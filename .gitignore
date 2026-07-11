@@ -1,0 +1,91 @@
+# =========================
+# CMake / C++ Build Files
+# =========================
+
+# Build directories
+build/
+**/build/
+cmake-build-*/
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+CTestTestfile.cmake
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+
+# CMake presets user files
+CMakeUserPresets.json
+
+# =========================
+# C++ Build Artifacts
+# =========================
+
+*.o
+*.obj
+*.a
+*.lib
+*.dll
+*.so
+*.dylib
+*.exe
+*.out
+
+# Debug symbols
+*.pdb
+*.dSYM/
+
+# =========================
+# Unity Generated Files
+# =========================
+
+# Unity generated folders
+UnityVisualizer/Library/
+UnityVisualizer/Temp/
+UnityVisualizer/Obj/
+UnityVisualizer/Bee/
+UnityVisualizer/UserSettings/
+UnityVisualizer/Logs/
+
+# Unity build output
+UnityVisualizer/[Bb]uild/
+UnityVisualizer/[Bb]uilds/
+
+# Unity generated metadata cache
+UnityVisualizer/*.csproj
+UnityVisualizer/*.sln
+UnityVisualizer/*.suo
+UnityVisualizer/*.user
+UnityVisualizer/*.userprefs
+
+# =========================
+# Unity IDE Files
+# =========================
+
+.vs/
+.idea/
+.vscode/
+
+# =========================
+# OS Files
+# =========================
+
+.DS_Store
+Thumbs.db
+
+# =========================
+# Logs / Temporary Files
+# =========================
+
+*.log
+*.tmp
+*.temp
+
+# =========================
+# Local Configuration
+# =========================
+
+.env
+*.local
