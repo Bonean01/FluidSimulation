@@ -17,7 +17,7 @@ project ("FluidSimulation")
 # Create a library from the project.
 add_library (FluidSolver SHARED
 	
-	 "include/FluidSimulation.h" "src/Exports.cpp")
+	 "include/FluidSimulation.h" "src/Exports.cpp" "include/VectorField.h")
 
 	
 if (CMAKE_VERSION VERSION_GREATER 3.12)

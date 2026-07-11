@@ -5,9 +5,6 @@ public class PluginUser : MonoBehaviour {
         try {
             FluidSimulation simulation = new();
             
-            print(simulation.IsRunning());
-            simulation.Stop();
-            print(simulation.IsRunning());
 
         } catch (System.Exception e) {
             print(e);            

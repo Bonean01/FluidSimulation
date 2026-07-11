@@ -1,11 +1,16 @@
 #pragma once
 
+#include "VectorField.h"
+
 class FluidSimulation {
 public:
-	const bool running() const { return isRunning; }
-	void stop() { isRunning = false; }
-	FluidSimulation() : isRunning(true) {}
+	FluidSimulation(int gridWidth, int gridHeight, float density = 1, float kinematicViscosity = 0) :
+	m_density(density),
+	m_kinematicViscosity(kinematicViscosity),
+	m_velocityField(gridWidth, gridHeight) {}
+
 
 private:
-	bool isRunning;
+	VectorField2D m_velocityField;
+	float m_density, m_kinematicViscosity;
 };
