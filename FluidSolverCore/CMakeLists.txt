@@ -14,10 +14,10 @@ endif()
 project ("FluidSimulation")
 
 
-# Create a .dll / .so / .dylib from the project.
+# Create a library from the project.
 add_library (FluidSolver SHARED
-	"src/FluidSolver.cpp"
-	"include/FluidSolver.h")
+	
+	 "include/FluidSimulation.h" "src/Exports.cpp")
 
 	
 if (CMAKE_VERSION VERSION_GREATER 3.12)
