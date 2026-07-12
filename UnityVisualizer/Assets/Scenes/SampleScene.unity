@@ -386,8 +386,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09ac10085ffc99346ae4f5256ff9d538, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PluginUser
-  width: 10
-  height: 1
+  width: 4
+  height: 4
   cellWidth: 1
 --- !u!4 &2031258203
 Transform:

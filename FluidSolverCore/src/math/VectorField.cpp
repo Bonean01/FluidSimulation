@@ -4,10 +4,10 @@
 Vector2 VectorField2D::sampleBilinear(float x, float y) const {
 	if (x < 0 || x > m_width || y < 0 || y > m_height) throw std::exception("Value out of bounds of vector field");
 
-	int x1 = std::floor(x);
-	int x2 = std::ceil(x);
-	int y1 = std::floor(y);
-	int y2 = std::ceil(y);
+	int x1 = (int)std::floor(x);
+	int x2 = (int)std::ceil(x);
+	int y1 = (int)std::floor(y);
+	int y2 = (int)std::ceil(y);
 	float tX = (x - x1) / (x2 - x1);
 	float tY = (y - y1) / (y2 - y1);
 

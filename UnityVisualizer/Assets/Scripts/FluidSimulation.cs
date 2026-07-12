@@ -3,39 +3,73 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 public class FluidSimulation : IDisposable {
-    readonly IntPtr handle;
+    readonly IntPtr m_handle;
+    readonly int m_width, m_height, m_cellCount;
+
+
+    public int GetWidth() => m_width;
+    public int GetHeight() => m_height;
+    public int GetCellCount() => m_cellCount;
+
+
     [DllImport("FluidSolver")] private extern static IntPtr CreateSimulation(int width, int height, float cellWidth, float density, float kinematicViscosity);
-    [DllImport("FluidSolver")] private extern static IntPtr CreateSimulation(int width, int height, float cellWidth);
     [DllImport("FluidSolver")] private extern static void DestroySimulation(IntPtr handle);
 
     [DllImport("FluidSolver")] private extern static void Step(IntPtr handle, float dt);
 
     [DllImport("FluidSolver")] private extern static IntPtr GetVelocityFieldPtr(IntPtr handle);
-    [DllImport("FluidSolver")] private extern static int GetVelocityFieldSize(IntPtr handle);
+    [DllImport("FluidSolver")] private extern static IntPtr GetPressureFieldPtr(IntPtr handle);
+    [DllImport("FluidSolver")] private extern static IntPtr GetSolidCellMapPtr(IntPtr handle);
+
+    [DllImport("FluidSolver")] private extern static void SetVelocity(IntPtr handle, int i, int j, Vector2 velocity);
+    [DllImport("FluidSolver")] private extern static void SetSolidCell(IntPtr handle, int i, int j, bool isSolid);
 
 
-    public FluidSimulation(int width, int height, float cellWidth, float density, float kinematicViscosity) {
-        handle = CreateSimulation(width, height, cellWidth, density, kinematicViscosity);
+    public FluidSimulation(int width, int height, float cellWidth, float density = 1, float kinematicViscosity = 0) {
+        m_handle = CreateSimulation(width, height, cellWidth, density, kinematicViscosity);
+        m_width = width;
+        m_height = height;
+        m_cellCount = width * height;
     }
-    public FluidSimulation(int width, int height, float cellWidth) {
-        handle = CreateSimulation(width, height, cellWidth);
-    }
+
     public void Dispose() {
-        DestroySimulation(handle);
+        DestroySimulation(m_handle);
     }
+
 
     public void Step(float dt) {
-        Step(handle, dt);
+        Step(m_handle, dt);
     }
 
-    public IEnumerable<Vector2> VelocityVectors() {
-        IntPtr ptr = GetVelocityFieldPtr(handle);
-        int size = GetVelocityFieldSize(handle);
-        for (int i = 0; i < size; i++)
-            yield return GetElementFromPointer<Vector2>(ptr, i);
-    }
 
     unsafe private T GetElementFromPointer<T>(IntPtr ptr, int index) where T : unmanaged {
         return ((T*)ptr)[index];
+    }
+
+    public IEnumerable<Vector2> VelocityVectors() {
+        IntPtr ptr = GetVelocityFieldPtr(m_handle);
+        for (int i = 0; i < m_cellCount; i++)
+            yield return GetElementFromPointer<Vector2>(ptr, i);
+    }
+
+    public IEnumerable<float> PressureValues() {
+        IntPtr ptr = GetPressureFieldPtr(m_handle);
+        for (int i = 0; i < m_cellCount; i++)
+            yield return GetElementFromPointer<float>(ptr, i);
+    }
+
+    public IEnumerable<byte> IsSolidCellValues() {
+        IntPtr ptr = GetSolidCellMapPtr(m_handle);
+        for (int i = 0; i < m_cellCount; i++)
+            yield return GetElementFromPointer<byte>(ptr, i);
+    }
+
+
+    public void SetVelocity(int i, int j, Vector2 velocity) {
+        SetVelocity(m_handle, i, j, velocity);
+    }
+
+    public void SetSolidCell(int i, int j, bool isSolid) {
+        SetSolidCell(m_handle, i, j, isSolid);
     }
 }
