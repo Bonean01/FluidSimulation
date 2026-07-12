@@ -4,6 +4,7 @@
 
 struct Vector2 {
 	float x, y;
+
 	Vector2(float x = 0, float y = 0) : x(x), y(y) {}
 	static Vector2 lerp(const Vector2& A, const Vector2& B, float t);
 	static Vector2 biLerp(const Vector2& A, const Vector2& B, const Vector2& C, const Vector2& D, float tX, float tY);
