@@ -1,13 +1,14 @@
 #pragma once
 
 #include <vector>
+#include "math/Vector.h"
 
 class VectorField2D {
 public:
-	// Bilinear interpolation is used to find values between cells
-	const float valueAt(float x, float y);
-	const float gradientAt(float x, float y);
-	const float divergenceAt(float x, float y);
+	const Vector2 sample(const Vector2& position) const;
+	const float divergence(int i, int j) const;
+	const float laplacian(int i, int j) const;
+	int size() const { return m_size; }
 
 	VectorField2D(int width, int height) :
 		m_width(width),
@@ -21,4 +22,5 @@ private:
 	int m_width, m_height, m_size;
 	std::vector<float> m_xComponent;
 	std::vector<float> m_yComponent;
+	int getIndex(int i, int j) const { return j * m_width + i; }
 };
