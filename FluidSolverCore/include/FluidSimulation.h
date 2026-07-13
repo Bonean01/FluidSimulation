@@ -26,9 +26,6 @@ public:
 	}
 
 	void step(float dt);
-	void advect(VectorField2D field);
-	void diffuse(VectorField2D field);
-	void project(VectorField2D field);
 
 	const VectorField2D* getVelocityField() const { return &m_velocityField; }
 	const ScalarField2D* getPressureField() const { return &m_pressureField; }
@@ -46,4 +43,9 @@ private:
 	// 0 => not solid, 1 => solid
 	Grid2D<uint8_t> m_solidCellMap;
 	float m_density, m_kinematicViscosity, m_cellWidth;
+	
+	void advect(VectorField2D& field, float dt);
+	void diffuse(VectorField2D& field, float dt);
+	void applyExternalForces(VectorField2D& field);
+	void project(VectorField2D& field);
 };

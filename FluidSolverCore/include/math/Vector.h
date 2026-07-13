@@ -18,6 +18,9 @@ struct Vector2 {
 	friend Vector2 operator *(float n, const Vector2& vec) {
 		return { n * vec.x, n * vec.y };
 	}
+	friend Vector2 operator *(const Vector2& vec, float n) {
+		return n * vec;
+	}
 
 	friend Vector2 operator /(const Vector2& vec, float n) {
 		return { vec.x / n, vec.y / n };

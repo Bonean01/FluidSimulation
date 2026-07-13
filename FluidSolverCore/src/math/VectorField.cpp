@@ -1,15 +1,17 @@
 #include <cmath>
+#include <algorithm>
 #include "math/VectorField.h"
 
 Vector2 VectorField2D::sampleBilinear(float x, float y) const {
-	if (x < 0 || x > m_width || y < 0 || y > m_height) throw std::exception("Value out of bounds of vector field");
+	x = std::clamp(x, 0.0f, (float)m_width - 2.0f);
+	y = std::clamp(y, 0.0f, (float)m_height - 2.0f);
 
 	int x1 = (int)std::floor(x);
-	int x2 = (int)std::ceil(x);
+	int x2 = x1 + 1;
 	int y1 = (int)std::floor(y);
-	int y2 = (int)std::ceil(y);
-	float tX = (x - x1) / (x2 - x1);
-	float tY = (y - y1) / (y2 - y1);
+	int y2 = y1 + 1;
+	float tX = x - x1;
+	float tY = y - y1;
 
 	Vector2 A = getValue(x1, y2);
 	Vector2 B = getValue(x2, y2);
@@ -39,5 +41,8 @@ Vector2 VectorField2D::laplacian(int i, int j) const {
 	Vector2 left = getValue(i - 1, j);
 	Vector2 top = getValue(i, j + 1);
 	Vector2 bottom = getValue(i, j - 1);
-	return {};
+	return Vector2{
+		(right.x + left.x + top.x + bottom.x - 4 * center.x),
+		(right.y + left.y + top.y + bottom.y - 4 * center.y)
+	} / (m_cellWidth * m_cellWidth);
 }

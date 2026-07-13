@@ -17,7 +17,7 @@ project ("FluidSimulation")
 # Create a library from the project.
 add_library (FluidSolver SHARED
 	
-	 "include/FluidSimulation.h" "src/Exports.cpp" "include/math/VectorField.h" "src/math/VectorField.cpp" "include/math/Vector.h" "src/math/Vector.cpp"  "include/math/ScalarField.h" "include/Grid.h" "src/FluidSimulation.cpp")
+	 "include/FluidSimulation.h" "src/Exports.cpp" "include/math/VectorField.h" "src/math/VectorField.cpp" "include/math/Vector.h" "src/math/Vector.cpp"  "include/math/ScalarField.h" "include/Grid.h" "src/FluidSimulation.cpp" "src/math/ScalarField.cpp")
 
 	
 if (CMAKE_VERSION VERSION_GREATER 3.12)
