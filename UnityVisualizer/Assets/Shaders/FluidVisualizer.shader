@@ -7,6 +7,7 @@ Shader "Custom/FluidVisualizer" {
         _SolidCellMapTexture("Solid Cell Map Texture", 2D) = "white" {}
         _GridWidth("Grid Width", int) = 10
         _GridHeight("Grid Height", int) = 10
+        _DisplayedField("Displayed Field", int) = 0
     }
 
     SubShader {
@@ -20,7 +21,7 @@ Shader "Custom/FluidVisualizer" {
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
-            int _GridWidth, _GridHeight;
+            int _GridWidth, _GridHeight, _DisplayedField;
             float _Offset;
 
             TEXTURE2D(_VelocityTexture);
@@ -51,16 +52,15 @@ Shader "Custom/FluidVisualizer" {
 
             float4 frag(Varyings IN) : SV_Target {
                 float2 uv = IN.uv;
-                //float4 color = float4(floor(uv.x * _GridWidth) / _GridWidth, floor(uv.y * _GridHeight) / _GridHeight, 0, 1);
 
-                //float grid = min(frac(uv.x * _GridWidth), frac(uv.y * _GridHeight)) < 0.1f ? 0 : 1;
-                //color *= grid;
-
-                float4 color = SAMPLE_TEXTURE2D(_VelocityTexture, sampler_VelocityTexture, uv);
-
+                float4 color = float4(1.0f, 0.0f, 1.0f, 1.0f);
+                switch (_DisplayedField) {
+                    case 0: color = float4(SAMPLE_TEXTURE2D(_VelocityTexture, sampler_VelocityTexture, uv).xy, 0.0f, 1.0f); break;
+                    case 3: color = float4(SAMPLE_TEXTURE2D(_SolidCellMapTexture, sampler_SolidCellMapTexture, uv).xxx, 1.0f); break;
+                }
                 return color;
             }
-            ENDHLSL 
+            ENDHLSL
         }
     }
 }

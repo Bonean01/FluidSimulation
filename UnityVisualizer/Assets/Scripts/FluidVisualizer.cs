@@ -1,13 +1,34 @@
 using UnityEngine;
 
+enum FieldType {
+    Velocity,
+    Divergence,
+    Pressure,
+    SolidCells
+}
 
 [RequireComponent(typeof(SpriteRenderer))]
 public class FluidVisualizer : MonoBehaviour {
     [SerializeField] private int width, height;
     [SerializeField] private float cellWidth;
-    private Texture2D velocityTexture, pressureTexture, solidCellMapTexture;
+    [SerializeField] private FieldType displayedField;
+    private Texture2D m_velocityTexture, m_pressureTexture, m_solidCellMapTexture;
+    private SpriteRenderer m_spriteRenderer;
     
     private void Awake() {
+        m_spriteRenderer = GetComponent<SpriteRenderer>();
+        m_velocityTexture = new(width, height, TextureFormat.RGBA32, mipChain: false, linear: true) {
+            filterMode = FilterMode.Point,
+            wrapMode = TextureWrapMode.Clamp
+        };
+        m_solidCellMapTexture = new(width, height, TextureFormat.RGBA32, mipChain: false, linear: true) {
+            filterMode = FilterMode.Point,
+            wrapMode = TextureWrapMode.Clamp
+        };
+    }
+
+
+    private void Start() {
         FluidSimulation simulation = new(width, height, cellWidth);
         for (int i = 0; i < simulation.GetWidth(); i++) {
             for (int j = 0; j < simulation.GetHeight(); j++) {
@@ -17,32 +38,15 @@ public class FluidVisualizer : MonoBehaviour {
             }
         }
 
-        int index = 0;
-        foreach (Vector2 velocity in simulation.VelocityVectors()) {
-            print($"{index++} \t Velocity: ({velocity.x}, {velocity.y})");
-        }
-        index = 0;
-        foreach (float pressure in simulation.PressureValues()) {
-            print($"{index++} \t Pressure: {pressure}");
-        }
-        index = 0;
-        foreach (byte isSolid in simulation.IsSolidCellValues()) {
-            print($"{index++} \t IsSolid: {isSolid == 1}");
-        }
-
         // Create the textures from the fields
-        velocityTexture = new (width, height, TextureFormat.RGBA32, mipChain:false, linear:true);
-        int x = 0, y = 0;
-        foreach (Vector2 velocity in simulation.VelocityVectors()) {
-            if (y >= height) throw new System.Exception("More velocity vectors that expected for this texture");
-            Color color = new(velocity.x, velocity.y, 0, 1);
-            velocityTexture.SetPixel(x, y, color);
-            if (++x >= width) { x = 0; y++; }
-        }
-        velocityTexture.filterMode = FilterMode.Point;
-        velocityTexture.wrapMode = TextureWrapMode.Clamp;
-        velocityTexture.Apply();
+        simulation.UpdateVelocityTexture(ref m_velocityTexture);
+        simulation.UpdateSolidMapCellTexture(ref m_solidCellMapTexture);
 
-        GetComponent<SpriteRenderer>().material.SetTexture("_VelocityTexture", velocityTexture);
+        m_spriteRenderer.material.SetTexture("_VelocityTexture", m_velocityTexture);
+        m_spriteRenderer.material.SetTexture("_SolidCellMapTexture", m_solidCellMapTexture);
+    }
+
+    private void Update() {
+        m_spriteRenderer.material.SetInt("_DisplayedField", (int)displayedField);
     }
 }
