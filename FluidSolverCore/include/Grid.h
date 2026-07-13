@@ -5,9 +5,10 @@
 template<typename T>
 class Grid2D {
 public:
-	Grid2D(int width, int height) :
+	Grid2D(int width, int height, float cellWidth = 1) :
 		m_width(width),
 		m_height(height),
+		m_cellWidth(cellWidth),
 		m_cellCount(m_width * m_height),
 		m_values(m_cellCount) {}
 	
@@ -35,6 +36,7 @@ public:
 
 protected:
 	int m_width, m_height, m_cellCount;
+	float m_cellWidth;
 	std::vector<T> m_values;
 
 

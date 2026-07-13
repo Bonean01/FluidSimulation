@@ -25,5 +25,19 @@ Vector2 VectorField2D::sampleBilinear(const Vector2& position) const {
 
 
 float VectorField2D::divergence(int i, int j) const {
-	return 0.0f;
+	Vector2 right = getValue(i + 1, j);
+	Vector2 left = getValue(i - 1, j);
+	Vector2 top = getValue(i, j + 1);
+	Vector2 bottom = getValue(i, j - 1);
+	return (right.x - left.x + top.y - bottom.y) / (2 * m_cellWidth);
+}
+
+
+Vector2 VectorField2D::laplacian(int i, int j) const {
+	Vector2 center = getValue(i, j);
+	Vector2 right = getValue(i + 1, j);
+	Vector2 left = getValue(i - 1, j);
+	Vector2 top = getValue(i, j + 1);
+	Vector2 bottom = getValue(i, j - 1);
+	return {};
 }

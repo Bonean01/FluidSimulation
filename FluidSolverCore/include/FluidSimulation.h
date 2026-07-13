@@ -10,8 +10,8 @@ public:
 		m_cellWidth(cellWidth),
 		m_density(density),
 		m_kinematicViscosity(kinematicViscosity),
-		m_velocityField(gridWidth, gridHeight),
-		m_pressureField(gridWidth, gridHeight),
+		m_velocityField(gridWidth, gridHeight, m_cellWidth),
+		m_pressureField(gridWidth, gridHeight, m_cellWidth),
 		m_solidCellMap(gridWidth, gridHeight) {
 		
 		// Initialize all the outer cells to be solid (boundary condition: u = 0)

@@ -19,6 +19,10 @@ struct Vector2 {
 		return { n * vec.x, n * vec.y };
 	}
 
+	friend Vector2 operator /(const Vector2& vec, float n) {
+		return { vec.x / n, vec.y / n };
+	}
+
 	Vector2& operator +=(const Vector2& other) {
 		x += other.x;
 		y += other.y;
@@ -27,5 +31,9 @@ struct Vector2 {
 
 	friend Vector2 operator +(const Vector2& vec1, const Vector2& vec2) {
 		return { vec1.x + vec2.x, vec1.y + vec2.y };
+	}
+
+	friend Vector2 operator -(const Vector2& vec1, const Vector2& vec2) {
+		return { vec1.x - vec2.x, vec1.y - vec2.y };
 	}
 };
