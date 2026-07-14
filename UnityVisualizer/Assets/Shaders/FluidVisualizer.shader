@@ -56,7 +56,7 @@ Shader "Custom/FluidVisualizer" {
                 float4 color = float4(1.0f, 0.0f, 1.0f, 1.0f);
                 switch (_DisplayedField) {
                     case 0: color = float4(SAMPLE_TEXTURE2D(_VelocityTexture, sampler_VelocityTexture, uv).xy, 0.0f, 1.0f); break;
-                    case 3: color = float4(SAMPLE_TEXTURE2D(_SolidCellMapTexture, sampler_SolidCellMapTexture, uv).xxx, 1.0f); break;
+                    case 2: color = float4(SAMPLE_TEXTURE2D(_SolidCellMapTexture, sampler_SolidCellMapTexture, uv).xxx, 1.0f); break;
                 }
                 return color;
             }

@@ -21,11 +21,11 @@ extern "C" _declspec(dllexport) const Vector2* GetVelocityFieldPtr(FluidSimulati
 }
 
 extern "C" _declspec(dllexport) const float* GetPressureFieldPtr(FluidSimulation* handle) {
-	return handle->getPressureField()->getValuesPtr();
+	return handle->getPressureField().getValuesPtr();
 }
 
 extern "C" _declspec(dllexport) const uint8_t* GetSolidCellMapPtr(FluidSimulation* handle) {
-	return handle->getSolidCellMap()->getValuesPtr();
+	return handle->getSolidCellMap().getValuesPtr();
 }
 
 
