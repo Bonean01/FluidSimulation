@@ -34,7 +34,7 @@ public class FluidVisualizer : MonoBehaviour {
 
     private void Start() {
         for (int j = 10; j < simulation.GetHeight() - 10; j++) {
-            simulation.SetVelocity(3, j, new(0.1f, 0.0f));
+            simulation.SetVelocity(3, j, new(20.0f, 0.0f));
         }
 
         for (int j = 10; j < simulation.GetHeight() - 10; j++) {

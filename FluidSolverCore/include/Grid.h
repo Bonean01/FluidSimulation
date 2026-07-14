@@ -14,7 +14,7 @@ public:
 	
 	int width() const { return m_width; }
 	int height() const { return m_height; }
-	int size() const { return m_cellCount; }
+	int cellCount() const { return m_cellCount; }
 
 	void setValue(int i, int j, T value) {
 		int index = getIndex(i, j);
