@@ -34,7 +34,19 @@ public class FluidVisualizer : MonoBehaviour {
 
     private void Start() {
         for (int j = 10; j < simulation.GetHeight() - 10; j++) {
-            simulation.SetVelocity(simulation.GetWidth() / 2, j, new(0.1f, 0.0f));
+            simulation.SetVelocity(3, j, new(0.1f, 0.0f));
+        }
+
+        for (int j = 10; j < simulation.GetHeight() - 10; j++) {
+            simulation.SetVelocity(simulation.GetWidth() - 4, j, new(0.0f, 0.1f));
+        }
+
+        for (int i = 10; i < simulation.GetWidth() - 10; i++) {
+            simulation.SetVelocity(i, 3, new(0.1f, 0.0f));
+        }
+
+        for (int i = 10; i < simulation.GetWidth() - 10; i++) {
+            simulation.SetVelocity(i, simulation.GetHeight() - 4, new(0.0f, 0.1f));
         }
 
         // Create the textures from the fields
@@ -48,8 +60,8 @@ public class FluidVisualizer : MonoBehaviour {
     private void Update() {
         m_spriteRenderer.material.SetInt("_DisplayedField", (int)displayedField);
 
-        if (Input.GetKeyDown(KeyCode.Space)) {
-            simulation.Step(1.0f / 1200.0f);
+        if (Input.GetKeyDown(KeyCode.RightArrow)) {
+            simulation.Step(1.0f / 60.0f);
             simulation.UpdateVelocityTexture(ref m_velocityTexture);
             m_spriteRenderer.material.SetTexture("_VelocityTexture", m_velocityTexture);
         }

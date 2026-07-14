@@ -11,6 +11,7 @@ public:
 		m_density(density),
 		m_kinematicViscosity(kinematicViscosity),
 		m_velocityField(gridWidth, gridHeight, m_cellWidth),
+		m_auxVectorField(gridWidth, gridHeight, m_cellWidth),
 		m_pressureField(gridWidth, gridHeight, m_cellWidth),
 		m_solidCellMap(gridWidth, gridHeight) {
 		
@@ -38,13 +39,13 @@ public:
 
 
 private:
-	VectorField2D m_velocityField;
+	VectorField2D m_velocityField, m_auxVectorField;
 	ScalarField2D m_pressureField;
 	// 0 => not solid, 1 => solid
 	Grid2D<uint8_t> m_solidCellMap;
 	float m_density, m_kinematicViscosity, m_cellWidth;
 	
-	void advect(VectorField2D& field, float dt);
+	void advect(VectorField2D& field, VectorField2D& auxVectorField, float dt);
 	void diffuse(VectorField2D& field, float dt);
 	void applyExternalForces(VectorField2D& field);
 	void project(VectorField2D& field);

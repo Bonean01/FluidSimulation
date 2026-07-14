@@ -1,5 +1,6 @@
 #include <cmath>
 #include <algorithm>
+#include <iostream>
 #include "math/VectorField.h"
 
 Vector2 VectorField2D::sampleBilinear(float x, float y) const {
@@ -13,10 +14,10 @@ Vector2 VectorField2D::sampleBilinear(float x, float y) const {
 	float tX = x - x1;
 	float tY = y - y1;
 
-	Vector2 A = getValue(x1, y2);
-	Vector2 B = getValue(x2, y2);
-	Vector2 C = getValue(x1, y1);
-	Vector2 D = getValue(x2, y1);
+	Vector2 A = getValue(x1, y1);
+	Vector2 B = getValue(x2, y1);
+	Vector2 C = getValue(x1, y2);
+	Vector2 D = getValue(x2, y2);
 	
 	return Vector2::biLerp(A, B, C, D, tX, tY);
 }
@@ -41,7 +42,7 @@ Vector2 VectorField2D::laplacian(int i, int j) const {
 	Vector2 left = getValue(i - 1, j);
 	Vector2 top = getValue(i, j + 1);
 	Vector2 bottom = getValue(i, j - 1);
-	return Vector2{
+	return Vector2 {
 		(right.x + left.x + top.x + bottom.x - 4 * center.x),
 		(right.y + left.y + top.y + bottom.y - 4 * center.y)
 	} / (m_cellWidth * m_cellWidth);
