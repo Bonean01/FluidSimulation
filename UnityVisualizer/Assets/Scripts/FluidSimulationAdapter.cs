@@ -13,12 +13,32 @@ public class FluidSimulationAdapter : MonoBehaviour {
 
         float aspectRatio = (float)height / width;
         transform.localScale = new Vector3(transform.localScale.x, transform.localScale.x * aspectRatio, transform.localScale.z);
+
+        for (int j = 10; j < m_simulation.GetHeight() - 10; j++) {
+            m_simulation.SetVelocity(3, j, new(1.0f, 0.0f));
+        }
+        ApplyVelocityImpulse(new(width / 2, height - 50), new(1, 1), 10);
     }
 
 
-    private void Start() {
-         for (int j = 10; j < m_simulation.GetHeight() - 10; j++) {
-            m_simulation.SetVelocity(3, j, new(20.0f, 0.0f));
+    public void ApplyVelocityImpulse(Vector2Int position, Vector2 velocity, float radius) {
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                if (Mathf.Abs(i - position.x) > radius) continue;
+                if (Mathf.Abs(j - position.y) > radius) continue;
+
+                float xDiff = i - position.x;
+                float yDiff = j - position.y;
+                float dst = Mathf.Sqrt(xDiff * xDiff + yDiff * yDiff);
+
+                if (dst > radius) continue;
+
+                float t = 1 - dst / radius;
+                float resX = Mathf.SmoothStep(0, velocity.x, t);
+                float resY = Mathf.SmoothStep(0, velocity.y, t);
+
+                m_simulation.SetVelocity(i, j, new(resX, resY)); // needs to be changed for AddVelocity or expose GetVelocity in the libraries API.
+            }
         }
     }
 
@@ -34,7 +54,10 @@ public class FluidSimulationAdapter : MonoBehaviour {
 
 
     public Texture2D CreateTexture() {
-        Texture2D res = new(width, height, TextureFormat.RGBA32, mipChain: false, linear: true);
+        Texture2D res = new(width, height, TextureFormat.RGBA32, mipChain: false, linear: true) {
+            filterMode = FilterMode.Point,
+            wrapMode = TextureWrapMode.Clamp
+        };
         return res;
     }
 
