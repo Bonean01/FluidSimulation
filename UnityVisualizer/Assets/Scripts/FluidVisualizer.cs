@@ -34,6 +34,9 @@ public class FluidVisualizer : MonoBehaviour {
 
         m_spriteRenderer.material.SetTexture("_VelocityTexture", m_velocityTexture);
         m_spriteRenderer.material.SetTexture("_SolidCellMapTexture", m_solidCellMapTexture);
+
+        float aspectRatio = (float)m_simulationAdapter.Height / m_simulationAdapter.Width;
+        transform.localScale.Set(transform.localScale.x, transform.localScale.x * aspectRatio, transform.localScale.z);
     }
 
 

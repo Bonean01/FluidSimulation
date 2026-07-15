@@ -370,6 +370,7 @@ GameObject:
   - component: {fileID: 1486929792}
   - component: {fileID: 1486929793}
   - component: {fileID: 1486929791}
+  - component: {fileID: 1486929794}
   m_Layer: 0
   m_Name: FluidVisualizer
   m_TagString: Untagged
@@ -492,7 +493,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 482acafe0d8620945944c789eb241a99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FluidSimulationPlayer
-  fixedFrameRate: 120
+  fixedFrameRate: 60
+--- !u!114 &1486929794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1486929788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f90dfff53424dd448c526536383acde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FluidPainter
+  brushMode: 0
+  brushSize: 10
+  brushStrength: 0.01
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

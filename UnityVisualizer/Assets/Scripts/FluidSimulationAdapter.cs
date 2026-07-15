@@ -1,13 +1,19 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class FluidSimulationAdapter : MonoBehaviour {
     [SerializeField] private int width, height;
     [SerializeField] private float cellWidth;
+
     private int m_width, m_height;
-    FluidSimulation m_simulation;
+    private FluidSimulation m_simulation;
     public event Action SimulationStepped;
+
+    public int Width => m_width;
+    public int Height => m_height;
     
 
     private void Awake() {
@@ -15,10 +21,6 @@ public class FluidSimulationAdapter : MonoBehaviour {
         m_height = height;
         m_simulation = new(m_width, m_height, cellWidth);
         InitializeSimulation();
-
-        // Should this go elsewhere?
-        float aspectRatio = (float)m_height / m_width;
-        transform.localScale = new Vector3(transform.localScale.x, transform.localScale.x * aspectRatio, transform.localScale.z);
     }
 
 
@@ -28,14 +30,18 @@ public class FluidSimulationAdapter : MonoBehaviour {
             m_simulation.SetVelocity(3, j, new(1.0f, 0.0f));
         }
         ApplyVelocityImpulse(new(m_width / 2, m_height - 50), new(1, 1), 10);
+
+        //for (int i = 20; i < 40; i++) {
+        //    for (int j = 20; j < 40; j++) {
+        //        m_simulation.SetSolidCell(i, j, true);
+        //    }
+        //}
     }
 
 
     public void StepSimulation(float dt) {
         m_simulation.Step(dt);
         SimulationStepped?.Invoke();
-        Vec2f vel = m_simulation.GetVelocity(m_width / 2, m_height - 50);
-        print($"({vel.x}, {vel.y})");
     }
 
 
@@ -135,6 +141,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
         }
         velocityTexture.Apply();
     }
+    
 
     public void UpdateSolidMapCellTexture(ref Texture2D solidMapCellTexture) {
         UpdateSolidMapCellTexture(ref solidMapCellTexture, m_simulation.IsSolidCellValues());
