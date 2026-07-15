@@ -2,12 +2,15 @@ Shader "Custom/FluidVisualizer" {
     Properties {
         [MainTexture] _MainTex ("Texture", 2D) = "white" {}
         [MainColor] _BaseColor("Base Color", Color) = (1, 1, 1, 1)
+
         _VelocityTexture("Velocity Texture", 2D) = "white" {}
         _PressureTexture("Pressure Texture", 2D) = "white" {}
         _SolidCellMapTexture("Solid Cell Map Texture", 2D) = "white" {}
-        _GridWidth("Grid Width", int) = 10
-        _GridHeight("Grid Height", int) = 10
+
         _DisplayedField("Displayed Field", int) = 0
+
+        _SpeedGradientTexture("Speed Gradient Texture", 2D) = "white" {}
+        _MaxSpeedSqrd("Max Speed Squared", float) = 10
     }
 
     SubShader {
@@ -21,8 +24,8 @@ Shader "Custom/FluidVisualizer" {
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
-            int _GridWidth, _GridHeight, _DisplayedField;
-            float _Offset;
+            int _DisplayedField;
+            float _MaxSpeedSqrd;
 
             TEXTURE2D(_VelocityTexture);
             SAMPLER(sampler_VelocityTexture);
@@ -32,6 +35,9 @@ Shader "Custom/FluidVisualizer" {
 
             TEXTURE2D(_SolidCellMapTexture);
             SAMPLER(sampler_SolidCellMapTexture);
+
+            TEXTURE2D(_SpeedGradientTexture);
+            SAMPLER(sampler_SpeedGradientTexture);
 
             struct Attributes {
                 float4 positionOS : POSITION;
@@ -56,7 +62,13 @@ Shader "Custom/FluidVisualizer" {
                 float4 color = float4(1.0f, 0.0f, 1.0f, 1.0f);
                 switch (_DisplayedField) {
                     case 0: color = float4(SAMPLE_TEXTURE2D(_VelocityTexture, sampler_VelocityTexture, uv).xy, 0.0f, 1.0f); break;
-                    case 2: color = float4(SAMPLE_TEXTURE2D(_SolidCellMapTexture, sampler_SolidCellMapTexture, uv).xxx, 1.0f); break;
+                    case 1:
+                        float2 vel = SAMPLE_TEXTURE2D(_VelocityTexture, sampler_VelocityTexture, uv).xy;
+                        float speedSqrd = dot(vel, vel);
+                        float t = clamp(speedSqrd / _MaxSpeedSqrd, 0, 1);
+                        color = SAMPLE_TEXTURE2D(_SpeedGradientTexture, sampler_SpeedGradientTexture, float2(t, 0));
+                        break;
+                    case 3: color = float4(SAMPLE_TEXTURE2D(_SolidCellMapTexture, sampler_SolidCellMapTexture, uv).xxx, 1.0f); break;
                 }
                 return color;
             }

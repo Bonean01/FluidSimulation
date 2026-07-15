@@ -465,7 +465,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09ac10085ffc99346ae4f5256ff9d538, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FLuidVisualizer
-  displayedField: 0
+  displayedField: 1
+  speedGradient:
+    serializedVersion: 2
+    key0: {r: 0, g: 0, b: 0, a: 1}
+    key1: {r: 0.17451759, g: 0.7219366, b: 0.7283019, a: 1}
+    key2: {r: 0.18350329, g: 0.690566, b: 0.17589882, a: 0}
+    key3: {r: 0.8113208, g: 0.79215485, b: 0.2189035, a: 0}
+    key4: {r: 0.9169811, g: 0.55718535, b: 0.13668199, a: 0}
+    key5: {r: 1, g: 0.3139222, b: 0.20188677, a: 0}
+    key6: {r: 0.96981126, g: 0.2104306, b: 0.7810125, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 1002
+    ctime1: 10922
+    ctime2: 21845
+    ctime3: 32768
+    ctime4: 43690
+    ctime5: 54612
+    ctime6: 65535
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: 0
+    m_NumColorKeys: 7
+    m_NumAlphaKeys: 2
+  maxSpeed: 150
 --- !u!114 &1486929792
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -507,7 +538,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FluidPainter
   brushMode: 0
-  brushSize: 10
+  brushSize: 20
   brushStrength: 0.01
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

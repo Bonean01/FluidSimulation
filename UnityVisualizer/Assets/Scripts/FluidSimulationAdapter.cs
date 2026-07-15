@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class FluidSimulationAdapter : MonoBehaviour {
@@ -90,7 +89,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
 
 
     public Texture2D CreateTexture() {
-        Texture2D res = new(m_width, m_height, TextureFormat.RGBA32, mipChain: false, linear: true) {
+        Texture2D res = new(m_width, m_height, TextureFormat.RGBAFloat, mipChain: false, linear: true) {
             filterMode = FilterMode.Point,
             wrapMode = TextureWrapMode.Clamp
         };
