@@ -18,10 +18,18 @@ public class FluidSimulationAdapter : MonoBehaviour {
             m_simulation.SetVelocity(3, j, new(1.0f, 0.0f));
         }
         ApplyVelocityImpulse(new(width / 2, height - 50), new(1, 1), 10);
+        Vec2f vel = m_simulation.GetVelocity(width / 2, height - 50);
+        print($"({vel.x}, {vel.y})");
+    }
+
+    private void FixedUpdate() {
+        m_simulation.Step(Time.fixedDeltaTime);
     }
 
 
-    public void ApplyVelocityImpulse(Vector2Int position, Vector2 velocity, float radius) {
+// Maybe make simulation adapter hold the simulation object and have a separate simulation player that steps the simulation and can stop it and such.
+
+    public void ApplyVelocityImpulse(Vector2Int position, Vec2f velocity, float radius) {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 if (Mathf.Abs(i - position.x) > radius) continue;
@@ -37,7 +45,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
                 float resX = Mathf.SmoothStep(0, velocity.x, t);
                 float resY = Mathf.SmoothStep(0, velocity.y, t);
 
-                m_simulation.SetVelocity(i, j, new(resX, resY)); // needs to be changed for AddVelocity or expose GetVelocity in the libraries API.
+                m_simulation.AddVelocity(i, j, new(resX, resY));
             }
         }
     }
@@ -61,9 +69,9 @@ public class FluidSimulationAdapter : MonoBehaviour {
         return res;
     }
 
-    private void UpdateVectorFieldTexture(ref Texture2D texture, IEnumerable<Vector2> vectorCollection) {
+    private void UpdateVectorFieldTexture(ref Texture2D texture, IEnumerable<Vec2f> vectorCollection) {
         int x = 0, y = 0;
-        foreach (Vector2 vec in vectorCollection) {
+        foreach (Vec2f vec in vectorCollection) {
             if (y >= height) throw new Exception("The number of values is greater than the number of cells in the simulation");
             Color color = new (vec.x, vec.y, 0.0f, 1.0f);
             texture.SetPixel(x, y, color);
@@ -96,7 +104,16 @@ public class FluidSimulationAdapter : MonoBehaviour {
     }
 
     public void UpdateVelocityTexture(ref Texture2D velocityTexture) {
-        UpdateVectorFieldTexture(ref velocityTexture, m_simulation.VelocityVectors());
+        //UpdateVectorFieldTexture(ref velocityTexture, m_simulation.VelocityVectors());
+
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                Vec2f vel = m_simulation.GetVelocity(i, j);
+                Color color = new(vel.x, vel.y, 0.0f, 1.0f);
+                velocityTexture.SetPixel(i, j, color);
+            }
+        }
+        velocityTexture.Apply();
     }
 
     public void UpdateSolidMapCellTexture(ref Texture2D solidMapCellTexture) {

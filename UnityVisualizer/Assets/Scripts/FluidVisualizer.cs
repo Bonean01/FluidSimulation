@@ -42,10 +42,7 @@ public class FluidVisualizer : MonoBehaviour {
     private void Update() {
         m_spriteRenderer.material.SetInt("_DisplayedField", (int)displayedField);
 
-        //if (Input.GetKeyDown(KeyCode.RightArrow)) {
-        //    simulation.Step(1.0f / 60.0f);
-        //    simulation.UpdateVelocityTexture(ref m_velocityTexture);
-        //    m_spriteRenderer.material.SetTexture("_VelocityTexture", m_velocityTexture);
-        //}
+        m_simulationAdapter.UpdateVelocityTexture(ref m_velocityTexture);
+        m_spriteRenderer.material.SetTexture("_VelocityTexture", m_velocityTexture);
     }
 }

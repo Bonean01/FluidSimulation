@@ -28,9 +28,18 @@ extern "C" _declspec(dllexport) const uint8_t* GetSolidCellMapPtr(FluidSimulatio
 	return handle->getSolidCellMap().getValuesPtr();
 }
 
-
 extern "C" _declspec(dllexport) void SetVelocity(FluidSimulation* handle, int i, int j, Vector2 velocity) {
 	handle->setVelocity(i, j, velocity);
+}
+
+struct CVector2 { float x, y; };
+extern "C" _declspec(dllexport) CVector2 GetVelocity(FluidSimulation* handle, int i, int j) {
+	Vector2 vel = handle->getVelocity(i, j);
+	return CVector2{ vel.x, vel.y };
+}
+
+extern "C" _declspec(dllexport) void AddVelocity(FluidSimulation* handle, int i, int j, Vector2 deltaVel) {
+	handle->addVelocity(i, j, deltaVel);
 }
 
 extern "C" _declspec(dllexport) void SetSolidCell(FluidSimulation* handle, int i, int j, bool isSolid) {

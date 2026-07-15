@@ -33,8 +33,9 @@ public:
 	const Grid2D<uint8_t>& getSolidCellMap() const { return m_solidCellMap; }
 
 	void setVelocity(int i, int j, Vector2 velocity) { m_velocityField.setValue(i, j, velocity); }
+	Vector2 getVelocity(int i, int j) const { return m_velocityField.getValue(i, j); }
+	void addVelocity(int i, int j, Vector2 deltaVel) { setVelocity(i, j, getVelocity(i, j) + deltaVel); }
 	void setSolidCell(int i, int j, bool isSolid) { m_solidCellMap.setValue(i, j, isSolid); }
-	void addVelocity(int i, int j, Vector2 deltaVel) { setVelocity(i, j, m_velocityField.getValue(i, j) + deltaVel); }
 
 	bool isSolid(int i, int j) const { return m_solidCellMap.getValue(i, j); }
 

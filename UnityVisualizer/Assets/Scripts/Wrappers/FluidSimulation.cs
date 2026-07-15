@@ -22,7 +22,9 @@ public class FluidSimulation : IDisposable {
     [DllImport("FluidSolver")] private extern static IntPtr GetPressureFieldPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static IntPtr GetSolidCellMapPtr(IntPtr handle);
 
-    [DllImport("FluidSolver")] private extern static void SetVelocity(IntPtr handle, int i, int j, Vector2 velocity);
+    [DllImport("FluidSolver")] private extern static void SetVelocity(IntPtr handle, int i, int j, Vec2f velocity);
+    [DllImport("FluidSolver")] private extern static Vec2f GetVelocity(IntPtr handle, int i, int j);
+    [DllImport("FluidSolver")] private extern static void AddVelocity(IntPtr handle, int i, int j, Vec2f deltaVel);
     [DllImport("FluidSolver")] private extern static void SetSolidCell(IntPtr handle, int i, int j, bool isSolid);
 
 
@@ -47,10 +49,10 @@ public class FluidSimulation : IDisposable {
         return ((T*)ptr)[index];
     }
 
-    public IEnumerable<Vector2> VelocityVectors() {
+    public IEnumerable<Vec2f> VelocityVectors() {
         IntPtr ptr = GetVelocityFieldPtr(m_handle);
         for (int i = 0; i < m_cellCount; i++)
-            yield return GetElementFromPointer<Vector2>(ptr, i);
+            yield return GetElementFromPointer<Vec2f>(ptr, i);
     }
 
     public IEnumerable<float> PressureValues() {
@@ -66,11 +68,9 @@ public class FluidSimulation : IDisposable {
     }
 
 
-    public void SetVelocity(int i, int j, Vector2 velocity) {
-        SetVelocity(m_handle, i, j, velocity);
-    }
+    public void SetVelocity(int i, int j, Vec2f velocity) => SetVelocity(m_handle, i, j, velocity);
+    public Vec2f GetVelocity(int i, int j) => GetVelocity(m_handle, i, j);
+    public void AddVelocity(int i, int j, Vec2f deltaVel) => AddVelocity(m_handle, i, j, deltaVel);
 
-    public void SetSolidCell(int i, int j, bool isSolid) {
-        SetSolidCell(m_handle, i, j, isSolid);
-    }
+    public void SetSolidCell(int i, int j, bool isSolid) => SetSolidCell(m_handle, i, j, isSolid);
 }
