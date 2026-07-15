@@ -44,7 +44,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
     }
 
 
-    public void ApplyVelocityImpulse(Vector2Int position, Vec2f velocity, float radius) {
+    public void ApplyVelocityImpulse(Vector2 position, Vec2f velocity, float radius) {
         for (int i = 0; i < m_width; i++) {
             for (int j = 0; j < m_height; j++) {
                 if (Mathf.Abs(i - position.x) > radius) continue;

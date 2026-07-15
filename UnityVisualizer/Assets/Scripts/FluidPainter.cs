@@ -21,9 +21,14 @@ public class FluidPainter : MonoBehaviour {
     }
 
 
+    private Vector2 m_prevMousePosGrid, m_mouseGridDelta;
     private void Update() {
         if (!IsWithinBounds(Input.mousePosition)) return;
-        if (Input.GetMouseButton(0)) Paint();
+
+        Vector2 mousePosGrid = WorldToSimulationGrid(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+        m_mouseGridDelta = mousePosGrid - m_prevMousePosGrid;
+        if (Input.GetMouseButton(0)) Paint(mousePosGrid);
+        m_prevMousePosGrid = mousePosGrid;
     }
 
 
@@ -48,10 +53,8 @@ public class FluidPainter : MonoBehaviour {
     }
 
 
-    private void Paint() {
-        Vector2Int mousePosGrid = WorldToSimulationGrid(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-
-        Vector2 mouseVel = Input.mousePositionDelta / Time.deltaTime; // this should probably use the fixed delta
+    private void Paint(Vector2 mousePosGrid) {
+        Vector2 mouseVel = m_mouseGridDelta / Time.deltaTime;
         mouseVel *= brushStrength;
         Vec2f velocity = new(mouseVel.x, mouseVel.y);
 
