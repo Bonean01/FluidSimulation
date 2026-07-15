@@ -5,33 +5,43 @@ using UnityEngine;
 public class FluidSimulationAdapter : MonoBehaviour {
     [SerializeField] private int width, height;
     [SerializeField] private float cellWidth;
+    private int m_width, m_height;
     FluidSimulation m_simulation;
+    public event Action SimulationStepped;
     
 
     private void Awake() {
-        m_simulation = new(width, height, cellWidth);
+        m_width = width;
+        m_height = height;
+        m_simulation = new(m_width, m_height, cellWidth);
+        InitializeSimulation();
 
-        float aspectRatio = (float)height / width;
+        // Should this go elsewhere?
+        float aspectRatio = (float)m_height / m_width;
         transform.localScale = new Vector3(transform.localScale.x, transform.localScale.x * aspectRatio, transform.localScale.z);
+    }
 
-        for (int j = 10; j < m_simulation.GetHeight() - 10; j++) {
+
+    // temp
+    private void InitializeSimulation() {
+        for (int j = 10; j < m_height - 10; j++) {
             m_simulation.SetVelocity(3, j, new(1.0f, 0.0f));
         }
-        ApplyVelocityImpulse(new(width / 2, height - 50), new(1, 1), 10);
-        Vec2f vel = m_simulation.GetVelocity(width / 2, height - 50);
+        ApplyVelocityImpulse(new(m_width / 2, m_height - 50), new(1, 1), 10);
+    }
+
+
+    public void StepSimulation(float dt) {
+        m_simulation.Step(dt);
+        SimulationStepped?.Invoke();
+        Vec2f vel = m_simulation.GetVelocity(m_width / 2, m_height - 50);
         print($"({vel.x}, {vel.y})");
     }
 
-    private void FixedUpdate() {
-        m_simulation.Step(Time.fixedDeltaTime);
-    }
-
-
-// Maybe make simulation adapter hold the simulation object and have a separate simulation player that steps the simulation and can stop it and such.
 
     public void ApplyVelocityImpulse(Vector2Int position, Vec2f velocity, float radius) {
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
+        for (int i = 0; i < m_width; i++) {
+            for (int j = 0; j < m_height; j++) {
                 if (Mathf.Abs(i - position.x) > radius) continue;
                 if (Mathf.Abs(j - position.y) > radius) continue;
 
@@ -51,6 +61,18 @@ public class FluidSimulationAdapter : MonoBehaviour {
     }
 
 
+
+
+
+
+
+
+
+    // ##########################################
+    //              TEXTURE HANDLING
+    // ##########################################
+
+
     private Texture2D GetTextureFromPointer(IntPtr ptr, int size) {
         //return Texture2D.CreateExternalTexture()
         throw new NotImplementedException("Would be cool huh");
@@ -62,7 +84,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
 
 
     public Texture2D CreateTexture() {
-        Texture2D res = new(width, height, TextureFormat.RGBA32, mipChain: false, linear: true) {
+        Texture2D res = new(m_width, m_height, TextureFormat.RGBA32, mipChain: false, linear: true) {
             filterMode = FilterMode.Point,
             wrapMode = TextureWrapMode.Clamp
         };
@@ -72,10 +94,10 @@ public class FluidSimulationAdapter : MonoBehaviour {
     private void UpdateVectorFieldTexture(ref Texture2D texture, IEnumerable<Vec2f> vectorCollection) {
         int x = 0, y = 0;
         foreach (Vec2f vec in vectorCollection) {
-            if (y >= height) throw new Exception("The number of values is greater than the number of cells in the simulation");
+            if (y >= m_height) throw new Exception("The number of values is greater than the number of cells in the simulation");
             Color color = new (vec.x, vec.y, 0.0f, 1.0f);
             texture.SetPixel(x, y, color);
-            if (++x >= width) { x = 0; y++; }
+            if (++x >= m_width) { x = 0; y++; }
         }
         texture.Apply();
     }
@@ -83,10 +105,10 @@ public class FluidSimulationAdapter : MonoBehaviour {
     private void UpdateScalarFieldTexture(ref Texture2D texture, IEnumerable<float> scalarCollection) {
         int x = 0, y = 0;
         foreach (float value in scalarCollection) {
-            if (y >= height) throw new Exception("The number of values is greater than the number of cells in the simulation");
+            if (y >= m_height) throw new Exception("The number of values is greater than the number of cells in the simulation");
             Color color = new (value, 0.0f, 0.0f, 1.0f);
             texture.SetPixel(x, y, color);
-            if (++x >= width) { x = 0; y++; }
+            if (++x >= m_width) { x = 0; y++; }
         }
         texture.Apply();
     }
@@ -95,19 +117,17 @@ public class FluidSimulationAdapter : MonoBehaviour {
     private void UpdateSolidMapCellTexture(ref Texture2D texture, IEnumerable<byte> scalarCollection) {
         int x = 0, y = 0;
         foreach (byte value in scalarCollection) {
-            if (y >= height) throw new Exception("The number of values is greater than the number of cells in the simulation");
+            if (y >= m_height) throw new Exception("The number of values is greater than the number of cells in the simulation");
             Color color = new (value, 0.0f, 0.0f, 1.0f);
             texture.SetPixel(x, y, color);
-            if (++x >= width) { x = 0; y++; }
+            if (++x >= m_width) { x = 0; y++; }
         }
         texture.Apply();
     }
 
     public void UpdateVelocityTexture(ref Texture2D velocityTexture) {
-        //UpdateVectorFieldTexture(ref velocityTexture, m_simulation.VelocityVectors());
-
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
+        for (int i = 0; i < m_width; i++) {
+            for (int j = 0; j < m_height; j++) {
                 Vec2f vel = m_simulation.GetVelocity(i, j);
                 Color color = new(vel.x, vel.y, 0.0f, 1.0f);
                 velocityTexture.SetPixel(i, j, color);

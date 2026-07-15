@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UIElements;
 
 enum FieldType {
     Velocity,
@@ -7,8 +6,9 @@ enum FieldType {
     SolidCells
 }
 
-[RequireComponent(typeof(FluidSimulationAdapter))]
+
 [RequireComponent(typeof(SpriteRenderer))]
+[RequireComponent(typeof(FluidSimulationAdapter))]
 public class FluidVisualizer : MonoBehaviour {
 
     [SerializeField] private FieldType displayedField;
@@ -20,18 +20,15 @@ public class FluidVisualizer : MonoBehaviour {
     private void Awake() {
         m_simulationAdapter = GetComponent<FluidSimulationAdapter>();
         m_spriteRenderer = GetComponent<SpriteRenderer>();
-        
 
-        m_velocityTexture = m_simulationAdapter.CreateTexture();
-        m_solidCellMapTexture = m_simulationAdapter.CreateTexture();
-
-        //float aspectRatio = (float)height / width;
-        //transform.localScale = new Vector3(transform.localScale.x, transform.localScale.x * aspectRatio, transform.localScale.z);
+        m_simulationAdapter.SimulationStepped += OnSimulationStepped;
     }
 
 
     private void Start() {
-        // Create the textures from the fields
+        m_velocityTexture = m_simulationAdapter.CreateTexture();
+        m_solidCellMapTexture = m_simulationAdapter.CreateTexture();
+        
         m_simulationAdapter.UpdateVelocityTexture(ref m_velocityTexture);
         m_simulationAdapter.UpdateSolidMapCellTexture(ref m_solidCellMapTexture);
 
@@ -39,9 +36,13 @@ public class FluidVisualizer : MonoBehaviour {
         m_spriteRenderer.material.SetTexture("_SolidCellMapTexture", m_solidCellMapTexture);
     }
 
+
     private void Update() {
         m_spriteRenderer.material.SetInt("_DisplayedField", (int)displayedField);
+    }
 
+
+    private void OnSimulationStepped() {
         m_simulationAdapter.UpdateVelocityTexture(ref m_velocityTexture);
         m_spriteRenderer.material.SetTexture("_VelocityTexture", m_velocityTexture);
     }
