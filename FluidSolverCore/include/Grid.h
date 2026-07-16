@@ -18,13 +18,13 @@ public:
 
 	void setValue(int i, int j, T value) {
 		int index = getIndex(i, j);
-		if (i < 0 || i >= m_width || j < 0 || j >= m_height) throw std::exception("Index out of bounds for grid");
+		if (index > m_cellCount) return;
 		m_values[index] = value;
 	}
 
 	const T& getValue(int i, int j) const {
 		int index = getIndex(i, j);
-		if (i < 0 || i >= m_width || j < 0 || j >= m_height) throw std::exception("Index out of bounds for grid");
+		if (index > m_cellCount) throw std::exception("Index out of bounds for grid");
 
 		return m_values[index];
 	}

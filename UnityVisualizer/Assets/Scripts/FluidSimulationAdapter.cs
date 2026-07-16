@@ -70,9 +70,6 @@ public class FluidSimulationAdapter : MonoBehaviour {
 
 
 
-
-
-
     // ##########################################
     //              TEXTURE HANDLING
     // ##########################################

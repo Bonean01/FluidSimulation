@@ -6,8 +6,8 @@
 #include <iostream>
 
 Vector2 VectorField2D::sampleBilinear(float x, float y) const {
-	x = std::clamp(x, 0.0f, (float)m_width - 1.0f);
-	y = std::clamp(y, 0.0f, (float)m_height - 1.0f);
+	x = std::clamp(x, 0.0f, (float)m_width - 2.0f);
+	y = std::clamp(y, 0.0f, (float)m_height - 2.0f);
 
 	int x1 = (int)std::floor(x);
 	int x2 = x1 + 1;
