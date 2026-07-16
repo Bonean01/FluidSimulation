@@ -68,13 +68,7 @@ public class FluidSimulation : IDisposable {
     }
 
 
-    public void SetVelocity(int i, int j, Vec2f velocity) {
-        if (i < 0 || i >= m_width || j < 0 || j >= m_height) {
-            Debug.Log($"{i}, {j}: ({velocity.x}, {velocity.y})");
-            return;
-        }
-        SetVelocity(m_handle, i, j, velocity);
-    }
+    public void SetVelocity(int i, int j, Vec2f velocity) => SetVelocity(m_handle, i, j, velocity);
     public Vec2f GetVelocity(int i, int j) => GetVelocity(m_handle, i, j);
     public void AddVelocity(int i, int j, Vec2f deltaVel) => AddVelocity(m_handle, i, j, deltaVel);
 

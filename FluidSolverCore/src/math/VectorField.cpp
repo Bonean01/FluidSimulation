@@ -3,7 +3,6 @@
 #include <iostream>
 #include "math/VectorField.h"
 
-#include <iostream>
 
 Vector2 VectorField2D::sampleBilinear(float x, float y) const {
 	x = std::clamp(x, 0.0f, (float)m_width - 2.0f);

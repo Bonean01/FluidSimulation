@@ -18,7 +18,7 @@ public:
 
 	void setValue(int i, int j, T value) {
 		int index = getIndex(i, j);
-		if (index > m_cellCount) return;
+		if (index > m_cellCount) throw std::exception("Index out of bounds for grid");
 		m_values[index] = value;
 	}
 

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 
 public class FluidSimulationAdapter : MonoBehaviour {
@@ -9,7 +8,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
 
     private int m_width, m_height;
     private FluidSimulation m_simulation;
-    public event Action SimulationStepped;
+    public event Action OnVelocityUpdated;
 
     public int Width => m_width;
     public int Height => m_height;
@@ -19,28 +18,12 @@ public class FluidSimulationAdapter : MonoBehaviour {
         m_width = width;
         m_height = height;
         m_simulation = new(m_width, m_height, cellWidth);
-        InitializeSimulation();
-    }
-
-
-    // temp
-    private void InitializeSimulation() {
-        for (int j = 10; j < m_height - 10; j++) {
-            m_simulation.SetVelocity(3, j, new(1.0f, 0.0f));
-        }
-        ApplyVelocityImpulse(new(m_width / 2, m_height - 50), new(1, 1), 10);
-
-        //for (int i = 20; i < 40; i++) {
-        //    for (int j = 20; j < 40; j++) {
-        //        m_simulation.SetSolidCell(i, j, true);
-        //    }
-        //}
     }
 
 
     public void StepSimulation(float dt) {
         m_simulation.Step(dt);
-        SimulationStepped?.Invoke();
+        OnVelocityUpdated?.Invoke();
     }
 
 
@@ -63,8 +46,18 @@ public class FluidSimulationAdapter : MonoBehaviour {
                 m_simulation.AddVelocity(i, j, new(resX, resY));
             }
         }
+        OnVelocityUpdated?.Invoke();
     }
 
+
+    public Vector2Int WorldToGridPoint(Vector2 worldPos) {
+        float widthWorld = transform.localScale.x;
+        float cellWidthWorld = widthWorld / m_width;
+        return new() {
+            x = (int)(worldPos.x / cellWidthWorld + m_width / 2),
+            y = (int)(worldPos.y / cellWidthWorld + m_height / 2)
+        };
+    }
 
 
 

@@ -26,7 +26,7 @@ public class FluidVisualizer : MonoBehaviour {
         m_simulationAdapter = GetComponent<FluidSimulationAdapter>();
         m_spriteRenderer = GetComponent<SpriteRenderer>();
 
-        m_simulationAdapter.SimulationStepped += OnSimulationStepped;
+        m_simulationAdapter.OnVelocityUpdated += OnVelocityUpdated;
     }
 
 
@@ -64,7 +64,7 @@ public class FluidVisualizer : MonoBehaviour {
     }
 
 
-    private void OnSimulationStepped() {
+    private void OnVelocityUpdated() {
         m_simulationAdapter.UpdateVelocityTexture(ref m_velocityTexture);
         m_spriteRenderer.material.SetTexture("_VelocityTexture", m_velocityTexture);
 
