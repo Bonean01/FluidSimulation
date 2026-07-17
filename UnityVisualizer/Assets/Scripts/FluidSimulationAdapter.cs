@@ -5,6 +5,7 @@ using UnityEngine;
 public class FluidSimulationAdapter : MonoBehaviour {
     [SerializeField] private int width, height;
     [SerializeField] private float cellWidth;
+    [SerializeField] private uint solverIterationCount;
 
     private int m_width, m_height;
     private FluidSimulation m_simulation;
@@ -17,7 +18,21 @@ public class FluidSimulationAdapter : MonoBehaviour {
     private void Awake() {
         m_width = width;
         m_height = height;
-        m_simulation = new(m_width, m_height, cellWidth);
+        m_simulation = new(m_width, m_height, cellWidth, iterationCount:solverIterationCount);
+        InitializeSimulation();
+    }
+
+
+    private void InitializeSimulation() {
+        Vector2Int origin = new(m_width / 2 + 5, m_height / 2);
+        for (int i = 0; i < m_width; i++) {
+            for (int j = 0; j < m_height; j++) {
+                Vector2Int pos = new(i, j);
+                if ((origin - pos).magnitude < 5) {
+                    m_simulation.SetSolidCell(i, j, true);
+                }
+            }
+        }
     }
 
 

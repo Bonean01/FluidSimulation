@@ -22,14 +22,15 @@ public class FluidPainter : MonoBehaviour {
     }
 
 
-    private Vector2 m_prevMousePosGrid, m_mouseGridDelta;
+    private Vector2 m_prevMousePosWorld, m_mouseWorldDelta;
     private void Update() {
         if (!IsWithinBounds(Input.mousePosition)) return;
 
-        Vector2 mousePosGrid = WorldToSimulationGrid(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-        m_mouseGridDelta = mousePosGrid - m_prevMousePosGrid;
+        Vector2 mousePosWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 mousePosGrid = m_simulationAdapter.WorldToGridPoint(mousePosWorld);
+        m_mouseWorldDelta = mousePosWorld - m_prevMousePosWorld;
         if (Input.GetMouseButton(0)) Paint(mousePosGrid);
-        m_prevMousePosGrid = mousePosGrid;
+        m_prevMousePosWorld = mousePosWorld;
     }
 
 
@@ -42,20 +43,8 @@ public class FluidPainter : MonoBehaviour {
     }
 
 
-    private Vector2Int WorldToSimulationGrid(Vector2 worldPos) {
-        float widthWorld = transform.localScale.x;
-        int widthGrid = m_simulationAdapter.Width;
-        int heightGrid = m_simulationAdapter.Height;
-        float cellWidthWorld = widthWorld / widthGrid;
-        return new() {
-            x = (int)(worldPos.x / cellWidthWorld + widthGrid / 2),
-            y = (int)(worldPos.y / cellWidthWorld + heightGrid / 2)
-        };
-    }
-
-
     private void Paint(Vector2 mousePosGrid) {
-        Vector2 mouseVel = m_mouseGridDelta / Time.deltaTime; // we also need to take the cellsize into consideration
+        Vector2 mouseVel = m_mouseWorldDelta / Time.deltaTime; // we also need to take the cellsize into consideration
         mouseVel *= brushStrength;
         Vec2f velocity = new(mouseVel.x, mouseVel.y);
 

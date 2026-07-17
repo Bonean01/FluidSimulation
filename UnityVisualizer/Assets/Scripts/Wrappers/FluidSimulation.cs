@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using UnityEngine;
 
 public class FluidSimulation : IDisposable {
     readonly IntPtr m_handle;
@@ -13,7 +12,7 @@ public class FluidSimulation : IDisposable {
     public int GetCellCount() => m_cellCount;
 
 
-    [DllImport("FluidSolver")] private extern static IntPtr CreateSimulation(int width, int height, float cellWidth, float density, float kinematicViscosity);
+    [DllImport("FluidSolver")] private extern static IntPtr CreateSimulation(int width, int height, float cellWidth, float density, float kinematicViscosity, uint iterationCount);
     [DllImport("FluidSolver")] private extern static void DestroySimulation(IntPtr handle);
 
     [DllImport("FluidSolver")] private extern static void Step(IntPtr handle, float dt);
@@ -28,8 +27,8 @@ public class FluidSimulation : IDisposable {
     [DllImport("FluidSolver")] private extern static void SetSolidCell(IntPtr handle, int i, int j, bool isSolid);
 
 
-    public FluidSimulation(int width, int height, float cellWidth, float density = 1, float kinematicViscosity = 0) {
-        m_handle = CreateSimulation(width, height, cellWidth, density, kinematicViscosity);
+    public FluidSimulation(int width, int height, float cellWidth, float density = 1, float kinematicViscosity = 0, uint iterationCount = 60) {
+        m_handle = CreateSimulation(width, height, cellWidth, density, kinematicViscosity, iterationCount);
         m_width = width;
         m_height = height;
         m_cellCount = width * height;

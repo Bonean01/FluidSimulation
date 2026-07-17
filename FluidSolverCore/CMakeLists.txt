@@ -26,7 +26,10 @@ set (SOURCE_FILES
 	"include/Grid.h"
 	"src/FluidSimulation.cpp"
 	"src/math/dataStructures/ScalarField.cpp"
-	"include/math/solvers/LinearSolver.h")
+	"include/math/solvers/JacobiIterationSolver.h"
+	"include/math/solvers/PressureSolver.h"
+	"src/math/solvers/PressureSolver.cpp"
+)
 
 
 # Create a library from the project.

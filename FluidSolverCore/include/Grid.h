@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <algorithm>
 
 template<typename T>
 class Grid2D {
@@ -14,17 +15,19 @@ public:
 	
 	int width() const { return m_width; }
 	int height() const { return m_height; }
+	float cellWidth() const { return m_cellWidth; }
 	int cellCount() const { return m_cellCount; }
 
 	void setValue(int i, int j, T value) {
 		int index = getIndex(i, j);
-		if (index > m_cellCount) throw std::exception("Index out of bounds for grid");
+		if (index < 0 || index >= m_cellCount) return;
+		
 		m_values[index] = value;
 	}
 
 	const T& getValue(int i, int j) const {
 		int index = getIndex(i, j);
-		if (index > m_cellCount) throw std::exception("Index out of bounds for grid");
+		index = std::clamp(index, 0, m_cellCount - 1);
 
 		return m_values[index];
 	}

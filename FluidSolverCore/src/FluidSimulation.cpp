@@ -1,15 +1,21 @@
 #include "FluidSimulation.h"
+#include "math/solvers/PressureSolver.h"
+
 
 void FluidSimulation::step(float dt) {
 	// All of the steps within the step function require an auxiliary vectorfield to which to write
-	advect(m_velocityField, m_auxVectorField, dt);
-	diffuse(m_velocityField, m_auxVectorField, dt);
+	advect(m_velocityField, dt);
+	diffuse(m_velocityField, dt);
 	project(m_velocityField);
 }
 
-void FluidSimulation::advect(VectorField2D& field, VectorField2D& auxField, float dt) const {
+
+void FluidSimulation::advect(VectorField2D& field, float dt) {
 	int width = field.width();
 	int height = field.height();
+	VectorField2D& auxField = m_auxVectorField;
+	if (auxField.width() != width || auxField.height() != height) return;
+
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
 			if (isSolid(i, j)) { auxField.setValue(i, j, { 0.0f, 0.0f }); continue; }
@@ -22,9 +28,13 @@ void FluidSimulation::advect(VectorField2D& field, VectorField2D& auxField, floa
 	std::swap(field, auxField);
 }
 
-void FluidSimulation::diffuse(VectorField2D& field, VectorField2D& auxVectorField, float dt) const {
+
+void FluidSimulation::diffuse(VectorField2D& field, float dt) {
 	int width = field.width();
 	int height = field.height();
+	VectorField2D& auxField = m_auxVectorField;
+	if (auxField.width() != width || auxField.height() != height) return;
+
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
 			
@@ -32,12 +42,21 @@ void FluidSimulation::diffuse(VectorField2D& field, VectorField2D& auxVectorFiel
 	}
 }
 
+
 void FluidSimulation::project(VectorField2D& field) {
 	int width = field.width();
 	int height = field.height();
+	ScalarField2D& auxField = m_auxScalarField;
+	if (auxField.width() != width || auxField.height() != height) return;
+
+	// Solve the pressure value for every point in the field
+	m_pressureSolver.solve(m_pressureField, auxField, m_iterationCount);
+
+	// Subtract the gradient of the pressure field to the velocity field
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
-			 
+			Vector2 gradient = m_pressureField.gradient(i, j);
+			addVelocity(i, j, -gradient);
 		}
 	}
 }

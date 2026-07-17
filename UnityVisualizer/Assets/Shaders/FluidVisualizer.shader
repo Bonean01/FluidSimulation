@@ -61,14 +61,20 @@ Shader "Custom/FluidVisualizer" {
 
                 float4 color = float4(1.0f, 0.0f, 1.0f, 1.0f);
                 switch (_DisplayedField) {
-                    case 0: color = float4(SAMPLE_TEXTURE2D(_VelocityTexture, sampler_VelocityTexture, uv).xy, 0.0f, 1.0f); break;
-                    case 1:
+                    case 0:  // VELOCITY
+                        color = float4(SAMPLE_TEXTURE2D(_VelocityTexture, sampler_VelocityTexture, uv).xy / sqrt(_MaxSpeedSqrd), 0.0f, 1.0f);
+                        break;
+
+                    case 1:  // SPEED
                         float2 vel = SAMPLE_TEXTURE2D(_VelocityTexture, sampler_VelocityTexture, uv).xy;
                         float speedSqrd = dot(vel, vel);
                         float t = clamp(speedSqrd / _MaxSpeedSqrd, 0, 1);
                         color = SAMPLE_TEXTURE2D(_SpeedGradientTexture, sampler_SpeedGradientTexture, float2(t, 0));
                         break;
-                    case 3: color = float4(SAMPLE_TEXTURE2D(_SolidCellMapTexture, sampler_SolidCellMapTexture, uv).xxx, 1.0f); break;
+
+                    case 3:  // SOLID CELLS
+                        color = float4(SAMPLE_TEXTURE2D(_SolidCellMapTexture, sampler_SolidCellMapTexture, uv).xxx, 1.0f);
+                        break;
                 }
                 return color;
             }
