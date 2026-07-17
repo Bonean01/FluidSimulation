@@ -538,7 +538,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FluidPainter
   brushMode: 0
-  brushSize: 10
+  brushSize: 3
   brushStrength: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
