@@ -1,5 +1,5 @@
 #include <cmath>
-#include "math/Vector.h"
+#include "math/dataStructures/Vector.h"
 
 Vector2 Vector2::lerp(const Vector2& A, const Vector2& B, float t) {
 	Vector2 res{};

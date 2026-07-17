@@ -1,4 +1,4 @@
-#include "math/ScalarField.h"
+#include "math/dataStructures/ScalarField.h"
 
 Vector2 ScalarField2D::gradient(int i, int j) const {
 	float right = getValue(i + 1, j);

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "math/Vector.h"
+#include "math/dataStructures/Vector.h"
 #include "Grid.h"
 
 class VectorField2D : public Grid2D<Vector2> {

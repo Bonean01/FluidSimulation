@@ -18,14 +18,15 @@ project ("FluidSimulation")
 set (SOURCE_FILES
 	"include/FluidSimulation.h"
 	"src/Exports.cpp"
-	"include/math/VectorField.h"
-	"src/math/VectorField.cpp"
-	"include/math/Vector.h"
-	"src/math/Vector.cpp"
-	"include/math/ScalarField.h"
+	"include/math/dataStructures/VectorField.h"
+	"src/math/dataStructures/VectorField.cpp"
+	"include/math/dataStructures/Vector.h"
+	"src/math/dataStructures/Vector.cpp"
+	"include/math/dataStructures/ScalarField.h"
 	"include/Grid.h"
 	"src/FluidSimulation.cpp"
-	"src/math/ScalarField.cpp")
+	"src/math/dataStructures/ScalarField.cpp"
+	"include/math/solvers/LinearSolver.h")
 
 
 # Create a library from the project.

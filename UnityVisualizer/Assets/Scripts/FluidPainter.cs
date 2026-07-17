@@ -11,8 +11,8 @@ enum BrushMode {
 public class FluidPainter : MonoBehaviour {
 
     [SerializeField] private BrushMode brushMode;
-    [SerializeField] private float brushSize;
-    [SerializeField] [Range(0, 1)] private float brushStrength;
+    [SerializeField] [Range(.5f, 2)] private float brushSize;
+    [SerializeField] [Range(.5f, 2)] private float brushStrength;
     private FluidSimulationAdapter m_simulationAdapter;
     private float m_brushSizeGrid;
 

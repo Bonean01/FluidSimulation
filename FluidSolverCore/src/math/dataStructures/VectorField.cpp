@@ -1,7 +1,7 @@
 #include <cmath>
 #include <algorithm>
 #include <iostream>
-#include "math/VectorField.h"
+#include "math/dataStructures/VectorField.h"
 
 
 Vector2 VectorField2D::sampleBilinear(float x, float y) const {

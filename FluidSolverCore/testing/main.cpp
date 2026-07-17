@@ -1,7 +1,7 @@
 #include <iostream>
 #include "FluidSimulation.h"
-#include "math/VectorField.h"
-#include "math/Vector.h"
+#include "math/dataStructures/VectorField.h"
+#include "math/dataStructures/Vector.h"
 
 static void printSimulationState(const FluidSimulation& simulation) {
 	const VectorField2D& velField = simulation.getVelocityField();

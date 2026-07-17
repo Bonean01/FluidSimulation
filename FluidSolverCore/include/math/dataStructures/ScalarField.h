@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Grid.h"
-#include "math/Vector.h"
+#include "math/dataStructures/Vector.h"
 
 class ScalarField2D : public Grid2D<float> {
 public:

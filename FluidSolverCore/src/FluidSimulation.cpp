@@ -3,11 +3,11 @@
 void FluidSimulation::step(float dt) {
 	// All of the steps within the step function require an auxiliary vectorfield to which to write
 	advect(m_velocityField, m_auxVectorField, dt);
-	diffuse(m_velocityField, dt);
+	diffuse(m_velocityField, m_auxVectorField, dt);
 	project(m_velocityField);
 }
 
-void FluidSimulation::advect(VectorField2D& field, VectorField2D& auxField, float dt) {
+void FluidSimulation::advect(VectorField2D& field, VectorField2D& auxField, float dt) const {
 	int width = field.width();
 	int height = field.height();
 	for (int i = 0; i < width; i++) {
@@ -22,10 +22,22 @@ void FluidSimulation::advect(VectorField2D& field, VectorField2D& auxField, floa
 	std::swap(field, auxField);
 }
 
-void FluidSimulation::diffuse(VectorField2D& field, float dt) {
-
+void FluidSimulation::diffuse(VectorField2D& field, VectorField2D& auxVectorField, float dt) const {
+	int width = field.width();
+	int height = field.height();
+	for (int i = 0; i < width; i++) {
+		for (int j = 0; j < height; j++) {
+			
+		}
+	}
 }
 
 void FluidSimulation::project(VectorField2D& field) {
-
+	int width = field.width();
+	int height = field.height();
+	for (int i = 0; i < width; i++) {
+		for (int j = 0; j < height; j++) {
+			 
+		}
+	}
 }

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "math/VectorField.h"
-#include "math/ScalarField.h"
-#include "math/Vector.h"
+#include "math/dataStructures/VectorField.h"
+#include "math/dataStructures/ScalarField.h"
+#include "math/dataStructures/Vector.h"
 
 class FluidSimulation {
 public:
@@ -47,8 +47,12 @@ private:
 	Grid2D<uint8_t> m_solidCellMap;
 	float m_density, m_kinematicViscosity, m_cellWidth;
 	
-	void advect(VectorField2D& field, VectorField2D& auxVectorField, float dt);
-	void diffuse(VectorField2D& field, float dt);
+	void advect(VectorField2D& field, VectorField2D& auxVectorField, float dt) const;
+	void diffuse(VectorField2D& field, VectorField2D& auxVectorField, float dt) const;
 	void applyExternalForces(VectorField2D& field);
 	void project(VectorField2D& field);
+
+	void pressureAt(int i, int j) {
+
+	}
 };
