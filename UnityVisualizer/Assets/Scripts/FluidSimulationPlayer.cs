@@ -5,6 +5,7 @@ using UnityEngine;
 public class FluidSimulationPlayer : MonoBehaviour {
 
     [SerializeField] private uint fixedFrameRate = 60;
+    [SerializeField] private bool startPaused;
     private FluidSimulationAdapter m_simulationAdapter;
     private float m_fixedDelta;
     private int m_speedUp = 1;
@@ -15,6 +16,7 @@ public class FluidSimulationPlayer : MonoBehaviour {
     private void Awake() {
         m_simulationAdapter = GetComponent<FluidSimulationAdapter>();
         m_fixedDelta = 1.0f / fixedFrameRate;
+        m_paused = startPaused;
     }
 
 

@@ -3,10 +3,10 @@
 
 
 void FluidSimulation::step(float dt) {
-	// All of the steps within the step function require an auxiliary vectorfield to which to write
 	advect(m_velocityField, dt);
 	diffuse(m_velocityField, dt);
 	project(m_velocityField);
+	m_projectionError = m_pressureSolver.calculateError();
 }
 
 
@@ -50,7 +50,7 @@ void FluidSimulation::project(VectorField2D& field) {
 	if (auxField.width() != width || auxField.height() != height) return;
 
 	// Solve the pressure value for every point in the field
-	m_pressureSolver.solve(m_pressureField, auxField, m_iterationCount);
+	m_pressureSolver.solve(m_pressureField, m_iterationCount);
 
 	// Subtract the gradient of the pressure field to the velocity field
 	for (int i = 0; i < width; i++) {

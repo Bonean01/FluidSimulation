@@ -17,6 +17,8 @@ public class FluidSimulation : IDisposable {
 
     [DllImport("FluidSolver")] private extern static void Step(IntPtr handle, float dt);
 
+    [DllImport("FluidSolver")] private extern static float GetProjectionError(IntPtr handle);
+
     [DllImport("FluidSolver")] private extern static IntPtr GetVelocityFieldPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static IntPtr GetPressureFieldPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static IntPtr GetSolidCellMapPtr(IntPtr handle);
@@ -42,6 +44,9 @@ public class FluidSimulation : IDisposable {
     public void Step(float dt) {
         Step(m_handle, dt);
     }
+
+
+    public float GetProjectionError() => GetProjectionError(m_handle);
 
 
     unsafe private T GetElementFromPointer<T>(IntPtr ptr, int index) where T : unmanaged {

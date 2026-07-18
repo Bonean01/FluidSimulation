@@ -511,7 +511,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FluidSimulationAdapter
   width: 60
   height: 33
-  cellWidth: 0.01
+  cellWidth: 0.0001
   solverIterationCount: 60
 --- !u!114 &1486929793
 MonoBehaviour:
@@ -526,6 +526,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FluidSimulationPlayer
   fixedFrameRate: 60
+  startPaused: 1
 --- !u!114 &1486929794
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -540,7 +541,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FluidPainter
   brushMode: 0
   brushSize: 1
-  brushStrength: 1.61
+  brushStrength: 1.25
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

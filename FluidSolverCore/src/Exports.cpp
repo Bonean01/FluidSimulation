@@ -16,6 +16,12 @@ extern "C" _declspec(dllexport) void Step(FluidSimulation* handle, float dt) {
 }
 
 
+extern "C" _declspec(dllexport) float GetProjectionError(FluidSimulation* handle) {
+	return handle->getProjectionError();
+}
+
+
+
 extern "C" _declspec(dllexport) const Vector2* GetVelocityFieldPtr(FluidSimulation* handle) {
 	return handle->getVelocityField().getValuesPtr();
 }

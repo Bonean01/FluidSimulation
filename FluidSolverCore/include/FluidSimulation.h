@@ -16,7 +16,7 @@ public:
 		m_pressureField(gridWidth, gridHeight, m_cellWidth),
 		m_auxScalarField(gridWidth, gridHeight, m_cellWidth),
 		m_solidCellMap(gridWidth, gridHeight),
-		m_pressureSolver(m_velocityField),
+		m_pressureSolver(m_velocityField, m_solidCellMap),
 		m_iterationCount(iterationCount) {
 		
 		// Initialize all the outer cells to be solid (boundary condition: u = 0)
@@ -45,15 +45,20 @@ public:
 	void setSolidCell(int i, int j, bool isSolid) { m_solidCellMap.setValue(i, j, isSolid); }
 	bool isSolid(int i, int j) const { return m_solidCellMap.getValue(i, j); }
 
+	float getProjectionError() { return m_projectionError; };
+
 
 private:
 	VectorField2D m_velocityField, m_auxVectorField;
 	ScalarField2D m_pressureField, m_auxScalarField;
 	// 0 => not solid, 1 => solid
 	Grid2D<uint8_t> m_solidCellMap;
+
 	float m_density, m_kinematicViscosity, m_cellWidth;
+
 	PressureSolver m_pressureSolver;
 	int m_iterationCount;
+	float m_projectionError;
 	
 	void advect(VectorField2D& field, float dt);
 	void diffuse(VectorField2D& field, float dt);

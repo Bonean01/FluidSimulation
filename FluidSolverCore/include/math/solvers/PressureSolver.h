@@ -6,13 +6,17 @@
 
 class PressureSolver {
 public:
-	void solve(ScalarField2D& result, ScalarField2D& auxField, unsigned int iterationCount);
-	PressureSolver(VectorField2D& velocityField) : 
+	PressureSolver(VectorField2D& velocityField, Grid2D<uint8_t>& solidCellMap) : 
 		m_velocityField(velocityField),
-		m_velocityDivergence(velocityField.width(), velocityField.height(), velocityField.cellWidth()) {}
+		m_velocityDivergence(velocityField.width(), velocityField.height(), velocityField.cellWidth()),
+		m_auxScalarField(velocityField.width(), velocityField.height(), velocityField.cellWidth()) {}
+
+	void solve(ScalarField2D& result, unsigned int iterationCount);
+	float calculateError();
 
 private:
 	JacobiIterationSolver m_jacobiSolver{};
 	VectorField2D& m_velocityField;
-	ScalarField2D m_velocityDivergence;
+	ScalarField2D m_velocityDivergence, m_auxScalarField;
+	Grid2D<uint8_t>& m_solidCellMap;
 };

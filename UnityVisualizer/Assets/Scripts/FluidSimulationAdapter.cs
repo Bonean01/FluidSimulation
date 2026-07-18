@@ -19,11 +19,11 @@ public class FluidSimulationAdapter : MonoBehaviour {
         m_width = width;
         m_height = height;
         m_simulation = new(m_width, m_height, cellWidth, iterationCount:solverIterationCount);
-        InitializeSimulation();
+        //DrawSolidCells();
     }
 
 
-    private void InitializeSimulation() {
+    private void DrawSolidCells() {
         Vector2Int origin = new(m_width / 2 + 5, m_height / 2);
         for (int i = 0; i < m_width; i++) {
             for (int j = 0; j < m_height; j++) {
@@ -38,6 +38,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
 
     public void StepSimulation(float dt) {
         m_simulation.Step(dt);
+        print(m_simulation.GetProjectionError());
         OnVelocityUpdated?.Invoke();
     }
 
