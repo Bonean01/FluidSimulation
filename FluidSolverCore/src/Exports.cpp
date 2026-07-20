@@ -22,9 +22,9 @@ extern "C" _declspec(dllexport) float GetProjectionError(FluidSimulation* handle
 
 
 
-extern "C" _declspec(dllexport) const Vec2f* GetVelocityFieldPtr(FluidSimulation* handle) {
-	return handle->getVelocityField().getValuesPtr();
-}
+//extern "C" _declspec(dllexport) const Vec2f* GetVelocityFieldPtr(FluidSimulation* handle) {
+//	return handle->getVelocityField().getValuesPtr();
+//}
 
 extern "C" _declspec(dllexport) const float* GetPressureFieldPtr(FluidSimulation* handle) {
 	return handle->getPressureField().getValuesPtr();

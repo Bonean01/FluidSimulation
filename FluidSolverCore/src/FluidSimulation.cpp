@@ -7,11 +7,12 @@
 void FluidSimulation::step(float dt) {
 	advect(m_velocityField, dt);
 	//diffuse(m_velocityField, dt);
-	project(m_velocityField);
-	m_projectionError = m_pressureSolver.calculateError();
+	//project(m_velocityField);
+	//m_projectionError = m_pressureSolver.calculateError();
 }
 
 
+// The advection function should be more generic for advecting any property of the fluid
 void FluidSimulation::advect(VectorField2D& field, float dt) {
 	int width = field.width();
 	int height = field.height();
@@ -27,6 +28,34 @@ void FluidSimulation::advect(VectorField2D& field, float dt) {
 			auxField.setValue(i, j, newValue);
 		}
 	}
+	std::swap(field, auxField);
+}
+
+
+void FluidSimulation::advect(MACGrid2D& field, float dt) {
+	int width = field.width();
+	int height = field.height();
+	MACGrid2D& auxField = m_auxMacGrid;
+	if (auxField.width() != width || auxField.height() != height) return;
+
+	for (int i = 0; i <= field.width(); i++) {
+		for (int j = 0; j < field.height(); j++) {
+			Vec2f position = { (float)i - 0.5f, (float)j };
+			Vec2f currentVel = field.sampleBilinear(position);
+			Vec2f newValue = field.sampleBilinear(position - currentVel * dt);
+			auxField.setEdgeX(i, j, newValue.x);
+		}
+	}
+
+	for (int i = 0; i < field.width(); i++) {
+		for (int j = 0; j <= field.height(); j++) {
+			Vec2f position = { (float)i, (float)j - 0.5f };
+			Vec2f currentVel = field.sampleBilinear(position);
+			Vec2f newValue = field.sampleBilinear(position - currentVel * dt);
+			auxField.setEdgeY(i, j, newValue.y);
+		}
+	}
+	
 	std::swap(field, auxField);
 }
 

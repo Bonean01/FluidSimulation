@@ -38,7 +38,6 @@ public class FluidSimulationAdapter : MonoBehaviour {
 
     public void StepSimulation(float dt) {
         m_simulation.Step(dt);
-        print(m_simulation.GetProjectionError());
         OnVelocityUpdated?.Invoke();
     }
 

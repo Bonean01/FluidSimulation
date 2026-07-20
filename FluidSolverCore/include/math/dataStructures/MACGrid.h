@@ -14,6 +14,8 @@ public:
 
 	int width() const { return m_width; }
 	int height() const { return m_height; }
+	float cellWidth() const { return m_cellWidth; }
+
 
 	// SAMPLED AT CELL EDGE
 	float getEdgeX(int i, int j) const;
@@ -21,15 +23,16 @@ public:
 	void setEdgeX(int i, int j, float value);
 	void setEdgeY(int i, int j, float value);
 
-
-	// SAMPLED AT CELL CENTER
+	// Sampled at cell center
 	Vec2f sampleBilinear(float i, float j) const;
 	Vec2f sampleBilinear(const Vec2f& position) const;
 
+	void setValue(int i, int j, Vec2f value);
 	Vec2f getValue(int i, int j) const;
 
 	float divergence(int i, int j) const;
 	Vec2f laplacian(int i, int j) const;
+
 
 private:
 	int m_width, m_height;

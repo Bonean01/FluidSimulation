@@ -23,15 +23,14 @@ float MACGrid2D::getEdgeY(int i, int j) const {
 
 void MACGrid2D::setEdgeX(int i, int j, float value) {
 	int index = getIndexX(i, j);
-	if (index < 0 || index > m_cellWidth + m_width) return;
-
+	if (index < 0 || index > m_edgeValuesX.size()) return;
 	m_edgeValuesX[index] = value;
 }
 
 
 void MACGrid2D::setEdgeY(int i, int j, float value) {
 	int index = getIndexY(i, j);
-	if (index < 0 || index > m_cellWidth + m_height) return;
+	if (index < 0 || index > m_edgeValuesY.size()) return;
 	
 	m_edgeValuesY[index] = value;
 }
@@ -47,7 +46,17 @@ Vec2f MACGrid2D::getValue(int i, int j) const {
 	return { x, y };
 }
 
-// Maybe we could abstract out VectorField out at let this class be an implementation of it
+
+void MACGrid2D::setValue(int i, int j, Vec2f value) {
+	float x = value.x;
+	float y = value.y;
+	setEdgeX(i, j, x);
+	setEdgeX(i + 1, j, x);
+	setEdgeY(i, j, y);
+	setEdgeY(i, j + 1, y);
+}
+
+
 Vec2f MACGrid2D::sampleBilinear(float x, float y) const {
 	x = std::clamp(x, 0.0f, (float)m_width - 2.0f);
 	y = std::clamp(y, 0.0f, (float)m_height - 2.0f);

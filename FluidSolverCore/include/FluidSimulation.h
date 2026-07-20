@@ -1,8 +1,9 @@
 #pragma once
 
-#include "math/dataStructures/VectorField.h"
-#include "math/dataStructures/ScalarField.h"
 #include "math/dataStructures/Vector.h"
+#include "math/dataStructures/ScalarField.h"
+#include "math/dataStructures/VectorField.h"
+#include "math/dataStructures/MACGrid.h"
 #include "math/solvers/PressureSolver.h"
 
 class FluidSimulation {
@@ -12,6 +13,7 @@ public:
 		m_density(density),
 		m_kinematicViscosity(kinematicViscosity),
 		m_velocityField(gridWidth, gridHeight, m_cellWidth),
+		m_auxMacGrid(gridWidth, gridHeight, m_cellWidth),
 		m_auxVectorField(gridWidth, gridHeight, m_cellWidth),
 		m_pressureField(gridWidth, gridHeight, m_cellWidth),
 		m_auxScalarField(gridWidth, gridHeight, m_cellWidth),
@@ -32,7 +34,7 @@ public:
 
 	void step(float dt);
 
-	const VectorField2D& getVelocityField() const { return m_velocityField; }
+	const MACGrid2D& getVelocityField() const { return m_velocityField; }
 	const ScalarField2D& getPressureField() const { return m_pressureField; }
 	const Grid2D<uint8_t>& getSolidCellMap() const { return m_solidCellMap; }
 
@@ -49,7 +51,8 @@ public:
 
 
 private:
-	VectorField2D m_velocityField, m_auxVectorField;
+	MACGrid2D m_velocityField, m_auxMacGrid;
+	VectorField2D m_auxVectorField;
 	ScalarField2D m_pressureField, m_auxScalarField;
 	// 0 => not solid, 1 => solid
 	Grid2D<uint8_t> m_solidCellMap;
@@ -61,7 +64,9 @@ private:
 	float m_projectionError = 0;
 	
 	void advect(VectorField2D& field, float dt);
+	void advect(MACGrid2D& field, float dt);
 	void diffuse(VectorField2D& field, float dt);
 	void applyExternalForces(VectorField2D& field);
 	void project(VectorField2D& field);
+	void project(MACGrid2D& field);
 };
