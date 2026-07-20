@@ -1,6 +1,6 @@
 #include "math/dataStructures/ScalarField.h"
 
-Vector2 ScalarField2D::gradient(int i, int j) const {
+Vec2f ScalarField2D::gradient(int i, int j) const {
 	float right = getValue(i + 1, j);
 	float left = getValue(i - 1, j);
 	float top = getValue(i, j + 1);

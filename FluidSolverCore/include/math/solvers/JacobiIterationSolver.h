@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Grid.h"
-#include <iostream>
+#include "math/dataStructures/Grid.h"
 
 class JacobiIterationSolver {
 public:

@@ -26,8 +26,9 @@ public:
 	}
 
 	const T& getValue(int i, int j) const {
+		i = std::clamp(i, 0, m_width - 1);
+		j = std::clamp(j, 0, m_height - 1);
 		int index = getIndex(i, j);
-		index = std::clamp(index, 0, m_cellCount - 1);
 
 		return m_values[index];
 	}

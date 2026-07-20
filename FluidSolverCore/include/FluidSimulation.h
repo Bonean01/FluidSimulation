@@ -36,9 +36,9 @@ public:
 	const ScalarField2D& getPressureField() const { return m_pressureField; }
 	const Grid2D<uint8_t>& getSolidCellMap() const { return m_solidCellMap; }
 
-	void setVelocity(int i, int j, Vector2 velocity) { m_velocityField.setValue(i, j, velocity); }
-	Vector2 getVelocity(int i, int j) const { return m_velocityField.getValue(i, j); }
-	void addVelocity(int i, int j, Vector2 deltaVel) { setVelocity(i, j, getVelocity(i, j) + deltaVel); }
+	void setVelocity(int i, int j, Vec2f velocity) { m_velocityField.setValue(i, j, velocity); }
+	Vec2f getVelocity(int i, int j) const { return m_velocityField.getValue(i, j); }
+	void addVelocity(int i, int j, Vec2f deltaVel) { setVelocity(i, j, getVelocity(i, j) + deltaVel); }
 
 	float getPressure(int i, int j) { return m_pressureField.getValue(i, j); }
 	

@@ -17,17 +17,24 @@ project ("FluidSimulation")
 # Define a variable that contains the source files
 set (SOURCE_FILES
 	"include/FluidSimulation.h"
-	"src/Exports.cpp"
-	"include/math/dataStructures/VectorField.h"
-	"src/math/dataStructures/VectorField.cpp"
+
 	"include/math/dataStructures/Vector.h"
-	"src/math/dataStructures/Vector.cpp"
+	"include/math/dataStructures/Grid.h"
 	"include/math/dataStructures/ScalarField.h"
-	"include/Grid.h"
-	"src/FluidSimulation.cpp"
-	"src/math/dataStructures/ScalarField.cpp"
+	"include/math/dataStructures/VectorField.h"
+	"include/math/dataStructures/MACGrid.h"
+
 	"include/math/solvers/JacobiIterationSolver.h"
 	"include/math/solvers/PressureSolver.h"
+
+	"src/Exports.cpp"
+	"src/FluidSimulation.cpp"
+
+	"src/math/dataStructures/Vector.cpp"
+	"src/math/dataStructures/ScalarField.cpp"
+	"src/math/dataStructures/VectorField.cpp"
+	"src/math/dataStructures/MACGrid.cpp"
+	
 	"src/math/solvers/PressureSolver.cpp"
 )
 

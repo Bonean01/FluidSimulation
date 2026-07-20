@@ -21,9 +21,9 @@ void FluidSimulation::advect(VectorField2D& field, float dt) {
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
 			if (isSolid(i, j)) { auxField.setValue(i, j, { 0.0f, 0.0f }); continue; }
-			Vector2 position = { (float)i, (float)j };
-			Vector2 currentVel = field.getValue(i, j);
-			Vector2 newValue = field.sampleBilinear(position - currentVel * dt);
+			Vec2f position = { (float)i, (float)j };
+			Vec2f currentVel = field.getValue(i, j);
+			Vec2f newValue = field.sampleBilinear(position - currentVel * dt);
 			auxField.setValue(i, j, newValue);
 		}
 	}
@@ -57,7 +57,7 @@ void FluidSimulation::project(VectorField2D& field) {
 	// Subtract the gradient of the pressure field to the velocity field
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
-			Vector2 gradient = m_pressureField.gradient(i, j);
+			Vec2f gradient = m_pressureField.gradient(i, j);
 			addVelocity(i, j, -gradient);
 		}
 	}

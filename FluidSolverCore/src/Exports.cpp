@@ -22,7 +22,7 @@ extern "C" _declspec(dllexport) float GetProjectionError(FluidSimulation* handle
 
 
 
-extern "C" _declspec(dllexport) const Vector2* GetVelocityFieldPtr(FluidSimulation* handle) {
+extern "C" _declspec(dllexport) const Vec2f* GetVelocityFieldPtr(FluidSimulation* handle) {
 	return handle->getVelocityField().getValuesPtr();
 }
 
@@ -34,17 +34,17 @@ extern "C" _declspec(dllexport) const uint8_t* GetSolidCellMapPtr(FluidSimulatio
 	return handle->getSolidCellMap().getValuesPtr();
 }
 
-extern "C" _declspec(dllexport) void SetVelocity(FluidSimulation* handle, int i, int j, Vector2 velocity) {
+extern "C" _declspec(dllexport) void SetVelocity(FluidSimulation* handle, int i, int j, Vec2f velocity) {
 	handle->setVelocity(i, j, velocity);
 }
 
-struct CVector2 { float x, y; };
-extern "C" _declspec(dllexport) CVector2 GetVelocity(FluidSimulation* handle, int i, int j) {
-	Vector2 vel = handle->getVelocity(i, j);
-	return CVector2{ vel.x, vel.y };
+struct CVec2f { float x, y; };
+extern "C" _declspec(dllexport) CVec2f GetVelocity(FluidSimulation* handle, int i, int j) {
+	Vec2f vel = handle->getVelocity(i, j);
+	return CVec2f{ vel.x, vel.y };
 }
 
-extern "C" _declspec(dllexport) void AddVelocity(FluidSimulation* handle, int i, int j, Vector2 deltaVel) {
+extern "C" _declspec(dllexport) void AddVelocity(FluidSimulation* handle, int i, int j, Vec2f deltaVel) {
 	handle->addVelocity(i, j, deltaVel);
 }
 

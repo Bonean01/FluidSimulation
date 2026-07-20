@@ -2,45 +2,45 @@
 
 #include <concepts>
 
-struct Vector2 {
+struct Vec2f {
 	float x, y;
 
-	Vector2(float x = 0, float y = 0) : x(x), y(y) {}
-	static Vector2 lerp(const Vector2& A, const Vector2& B, float t);
-	static Vector2 biLerp(const Vector2& A, const Vector2& B, const Vector2& C, const Vector2& D, float tX, float tY);
+	Vec2f(float x = 0, float y = 0) : x(x), y(y) {}
+	static Vec2f lerp(const Vec2f& A, const Vec2f& B, float t);
+	static Vec2f biLerp(const Vec2f& A, const Vec2f& B, const Vec2f& C, const Vec2f& D, float tX, float tY);
 
-	Vector2& operator *=(float n) {
+	Vec2f& operator *=(float n) {
 		x *= n;
 		y *= n;
 		return *this;
 	}
 
-	friend Vector2 operator *(float n, const Vector2& vec) {
+	friend Vec2f operator *(float n, const Vec2f& vec) {
 		return { n * vec.x, n * vec.y };
 	}
-	friend Vector2 operator *(const Vector2& vec, float n) {
+	friend Vec2f operator *(const Vec2f& vec, float n) {
 		return n * vec;
 	}
 
-	friend Vector2 operator /(const Vector2& vec, float n) {
+	friend Vec2f operator /(const Vec2f& vec, float n) {
 		return { vec.x / n, vec.y / n };
 	}
 
-	Vector2& operator +=(const Vector2& other) {
+	Vec2f& operator +=(const Vec2f& other) {
 		x += other.x;
 		y += other.y;
 		return *this;
 	}
 
-	friend Vector2 operator +(const Vector2& vec1, const Vector2& vec2) {
+	friend Vec2f operator +(const Vec2f& vec1, const Vec2f& vec2) {
 		return { vec1.x + vec2.x, vec1.y + vec2.y };
 	}
 
-	friend Vector2 operator -(const Vector2& vec1, const Vector2& vec2) {
+	friend Vec2f operator -(const Vec2f& vec1, const Vec2f& vec2) {
 		return { vec1.x - vec2.x, vec1.y - vec2.y };
 	}
 	
-	friend Vector2 operator -(const Vector2& vec) {
+	friend Vec2f operator -(const Vec2f& vec) {
 		return { -vec.x, -vec.y };
 	}
 };
