@@ -1,10 +1,12 @@
 #include "FluidSimulation.h"
 #include "math/solvers/PressureSolver.h"
 
+#include <iostream>
+
 
 void FluidSimulation::step(float dt) {
 	advect(m_velocityField, dt);
-	diffuse(m_velocityField, dt);
+	//diffuse(m_velocityField, dt);
 	project(m_velocityField);
 	m_projectionError = m_pressureSolver.calculateError();
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Grid.h"
+#include <iostream>
 
 class JacobiIterationSolver {
 public:
@@ -45,13 +46,13 @@ public:
 	}
 
 
-	void solveCell(int i, int j, ScalarField2D& newX, ScalarField2D& x, ScalarField2D& b, float alpha, float beta) {
+	float solveCell(int i, int j, ScalarField2D& x, float b, float alpha, float beta) {
 		float right = x.getValue(i + 1, j);
 		float left = x.getValue(i - 1, j);
 		float top = x.getValue(i, j + 1);
 		float bottom = x.getValue(i, j - 1);
-		float valueB = b.getValue(i, j);
+		float valueB = b;
 		float res = (right + left + top + bottom + alpha * valueB) / beta;
-		newX.setValue(i, j, res);
+		return res;
 	}
 };

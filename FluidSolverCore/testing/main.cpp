@@ -24,7 +24,7 @@ static void printSimulationState(const FluidSimulation& simulation) {
 int main(int argc, char* argv[]) {
 	int width = 5; int height = 5;
 	float fixedDeltaTime = 1.0f / 60.0f;
-	FluidSimulation simulation{width, height, 1.0f};
+	FluidSimulation simulation{width, height, 1.0f, 1.0f, 0.0f, 1};
 
 	for (int j = 0; j < height; j++) {
 		simulation.setVelocity(1, j, {10.0f, 0.0f});

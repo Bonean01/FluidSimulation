@@ -58,7 +58,7 @@ private:
 
 	PressureSolver m_pressureSolver;
 	int m_iterationCount;
-	float m_projectionError;
+	float m_projectionError = 0;
 	
 	void advect(VectorField2D& field, float dt);
 	void diffuse(VectorField2D& field, float dt);
