@@ -7,7 +7,7 @@
 void FluidSimulation::step(float dt) {
 	advect(m_velocityField, dt);
 	//diffuse(m_velocityField, dt);
-	//project(m_velocityField);
+	project(m_velocityField, dt);
 	//m_projectionError = m_pressureSolver.calculateError();
 }
 
@@ -40,6 +40,7 @@ void FluidSimulation::advect(MACGrid2D& field, float dt) {
 
 	for (int i = 0; i <= field.width(); i++) {
 		for (int j = 0; j < field.height(); j++) {
+			if (isSolid(i, j) || isSolid(i - 1, j)) { auxField.setValue(i, j, { 0.0f, 0.0f }); continue; }
 			Vec2f position = { (float)i - 0.5f, (float)j };
 			Vec2f currentVel = field.sampleBilinear(position);
 			Vec2f newValue = field.sampleBilinear(position - currentVel * dt);
@@ -49,6 +50,7 @@ void FluidSimulation::advect(MACGrid2D& field, float dt) {
 
 	for (int i = 0; i < field.width(); i++) {
 		for (int j = 0; j <= field.height(); j++) {
+			if (isSolid(i, j) || isSolid(i, j - 1)) { auxField.setValue(i, j, { 0.0f, 0.0f }); continue; }
 			Vec2f position = { (float)i, (float)j - 0.5f };
 			Vec2f currentVel = field.sampleBilinear(position);
 			Vec2f newValue = field.sampleBilinear(position - currentVel * dt);
@@ -88,6 +90,27 @@ void FluidSimulation::project(VectorField2D& field) {
 		for (int j = 0; j < height; j++) {
 			Vec2f gradient = m_pressureField.gradient(i, j);
 			addVelocity(i, j, -gradient);
+		}
+	}
+}
+
+
+void FluidSimulation::project(MACGrid2D& field, float dt) {
+	int width = field.width();
+	int height = field.height();
+
+	// Solve the pressure value for every point in the field
+	m_pressureSolver.solve(m_pressureField, m_iterationCount);
+
+	// Subtract the gradient of the pressure field to the velocity field
+	for (int i = 0; i < width; i++) {
+		for (int j = 0; j < height; j++) {
+			Vec2f gradient = m_pressureField.gradient(i, j);
+			Vec2f diff = gradient * dt / (m_density * m_cellWidth);
+			float currentX = field.getEdgeX(i + 1, j);
+			float currentY = field.getEdgeY(i, j + 1);
+			field.setEdgeX(i + 1, j, currentX + diff.x);
+			field.setEdgeY(i, j + 1, currentY + diff.y);
 		}
 	}
 }

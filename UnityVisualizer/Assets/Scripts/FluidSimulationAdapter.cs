@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FluidSimulationAdapter : MonoBehaviour {
     [SerializeField] private int width, height;
-    [SerializeField] private float cellWidth;
+    [SerializeField] private float cellWidth, density, kinematicViscosity;
     [SerializeField] private uint solverIterationCount;
 
     private int m_width, m_height;
@@ -18,7 +18,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
     private void Awake() {
         m_width = width;
         m_height = height;
-        m_simulation = new(m_width, m_height, cellWidth, iterationCount:solverIterationCount);
+        m_simulation = new(m_width, m_height, cellWidth, density, kinematicViscosity, solverIterationCount);
         //DrawSolidCells();
     }
 

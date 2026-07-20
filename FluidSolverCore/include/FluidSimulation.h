@@ -68,5 +68,5 @@ private:
 	void diffuse(VectorField2D& field, float dt);
 	void applyExternalForces(VectorField2D& field);
 	void project(VectorField2D& field);
-	void project(MACGrid2D& field);
+	void project(MACGrid2D& field, float dt);
 };

@@ -23,14 +23,14 @@ float MACGrid2D::getEdgeY(int i, int j) const {
 
 void MACGrid2D::setEdgeX(int i, int j, float value) {
 	int index = getIndexX(i, j);
-	if (index < 0 || index > m_edgeValuesX.size()) return;
+	if (index < 0 || index >= m_edgeValuesX.size()) return;
 	m_edgeValuesX[index] = value;
 }
 
 
 void MACGrid2D::setEdgeY(int i, int j, float value) {
 	int index = getIndexY(i, j);
-	if (index < 0 || index > m_edgeValuesY.size()) return;
+	if (index < 0 || index >= m_edgeValuesY.size()) return;
 	
 	m_edgeValuesY[index] = value;
 }
