@@ -113,15 +113,20 @@ public class FluidSimulationAdapter : MonoBehaviour {
         texture.Apply();
     }
 
-    private void UpdateScalarFieldTexture(ref Texture2D texture, IEnumerable<float> scalarCollection) {
+    // returning the min and max in this method doesn't seem clean
+    private (float min, float max) UpdateScalarFieldTexture(ref Texture2D texture, IEnumerable<float> scalarCollection) {
         int x = 0, y = 0;
+        float min = float.MaxValue, max = float.MinValue;
         foreach (float value in scalarCollection) {
             if (y >= m_height) throw new Exception("The number of values is greater than the number of cells in the simulation");
+            if (min > value) min = value;
+            if (max < value) max = value;
             Color color = new (value, 0.0f, 0.0f, 1.0f);
             texture.SetPixel(x, y, color);
             if (++x >= m_width) { x = 0; y++; }
         }
         texture.Apply();
+        return (min, max);
     }
 
     // TODO: fix this mess
@@ -152,7 +157,11 @@ public class FluidSimulationAdapter : MonoBehaviour {
         UpdateSolidMapCellTexture(ref solidMapCellTexture, m_simulation.IsSolidCellValues());
     }
 
-    public void UpdatePressureTexture(ref Texture2D pressureTexture) {
-        UpdateScalarFieldTexture(ref pressureTexture, m_simulation.PressureValues());
+    public (float min, float max) UpdatePressureTexture(ref Texture2D pressureTexture) {
+        return UpdateScalarFieldTexture(ref pressureTexture, m_simulation.PressureValues());
+    }
+
+    public (float min, float max) UpdateDivergenceTexture(ref Texture2D divergenceTexture) {
+        return UpdateScalarFieldTexture(ref divergenceTexture, m_simulation.DivergenceValues());
     }
 }

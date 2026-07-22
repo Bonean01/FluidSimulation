@@ -12,12 +12,16 @@ public:
 		m_cellWidth(cellWidth),
 		m_density(density),
 		m_kinematicViscosity(kinematicViscosity),
+
 		m_velocityField(gridWidth, gridHeight, m_cellWidth),
+		m_pressureField(gridWidth, gridHeight, m_cellWidth),
+		m_divergenceField(gridWidth, gridHeight, m_cellWidth),
+		m_solidCellMap(gridWidth, gridHeight),
+
 		m_auxMacGrid(gridWidth, gridHeight, m_cellWidth),
 		m_auxVectorField(gridWidth, gridHeight, m_cellWidth),
-		m_pressureField(gridWidth, gridHeight, m_cellWidth),
 		m_auxScalarField(gridWidth, gridHeight, m_cellWidth),
-		m_solidCellMap(gridWidth, gridHeight),
+
 		m_pressureSolver(m_velocityField, m_solidCellMap),
 		m_iterationCount(iterationCount) {
 		
@@ -36,6 +40,7 @@ public:
 
 	const MACGrid2D& getVelocityField() const { return m_velocityField; }
 	const ScalarField2D& getPressureField() const { return m_pressureField; }
+	const ScalarField2D& getDivergenceField() const { return m_divergenceField; }
 	const Grid2D<uint8_t>& getSolidCellMap() const { return m_solidCellMap; }
 
 	void setVelocity(int i, int j, Vec2f velocity) { m_velocityField.setValue(i, j, velocity); }
@@ -53,7 +58,7 @@ public:
 private:
 	MACGrid2D m_velocityField, m_auxMacGrid;
 	VectorField2D m_auxVectorField;
-	ScalarField2D m_pressureField, m_auxScalarField;
+	ScalarField2D m_pressureField, m_divergenceField, m_auxScalarField;
 	// 0 => not solid, 1 => solid
 	Grid2D<uint8_t> m_solidCellMap;
 

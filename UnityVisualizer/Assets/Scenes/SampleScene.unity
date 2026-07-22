@@ -514,7 +514,7 @@ MonoBehaviour:
   cellWidth: 0.1
   density: 0.5
   kinematicViscosity: 1
-  solverIterationCount: 15
+  solverIterationCount: 60
 --- !u!114 &1486929793
 MonoBehaviour:
   m_ObjectHideFlags: 0

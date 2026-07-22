@@ -5,7 +5,8 @@ enum FluidProperty {
     Velocity,
     Speed,
     Pressure,
-    SolidCells
+    SolidCells,
+    Divergence
 }
 
 
@@ -17,9 +18,10 @@ public class FluidVisualizer : MonoBehaviour {
     [SerializeField] private Gradient speedGradient;
     [SerializeField] private float maxSpeed;
     private FluidSimulationAdapter m_simulationAdapter;
-    private Texture2D m_velocityTexture, m_pressureTexture, m_solidCellMapTexture;
+    private Texture2D m_velocityTexture, m_pressureTexture, m_divergenceTexture, m_solidCellMapTexture;
     private Texture2D m_speedGradientTexture;
     private SpriteRenderer m_spriteRenderer;
+    private float m_minPressure, m_maxPressure, m_minDivergence, m_maxDivergence;
     
 
     private void Awake() {
@@ -33,15 +35,23 @@ public class FluidVisualizer : MonoBehaviour {
     private void Start() {
         m_velocityTexture = m_simulationAdapter.CreateTexture();
         m_pressureTexture = m_simulationAdapter.CreateTexture();
+        m_divergenceTexture = m_simulationAdapter.CreateTexture();
         m_solidCellMapTexture = m_simulationAdapter.CreateTexture();
         
         m_simulationAdapter.UpdateVelocityTexture(ref m_velocityTexture);
-        m_simulationAdapter.UpdatePressureTexture(ref m_pressureTexture);
+        (m_minPressure, m_maxPressure) = m_simulationAdapter.UpdatePressureTexture(ref m_pressureTexture);
+        (m_minDivergence, m_maxDivergence) = m_simulationAdapter.UpdateDivergenceTexture(ref m_divergenceTexture);
         m_simulationAdapter.UpdateSolidMapCellTexture(ref m_solidCellMapTexture);
 
         m_spriteRenderer.material.SetTexture("_VelocityTexture", m_velocityTexture);
         m_spriteRenderer.material.SetTexture("_PressureTexture", m_pressureTexture);
+        m_spriteRenderer.material.SetTexture("_DivergenceTexture", m_divergenceTexture);
         m_spriteRenderer.material.SetTexture("_SolidCellMapTexture", m_solidCellMapTexture);
+        
+        m_spriteRenderer.material.SetFloat("_MinPressure", m_minPressure);
+        m_spriteRenderer.material.SetFloat("_MaxPressure", m_maxPressure);
+        m_spriteRenderer.material.SetFloat("_MinDivergence", m_minDivergence);
+        m_spriteRenderer.material.SetFloat("_MaxDivergence", m_maxDivergence);
 
 
         float aspectRatio = (float)m_simulationAdapter.Height / m_simulationAdapter.Width;
@@ -81,6 +91,11 @@ public class FluidVisualizer : MonoBehaviour {
         if (displayedProperty == FluidProperty.Pressure) {
             m_simulationAdapter.UpdatePressureTexture(ref m_pressureTexture);
             m_spriteRenderer.material.SetTexture("_PressureTexture", m_pressureTexture);
+        }
+
+        if (displayedProperty == FluidProperty.Divergence) {
+            m_simulationAdapter.UpdateDivergenceTexture(ref m_divergenceTexture);
+            m_spriteRenderer.material.SetTexture("_DivergenceTexture", m_divergenceTexture);
         }
     }
 }

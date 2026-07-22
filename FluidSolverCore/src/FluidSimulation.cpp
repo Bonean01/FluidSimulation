@@ -8,7 +8,7 @@ void FluidSimulation::step(float dt) {
 	advect(m_velocityField, dt);
 	//diffuse(m_velocityField, dt);
 	project(m_velocityField, dt);
-	//m_projectionError = m_pressureSolver.calculateError();
+	m_velocityField.divergence(m_divergenceField);
 }
 
 

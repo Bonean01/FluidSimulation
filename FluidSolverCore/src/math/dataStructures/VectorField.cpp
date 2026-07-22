@@ -36,6 +36,17 @@ float VectorField2D::divergence(int i, int j) const {
 }
 
 
+void VectorField2D::divergence(ScalarField2D& result) const {
+	for (int i = 0; i < m_width; i++) {
+		for (int j = 0; j < m_height; j++) {
+			float value = divergence(i, j);
+			result.setValue(i, j, value);
+		}
+	}
+}
+
+
+
 Vec2f VectorField2D::laplacian(int i, int j) const {
 	Vec2f center = getValue(i, j);
 	Vec2f right = getValue(i + 1, j);

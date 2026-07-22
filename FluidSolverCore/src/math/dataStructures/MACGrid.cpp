@@ -89,3 +89,13 @@ float MACGrid2D::divergence(int i, int j) const {
 	float bottom = getEdgeY(i, j);
 	return (right - left + top - bottom) / m_cellWidth;
 }
+
+
+void MACGrid2D::divergence(ScalarField2D& result) const {
+	for (int i = 0; i < m_width; i++) {
+		for (int j = 0; j < m_height; j++) {
+			float value = divergence(i, j);
+			result.setValue(i, j, value);
+		}
+	}
+}

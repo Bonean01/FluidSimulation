@@ -54,17 +54,30 @@ static void printPressureField(FluidSimulation simulation) {
 }
 
 
+static void printDivergenceField(FluidSimulation simulation) {
+	ScalarField2D divergenceField = simulation.getDivergenceField();
+	int width = divergenceField.width();
+	int height = divergenceField.height();
+	for (int i = 0; i < width; i++) {
+		for (int j = 0; j < height; j++) {
+			std::cout << "(" << divergenceField.getValue(i, j) << ")\t\t";
+		}
+		std::cout << std::endl;
+	}
+}
+
+
 int main(int argc, char* argv[]) {
 	int width = 5;
 	int height = 5;
-	FluidSimulation simulation{ width, height, 1.0f };
+	FluidSimulation simulation{ width, height, 1.0f, 1.0f, 0.0f, 60 };
 	for (int j = 0; j < height; j++) {
-		simulation.setVelocity(3, j, { 0.0f, 10.0f });
+		simulation.setVelocity(3, j, { 0.0f, j * 10.0f });
 	}
 
 	simulation.step(1.0f / 60);
 
 	std::cout << "================== STEP TAKEN ===================" << std::endl;
 
-	printPressureField(simulation);
+	printDivergenceField(simulation);
 }

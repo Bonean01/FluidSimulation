@@ -30,6 +30,10 @@ extern "C" _declspec(dllexport) const float* GetPressureFieldPtr(FluidSimulation
 	return handle->getPressureField().getValuesPtr();
 }
 
+extern "C" _declspec(dllexport) const float* GetDivergenceFieldPtr(FluidSimulation* handle) {
+	return handle->getDivergenceField().getValuesPtr();
+}
+
 extern "C" _declspec(dllexport) const uint8_t* GetSolidCellMapPtr(FluidSimulation* handle) {
 	return handle->getSolidCellMap().getValuesPtr();
 }

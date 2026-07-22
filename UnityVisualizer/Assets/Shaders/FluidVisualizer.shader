@@ -5,17 +5,21 @@ Shader "Custom/FluidVisualizer" {
 
         _VelocityTexture("Velocity Texture", 2D) = "white" {}
         _PressureTexture("Pressure Texture", 2D) = "white" {}
+        _DivergenceTexture("Divergence Texture", 2D) = "white" {}
         _SolidCellMapTexture("Solid Cell Map Texture", 2D) = "white" {}
 
         _DisplayedField("Displayed Field", int) = 0
 
         _SpeedGradientTexture("Speed Gradient Texture", 2D) = "white" {}
-        _MaxSpeedSqrd("Max Speed Squared", float) = 10
-
+        
         _MaxPressureColor("Max Pressure Color", Color) = (1, 0, 0, 1)
         _MinPressureColor("Min Pressure Color", Color) = (0, 0, 1, 1)
-
-        _MaxPressureValueAbs("Max Pressure Value Abs", float) = 0
+        
+        [HideInInspector] _MaxSpeedSqrd("Max Speed Squared", float) = 0
+        [HideInInspector] _MinPressure("Min Pressure", float) = 0
+        [HideInInspector] _MaxPressure("Max Pressure", float) = 0
+        [HideInInspector] _MinDivergence("Min Divergence", float) = 0
+        [HideInInspector] _MaxDivergence("Max Divergence", float) = 0
     }
 
     SubShader {
@@ -30,7 +34,8 @@ Shader "Custom/FluidVisualizer" {
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
             int _DisplayedField;
-            float _MaxSpeedSqrd, _MaxPressureValueAbs;
+            float _MaxSpeedSqrd;
+            float _MinPressure, _MaxPressure, _MinDivergence, _MaxDivergence;
 
             float4 _MaxPressureColor, _MinPressureColor;
 
@@ -39,6 +44,9 @@ Shader "Custom/FluidVisualizer" {
 
             TEXTURE2D(_PressureTexture);
             SAMPLER(sampler_PressureTexture);
+
+            TEXTURE2D(_DivergenceTexture);
+            SAMPLER(sampler_DivergenceTexture);
 
             TEXTURE2D(_SolidCellMapTexture);
             SAMPLER(sampler_SolidCellMapTexture);
@@ -83,12 +91,16 @@ Shader "Custom/FluidVisualizer" {
 
                     case 2:  // PRESSURE
                         float pressure = SAMPLE_TEXTURE2D(_PressureTexture, sampler_PressureTexture, uv).x;
-                        color = lerp(_MinPressureColor, _MaxPressureColor, (pressure + _MaxPressureValueAbs) / (2 * _MaxPressureValueAbs));
-                        //color = pressure < _MaxPressureValueAbs;
+                        color = lerp(_MinPressureColor, _MaxPressureColor, (pressure - _MinPressure) / (_MaxPressure - _MinPressure));
                         break;
 
                     case 3:  // SOLID CELLS
                         color = float4(SAMPLE_TEXTURE2D(_SolidCellMapTexture, sampler_SolidCellMapTexture, uv).xxx, 1.0f);
+                        break;
+                    
+                    case 4:  // VELOCITY DIVERGENCE
+                        float divergence = SAMPLE_TEXTURE2D(_DivergenceTexture, sampler_DivergenceTexture, uv).x;
+                        color = lerp(float4(0, 0, 0, 1), float4(1, 1, 1, 1), (divergence - _MinDivergence) / (_MaxDivergence - _MinDivergence));
                         break;
                 }
                 return color;

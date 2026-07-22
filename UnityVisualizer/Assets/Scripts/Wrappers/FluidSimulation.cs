@@ -19,8 +19,9 @@ public class FluidSimulation : IDisposable {
 
     [DllImport("FluidSolver")] private extern static float GetProjectionError(IntPtr handle);
 
-    [DllImport("FluidSolver")] private extern static IntPtr GetVelocityFieldPtr(IntPtr handle);
+    //[DllImport("FluidSolver")] private extern static IntPtr GetVelocityFieldPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static IntPtr GetPressureFieldPtr(IntPtr handle);
+    [DllImport("FluidSolver")] private extern static IntPtr GetDivergenceFieldPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static IntPtr GetSolidCellMapPtr(IntPtr handle);
 
     [DllImport("FluidSolver")] private extern static void SetVelocity(IntPtr handle, int i, int j, Vec2f velocity);
@@ -53,14 +54,20 @@ public class FluidSimulation : IDisposable {
         return ((T*)ptr)[index];
     }
 
-    public IEnumerable<Vec2f> VelocityVectors() {
-        IntPtr ptr = GetVelocityFieldPtr(m_handle);
-        for (int i = 0; i < m_cellCount; i++)
-            yield return GetElementFromPointer<Vec2f>(ptr, i);
-    }
+    //public IEnumerable<Vec2f> VelocityVectors() {
+    //    IntPtr ptr = GetVelocityFieldPtr(m_handle);
+    //    for (int i = 0; i < m_cellCount; i++)
+    //        yield return GetElementFromPointer<Vec2f>(ptr, i);
+    //}
 
     public IEnumerable<float> PressureValues() {
         IntPtr ptr = GetPressureFieldPtr(m_handle); 
+        for (int i = 0; i < m_cellCount; i++)
+            yield return GetElementFromPointer<float>(ptr, i);
+    }
+
+    public IEnumerable<float> DivergenceValues() {
+        IntPtr ptr = GetDivergenceFieldPtr(m_handle);
         for (int i = 0; i < m_cellCount; i++)
             yield return GetElementFromPointer<float>(ptr, i);
     }
