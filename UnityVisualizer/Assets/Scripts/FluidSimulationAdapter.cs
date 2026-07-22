@@ -9,7 +9,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
 
     private int m_width, m_height;
     private FluidSimulation m_simulation;
-    public event Action OnVelocityUpdated;
+    public event Action OnStateUpdated;
 
     public int Width => m_width;
     public int Height => m_height;
@@ -38,7 +38,8 @@ public class FluidSimulationAdapter : MonoBehaviour {
 
     public void StepSimulation(float dt) {
         m_simulation.Step(dt);
-        OnVelocityUpdated?.Invoke();
+        if (OnStateUpdated == null) print("bruh");
+        OnStateUpdated?.Invoke();
     }
 
 
@@ -61,7 +62,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
                 m_simulation.AddVelocity(i, j, new(resX, resY));
             }
         }
-        OnVelocityUpdated?.Invoke();
+        OnStateUpdated?.Invoke();
     }
 
 

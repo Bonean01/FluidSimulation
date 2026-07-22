@@ -60,7 +60,7 @@ public class FluidSimulation : IDisposable {
     }
 
     public IEnumerable<float> PressureValues() {
-        IntPtr ptr = GetPressureFieldPtr(m_handle);
+        IntPtr ptr = GetPressureFieldPtr(m_handle); 
         for (int i = 0; i < m_cellCount; i++)
             yield return GetElementFromPointer<float>(ptr, i);
     }

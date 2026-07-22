@@ -1,7 +1,7 @@
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-enum FieldType {
+enum FluidProperty {
     Velocity,
     Speed,
     Pressure,
@@ -13,7 +13,7 @@ enum FieldType {
 [RequireComponent(typeof(FluidSimulationAdapter))]
 public class FluidVisualizer : MonoBehaviour {
 
-    [SerializeField] private FieldType displayedField;
+    [SerializeField] private FluidProperty displayedProperty;
     [SerializeField] private Gradient speedGradient;
     [SerializeField] private float maxSpeed;
     private FluidSimulationAdapter m_simulationAdapter;
@@ -26,18 +26,21 @@ public class FluidVisualizer : MonoBehaviour {
         m_simulationAdapter = GetComponent<FluidSimulationAdapter>();
         m_spriteRenderer = GetComponent<SpriteRenderer>();
 
-        m_simulationAdapter.OnVelocityUpdated += OnVelocityUpdated;
+        m_simulationAdapter.OnStateUpdated += OnStateUpdated;
     }
 
 
     private void Start() {
         m_velocityTexture = m_simulationAdapter.CreateTexture();
+        m_pressureTexture = m_simulationAdapter.CreateTexture();
         m_solidCellMapTexture = m_simulationAdapter.CreateTexture();
         
         m_simulationAdapter.UpdateVelocityTexture(ref m_velocityTexture);
+        m_simulationAdapter.UpdatePressureTexture(ref m_pressureTexture);
         m_simulationAdapter.UpdateSolidMapCellTexture(ref m_solidCellMapTexture);
 
         m_spriteRenderer.material.SetTexture("_VelocityTexture", m_velocityTexture);
+        m_spriteRenderer.material.SetTexture("_PressureTexture", m_pressureTexture);
         m_spriteRenderer.material.SetTexture("_SolidCellMapTexture", m_solidCellMapTexture);
 
 
@@ -60,15 +63,24 @@ public class FluidVisualizer : MonoBehaviour {
 
 
     private void Update() {
-        m_spriteRenderer.material.SetInt("_DisplayedField", (int)displayedField);
+        m_spriteRenderer.material.SetInt("_DisplayedField", (int)displayedProperty);
     }
 
 
-    private void OnVelocityUpdated() {
-        m_simulationAdapter.UpdateVelocityTexture(ref m_velocityTexture);
-        m_spriteRenderer.material.SetTexture("_VelocityTexture", m_velocityTexture);
+    private void OnStateUpdated() {
+        if (displayedProperty == FluidProperty.Velocity || displayedProperty == FluidProperty.Speed) {
+            m_simulationAdapter.UpdateVelocityTexture(ref m_velocityTexture);
+            m_spriteRenderer.material.SetTexture("_VelocityTexture", m_velocityTexture);
+        }
 
-        m_spriteRenderer.material.SetTexture("_SpeedGradientTexture", m_speedGradientTexture);
-        m_spriteRenderer.material.SetFloat("_MaxSpeedSqrd", maxSpeed * maxSpeed);
+        if (displayedProperty == FluidProperty.Speed) {
+            m_spriteRenderer.material.SetTexture("_SpeedGradientTexture", m_speedGradientTexture);
+            m_spriteRenderer.material.SetFloat("_MaxSpeedSqrd", maxSpeed * maxSpeed);
+        }
+
+        if (displayedProperty == FluidProperty.Pressure) {
+            m_simulationAdapter.UpdatePressureTexture(ref m_pressureTexture);
+            m_spriteRenderer.material.SetTexture("_PressureTexture", m_pressureTexture);
+        }
     }
 }
