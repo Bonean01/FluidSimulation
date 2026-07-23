@@ -76,7 +76,7 @@ void FluidSimulation::diffuse(VectorField2D& field, float dt) {
 }
 
 
-void FluidSimulation::project(VectorField2D& field) {
+void FluidSimulation::project(VectorField2D& field, float dt) {
 	int width = field.width();
 	int height = field.height();
 	ScalarField2D& auxField = m_auxScalarField;

@@ -512,8 +512,8 @@ MonoBehaviour:
   width: 60
   height: 33
   cellWidth: 0.1
-  density: 0.5
-  kinematicViscosity: 1
+  density: 1
+  kinematicViscosity: 0
   solverIterationCount: 60
 --- !u!114 &1486929793
 MonoBehaviour:

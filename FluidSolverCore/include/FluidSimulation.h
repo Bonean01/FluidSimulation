@@ -56,7 +56,8 @@ public:
 
 
 private:
-	MACGrid2D m_velocityField, m_auxMacGrid;
+	MACGrid2D m_velocityField;
+	MACGrid2D m_auxMacGrid;
 	VectorField2D m_auxVectorField;
 	ScalarField2D m_pressureField, m_divergenceField, m_auxScalarField;
 	// 0 => not solid, 1 => solid
@@ -72,6 +73,6 @@ private:
 	void advect(MACGrid2D& field, float dt);
 	void diffuse(VectorField2D& field, float dt);
 	void applyExternalForces(VectorField2D& field);
-	void project(VectorField2D& field);
+	void project(VectorField2D& field, float dt);
 	void project(MACGrid2D& field, float dt);
 };

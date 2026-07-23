@@ -5,6 +5,7 @@
 #include "Grid.h"
 #include "ScalarField.h"
 
+
 class VectorField2D : public Grid2D<Vec2f> {
 public:
 	VectorField2D(int width, int height, float cellSeparation) : Grid2D(width, height, cellSeparation) {}

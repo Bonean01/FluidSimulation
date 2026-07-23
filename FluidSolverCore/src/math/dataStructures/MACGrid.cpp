@@ -99,3 +99,8 @@ void MACGrid2D::divergence(ScalarField2D& result) const {
 		}
 	}
 }
+
+
+Vec2f MACGrid2D::laplacian(int i, int j) const {
+	return { 0.0f, 0.0f };
+}
