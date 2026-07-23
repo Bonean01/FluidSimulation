@@ -34,6 +34,10 @@ extern "C" _declspec(dllexport) const float* GetDivergenceFieldPtr(FluidSimulati
 	return handle->getDivergenceField().getValuesPtr();
 }
 
+extern "C" _declspec(dllexport) const float* GetSmokeFieldPtr(FluidSimulation* handle) {
+	return handle->getSmokeField().getValuesPtr();
+}
+
 extern "C" _declspec(dllexport) const uint8_t* GetSolidCellMapPtr(FluidSimulation* handle) {
 	return handle->getSolidCellMap().getValuesPtr();
 }
@@ -50,6 +54,10 @@ extern "C" _declspec(dllexport) CVec2f GetVelocity(FluidSimulation* handle, int 
 
 extern "C" _declspec(dllexport) void AddVelocity(FluidSimulation* handle, int i, int j, Vec2f deltaVel) {
 	handle->addVelocity(i, j, deltaVel);
+}
+
+extern "C" _declspec(dllexport) void AddSmoke(FluidSimulation* handle, int i, int j, float deltaSmoke) {
+	handle->addSmoke(i, j, deltaSmoke);
 }
 
 extern "C" _declspec(dllexport) void SetSolidCell(FluidSimulation* handle, int i, int j, bool isSolid) {

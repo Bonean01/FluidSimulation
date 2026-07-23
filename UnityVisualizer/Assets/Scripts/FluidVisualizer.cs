@@ -6,7 +6,8 @@ enum FluidProperty {
     Speed,
     Pressure,
     SolidCells,
-    Divergence
+    Divergence,
+    Smoke
 }
 
 
@@ -18,7 +19,7 @@ public class FluidVisualizer : MonoBehaviour {
     [SerializeField] private Gradient speedGradient;
     [SerializeField] private float maxSpeed;
     private FluidSimulationAdapter m_simulationAdapter;
-    private Texture2D m_velocityTexture, m_pressureTexture, m_divergenceTexture, m_solidCellMapTexture;
+    private Texture2D m_velocityTexture, m_pressureTexture, m_divergenceTexture, m_smokeTexture, m_solidCellMapTexture;
     private Texture2D m_speedGradientTexture;
     private SpriteRenderer m_spriteRenderer;
     private float m_minPressure, m_maxPressure, m_minDivergence, m_maxDivergence;
@@ -36,6 +37,7 @@ public class FluidVisualizer : MonoBehaviour {
         m_velocityTexture = m_simulationAdapter.CreateTexture();
         m_pressureTexture = m_simulationAdapter.CreateTexture();
         m_divergenceTexture = m_simulationAdapter.CreateTexture();
+        m_smokeTexture = m_simulationAdapter.CreateTexture();
         m_solidCellMapTexture = m_simulationAdapter.CreateTexture();
 
         float aspectRatio = (float)m_simulationAdapter.Height / m_simulationAdapter.Width;
@@ -76,6 +78,7 @@ public class FluidVisualizer : MonoBehaviour {
             m_spriteRenderer.material.SetFloat("_MinPressure", m_minPressure);
             m_spriteRenderer.material.SetFloat("_MaxPressure", m_maxPressure);
             m_spriteRenderer.material.SetTexture("_PressureTexture", m_pressureTexture);
+            print($"min: {m_minPressure} \t max: {m_maxPressure}");
         }
 
         if (displayedProperty == FluidProperty.Divergence) {
@@ -83,6 +86,17 @@ public class FluidVisualizer : MonoBehaviour {
             m_spriteRenderer.material.SetFloat("_MinDivergence", m_minDivergence);
             m_spriteRenderer.material.SetFloat("_MaxDivergence", m_maxDivergence);
             m_spriteRenderer.material.SetTexture("_DivergenceTexture", m_divergenceTexture);
+            print($"min: {m_minDivergence} \t max: {m_maxDivergence}");
+        }
+
+        if (displayedProperty == FluidProperty.Smoke) {
+            float total = m_simulationAdapter.UpdateSmokeTexture(ref m_smokeTexture);
+            m_spriteRenderer.material.SetTexture("_SmokeTexture", m_smokeTexture);
+            print($"total smoke: {total}");  
+        }
+
+        if (displayedProperty == FluidProperty.SolidCells) {
+            
         }
     }
 }

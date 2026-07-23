@@ -66,6 +66,28 @@ public class FluidSimulationAdapter : MonoBehaviour {
     }
 
 
+    public void ApplySmokeCircle(Vector2 position, float smokeValue, float radius) {
+        for (int i = 0; i < m_width; i++) {
+            for (int j = 0; j < m_height; j++) {
+                if (Mathf.Abs(i - position.x) > radius) continue;
+                if (Mathf.Abs(j - position.y) > radius) continue;
+
+                float xDiff = i - position.x;
+                float yDiff = j - position.y;
+                float dst = Mathf.Sqrt(xDiff * xDiff + yDiff * yDiff);
+
+                if (dst > radius) continue;
+
+                float t = 1 - dst / radius;
+                float res = Mathf.SmoothStep(0, smokeValue, t);
+
+                m_simulation.AddSmoke(i, j, res);
+            }
+        }
+        OnStateUpdated?.Invoke();
+    }
+
+
     public Vector2Int WorldToGridPoint(Vector2 worldPos) {
         float widthWorld = transform.localScale.x;
         float cellWidthWorld = widthWorld / m_width;
@@ -114,19 +136,21 @@ public class FluidSimulationAdapter : MonoBehaviour {
     }
 
     // returning the min and max in this method doesn't seem clean
-    private (float min, float max) UpdateScalarFieldTexture(ref Texture2D texture, IEnumerable<float> scalarCollection) {
+    private (float min, float max, float total) UpdateScalarFieldTexture(ref Texture2D texture, IEnumerable<float> scalarCollection) {
         int x = 0, y = 0;
+        float total = 0;
         float min = float.MaxValue, max = float.MinValue;
         foreach (float value in scalarCollection) {
             if (y >= m_height) throw new Exception("The number of values is greater than the number of cells in the simulation");
             if (min > value) min = value;
             if (max < value) max = value;
+            total += value;
             Color color = new (value, 0.0f, 0.0f, 1.0f);
             texture.SetPixel(x, y, color);
             if (++x >= m_width) { x = 0; y++; }
         }
         texture.Apply();
-        return (min, max);
+        return (min, max, total);
     }
 
     // TODO: fix this mess
@@ -158,10 +182,16 @@ public class FluidSimulationAdapter : MonoBehaviour {
     }
 
     public (float min, float max) UpdatePressureTexture(ref Texture2D pressureTexture) {
-        return UpdateScalarFieldTexture(ref pressureTexture, m_simulation.PressureValues());
+        var res =  UpdateScalarFieldTexture(ref pressureTexture, m_simulation.PressureValues());
+        return (res.min, res.max);
     }
 
     public (float min, float max) UpdateDivergenceTexture(ref Texture2D divergenceTexture) {
-        return UpdateScalarFieldTexture(ref divergenceTexture, m_simulation.DivergenceValues());
+        var res = UpdateScalarFieldTexture(ref divergenceTexture, m_simulation.DivergenceValues());
+        return (res.min, res.max);
+    }
+
+    public float UpdateSmokeTexture(ref Texture2D smokeTexture) {
+        return UpdateScalarFieldTexture(ref smokeTexture, m_simulation.SmokeValues()).total;
     }
 }

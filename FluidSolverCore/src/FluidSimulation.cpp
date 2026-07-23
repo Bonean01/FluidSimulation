@@ -6,6 +6,7 @@
 
 void FluidSimulation::step(float dt) {
 	advect(m_velocityField, dt);
+	advect(m_velocityField, m_smokeField, dt);
 	//diffuse(m_velocityField, dt);
 	project(m_velocityField, dt);
 	m_velocityField.divergence(m_divergenceField);
@@ -58,6 +59,25 @@ void FluidSimulation::advect(MACGrid2D& field, float dt) {
 		}
 	}
 	
+	std::swap(field, auxField);
+}
+
+
+void FluidSimulation::advect(MACGrid2D& velocityField, ScalarField2D& field, float dt) {
+	int width = field.width();
+	int height = field.height();
+	ScalarField2D& auxField = m_auxScalarField;
+	if (auxField.width() != width || auxField.height() != height) return;
+
+	for (int i = 0; i <= width; i++) {
+		for (int j = 0; j < height; j++) {
+			if (isSolid(i, j) || isSolid(i - 1, j)) { auxField.setValue(i, j, 0.0f); continue; }
+			Vec2f position = { (float)i, (float)j };
+			Vec2f currentVel = velocityField.sampleBilinear(position);
+			float newValue = field.sampleBilinear(position - currentVel * dt);
+			auxField.setValue(i, j, newValue);
+		}
+	}
 	std::swap(field, auxField);
 }
 

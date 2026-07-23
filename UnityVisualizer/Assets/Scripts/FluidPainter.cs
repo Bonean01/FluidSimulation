@@ -3,14 +3,13 @@ using UnityEngine;
 enum BrushMode {
     Velocity,
     SolidCell,
+    Smoke,
     Color
 }
 
 
 [RequireComponent(typeof(FluidSimulationAdapter))]
 public class FluidPainter : MonoBehaviour {
-
-    [SerializeField] private BrushMode brushMode;
     [SerializeField] [Range(.5f, 2)] private float brushSize;
     [SerializeField] [Range(.5f, 2)] private float brushStrength;
     private FluidSimulationAdapter m_simulationAdapter;
@@ -29,7 +28,8 @@ public class FluidPainter : MonoBehaviour {
         Vector2 mousePosWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 mousePosGrid = m_simulationAdapter.WorldToGridPoint(mousePosWorld);
         m_mouseWorldDelta = mousePosWorld - m_prevMousePosWorld;
-        if (Input.GetMouseButton(0)) Paint(mousePosGrid);
+        // temp
+        if (Input.GetMouseButton(0) || Input.GetMouseButton(1)) Paint(mousePosGrid);
         m_prevMousePosWorld = mousePosWorld;
     }
 
@@ -52,6 +52,10 @@ public class FluidPainter : MonoBehaviour {
         int widthGrid = m_simulationAdapter.Width;
         m_brushSizeGrid =  brushSize * widthGrid / widthWorld;
 
-        m_simulationAdapter.ApplyVelocityImpulse(mousePosGrid, velocity, m_brushSizeGrid);
+        if (Input.GetMouseButton(0))
+            m_simulationAdapter.ApplyVelocityImpulse(mousePosGrid, velocity, m_brushSizeGrid);
+
+        if (Input.GetMouseButton(1))
+            m_simulationAdapter.ApplySmokeCircle(mousePosGrid, brushStrength, m_brushSizeGrid);
     }
 }

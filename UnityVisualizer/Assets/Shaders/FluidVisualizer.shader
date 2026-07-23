@@ -6,6 +6,7 @@ Shader "Custom/FluidVisualizer" {
         _VelocityTexture("Velocity Texture", 2D) = "white" {}
         _PressureTexture("Pressure Texture", 2D) = "white" {}
         _DivergenceTexture("Divergence Texture", 2D) = "white" {}
+        _SmokeTexture("Smoke Texture", 2D) = "white" {} 
         _SolidCellMapTexture("Solid Cell Map Texture", 2D) = "white" {}
 
         _DisplayedField("Displayed Field", int) = 0
@@ -47,6 +48,9 @@ Shader "Custom/FluidVisualizer" {
 
             TEXTURE2D(_DivergenceTexture);
             SAMPLER(sampler_DivergenceTexture);
+
+            TEXTURE2D(_SmokeTexture);
+            SAMPLER(sampler_SmokeTexture);
 
             TEXTURE2D(_SolidCellMapTexture);
             SAMPLER(sampler_SolidCellMapTexture);
@@ -101,6 +105,11 @@ Shader "Custom/FluidVisualizer" {
                     case 4:  // VELOCITY DIVERGENCE
                         float divergence = SAMPLE_TEXTURE2D(_DivergenceTexture, sampler_DivergenceTexture, uv).x;
                         color = lerp(float4(0, 0, 0, 1), float4(1, 1, 1, 1), (divergence - _MinDivergence) / (_MaxDivergence - _MinDivergence));
+                        break;
+                    
+                    case 5:  // SMOKE
+                        float smoke = SAMPLE_TEXTURE2D(_SmokeTexture, sampler_SmokeTexture, uv).x;
+                        color = float4(smoke.xxx, 1.0f);
                         break;
                 }
                 return color;
