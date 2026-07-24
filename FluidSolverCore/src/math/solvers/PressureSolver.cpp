@@ -1,5 +1,6 @@
 #include "math/solvers/PressureSolver.h"
 
+#include <iostream>
 
 void PressureSolver::solve(ScalarField2D& result, unsigned int iterationCount) {
 	int width = result.width();
@@ -20,40 +21,68 @@ void PressureSolver::solve(ScalarField2D& result, unsigned int iterationCount) {
 }
 
 
-//void PressureSolver::solveJacobi(ScalarField2D& result, float fixedDeltaTime, unsigned int iterationCount) {
-//	int width = result.width();
-//	int height = result.height();
-//	for (unsigned int k = 0; k < iterationCount; k++) {
-//		for (int i = 0; i < width; i++) {
-//			for (int j = 0; j < height; j++) {
-//				float newCellValue = solveCell(m_auxScalarField, fixedDeltaTime, i, j);
-//				result.setValue(i, j, newCellValue);
-//			}
-//		}
-//		if (k < iterationCount - 1)
-//			std::swap(result, m_auxScalarField);
-//	}
-//}
+void PressureSolver::solveJacobi(ScalarField2D& result, float fixedDeltaTime, unsigned int iterationCount) {
+	int width = result.width();
+	int height = result.height();
+	for (unsigned int k = 0; k < iterationCount; k++) {
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				float newCellValue = solveCell(m_auxScalarField, fixedDeltaTime, i, j);
+				result.setValue(i, j, newCellValue);
+			}
+		}
+		if (k < iterationCount - 1)
+			std::swap(result, m_auxScalarField);
+	}
+}
 
 
-//float PressureSolver::solveCell(ScalarField2D& prevPressureField, float fixedDeltaTime, int i, int j) {
-//	float right = prevPressureField.getValue(i + 1, j);
-//	float left = prevPressureField.getValue(i - 1, j);
-//	float top = prevPressureField.getValue(i, j + 1);
-//	float bottom = prevPressureField.getValue(i, j - 1);
-//
-//	float rightVel = m_velocityField.getEdgeX(i + 1, j);
-//	float leftVel = m_velocityField.getEdgeX(i, j);
-//	float topVel = m_velocityField.getEdgeY(i, j + 1);
-//	float bottomVel = m_velocityField.getEdgeY(i, j);
-//
-//	float k = m_cellWidth * m_density / fixedDeltaTime;
-//	float newPressure = (right + left + top + bottom);
-//	newPressure -= k * (rightVel - leftVel + topVel - bottomVel);
-//	newPressure /= 4;
-//
-//	return newPressure;
-//}
+float PressureSolver::solveCell(ScalarField2D& prevPressureField, float fixedDeltaTime, int i, int j) {
+	uint8_t rightFluid = 1 - m_solidCellMap.getValue(i + 1, j);
+	uint8_t leftFluid = 1 - m_solidCellMap.getValue(i - 1, j);
+	uint8_t topFluid = 1 - m_solidCellMap.getValue(i, j + 1);
+	uint8_t bottomFluid = 1 - m_solidCellMap.getValue(i, j - 1);
+	bool isSolid = m_solidCellMap.getValue(i, j) == 1;
+	
+	int totalFluidCells = rightFluid + leftFluid + topFluid + bottomFluid;
+
+	if (isSolid || totalFluidCells == 0) return 0.0f;
+
+	float rightPres = prevPressureField.getValue(i + 1, j) * rightFluid;
+	float leftPres = prevPressureField.getValue(i - 1, j) * leftFluid;
+	float topPres = prevPressureField.getValue(i, j + 1) * topFluid;
+	float bottomPres = prevPressureField.getValue(i, j - 1) * bottomFluid;
+
+	float rightVel = m_velocityField.getEdgeX(i + 1, j) * rightFluid;
+	float leftVel = m_velocityField.getEdgeX(i, j) * leftFluid;
+	float topVel = m_velocityField.getEdgeY(i, j + 1) * topFluid;
+	float bottomVel = m_velocityField.getEdgeY(i, j) * bottomFluid;
+
+
+	float k = fixedDeltaTime / (m_cellWidth * m_density);
+	float newPressure = (rightPres + leftPres + topPres + bottomPres);
+	newPressure -= k * (rightVel - leftVel + topVel - bottomVel);
+	newPressure /= totalFluidCells;
+
+	//if (i == 2 && j == 2) {
+	//	std::cout << "isSolid: " << isSolid << std::endl;
+	//	std::cout << "totalFluidCells: " << totalFluidCells << std::endl;
+	//	std::cout << "rPres: " << rightPres << std::endl;
+	//	std::cout << "lPres: " << leftPres << std::endl;
+	//	std::cout << "tPres: " << topPres << std::endl;
+	//	std::cout << "bPres: " << bottomPres << std::endl;
+	//	std::cout << "rVel: " << rightVel << std::endl;
+	//	std::cout << "lVel: " << leftVel << std::endl;
+	//	std::cout << "tVel: " << topVel << std::endl;
+	//	std::cout << "bVel: " << bottomVel << std::endl;
+	//	std::cout << "cellWidth: " << m_cellWidth << std::endl;
+	//	std::cout << "density: " << m_density << std::endl;
+	//	std::cout << "deltaTime: " << fixedDeltaTime << std::endl;
+	//	std::cout << "newPress: " << newPressure << std::endl << std::endl;
+	//}
+
+	return newPressure;
+}
 
 
 float PressureSolver::calculateError() {

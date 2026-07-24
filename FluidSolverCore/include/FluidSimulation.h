@@ -39,7 +39,7 @@ public:
 
 	void step(float dt);
 
-	const VectorField2D& getVelocityField() const { return m_velocityField; }
+	const MACGrid2D& getVelocityField() const { return m_velocityField; }
 	const ScalarField2D& getPressureField() const { return m_pressureField; }
 	const ScalarField2D& getDivergenceField() const { return m_divergenceField; }
 	const ScalarField2D& getSmokeField() const { return m_smokeField; }
@@ -64,14 +64,14 @@ public:
 
 
 private:
-	VectorField2D m_velocityField;
+	float m_density, m_kinematicViscosity, m_cellWidth;
+
+	MACGrid2D m_velocityField;
 	MACGrid2D m_auxMacGrid;
 	VectorField2D m_auxVectorField;
 	ScalarField2D m_pressureField, m_divergenceField, m_smokeField, m_auxScalarField;
 	// 0 => not solid, 1 => solid
 	Grid2D<uint8_t> m_solidCellMap;
-
-	float m_density, m_kinematicViscosity, m_cellWidth;
 
 	PressureSolver m_pressureSolver;
 	int m_iterationCount;

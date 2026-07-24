@@ -30,11 +30,6 @@ float ScalarField2D::sampleBilinear(const Vec2f& position) const {
 
 
 Vec2f ScalarField2D::gradient(int i, int j) const {
-	//float center = getValue(i, j);
-	//float right = getValue(i + 1, j);
-	//float top = getValue(i, j + 1);
-	//return Vec2f{ center - right, center - top } / m_cellWidth;
-
 	float right = getValue(i + 1, j);
 	float left = getValue(i - 1, j);
 	float top = getValue(i, j + 1);

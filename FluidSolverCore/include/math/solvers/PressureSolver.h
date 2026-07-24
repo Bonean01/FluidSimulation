@@ -7,7 +7,7 @@
 
 class PressureSolver {
 public:
-	PressureSolver(float density, float kinematicViscosity, VectorField2D& velocityField, Grid2D<uint8_t>& solidCellMap) : 
+	PressureSolver(float density, float kinematicViscosity, MACGrid2D& velocityField, Grid2D<uint8_t>& solidCellMap) : 
 		m_velocityField(velocityField),
 		m_solidCellMap(solidCellMap),
 		m_density(density),
@@ -23,7 +23,7 @@ public:
 
 private:
 	JacobiIterationSolver m_jacobiSolver{};
-	VectorField2D& m_velocityField;
+	MACGrid2D& m_velocityField;
 	ScalarField2D m_velocityDivergence, m_auxScalarField;
 	Grid2D<uint8_t>& m_solidCellMap;
 	float m_density, m_kinematicViscosity, m_cellWidth;
