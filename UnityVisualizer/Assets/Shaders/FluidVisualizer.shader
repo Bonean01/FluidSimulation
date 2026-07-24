@@ -97,10 +97,6 @@ Shader "Custom/FluidVisualizer" {
                         float pressure = SAMPLE_TEXTURE2D(_PressureTexture, sampler_PressureTexture, uv).x;
                         color = lerp(_MinPressureColor, _MaxPressureColor, (pressure - _MinPressure) / (_MaxPressure - _MinPressure));
                         break;
-
-                    case 3:  // SOLID CELLS
-                        color = float4(SAMPLE_TEXTURE2D(_SolidCellMapTexture, sampler_SolidCellMapTexture, uv).xxx, 1.0f);
-                        break;
                     
                     case 4:  // VELOCITY DIVERGENCE
                         float divergence = SAMPLE_TEXTURE2D(_DivergenceTexture, sampler_DivergenceTexture, uv).x;
@@ -112,6 +108,8 @@ Shader "Custom/FluidVisualizer" {
                         color = float4(smoke.xxx, 1.0f);
                         break;
                 }
+                float solid = SAMPLE_TEXTURE2D(_SolidCellMapTexture, sampler_SolidCellMapTexture, uv).x;
+                color = solid ? float4(0.5f, 0.25f, 0.1f, 1) : color;
                 return color;
             }
             ENDHLSL

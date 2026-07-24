@@ -21,15 +21,15 @@ public class FluidPainter : MonoBehaviour {
     }
 
 
-    private Vector2 m_prevMousePosWorld, m_mouseWorldDelta;
+    private Vector2 m_prevMousePosWorld;
     private void Update() {
         if (!IsWithinBounds(Input.mousePosition)) return;
 
         Vector2 mousePosWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 mousePosGrid = m_simulationAdapter.WorldToGridPoint(mousePosWorld);
-        m_mouseWorldDelta = mousePosWorld - m_prevMousePosWorld;
-        // temp
-        if (Input.GetMouseButton(0) || Input.GetMouseButton(1)) Paint(mousePosGrid);
+
+        if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
+            Paint(mousePosWorld);
+        
         m_prevMousePosWorld = mousePosWorld;
     }
 
@@ -43,19 +43,23 @@ public class FluidPainter : MonoBehaviour {
     }
 
 
-    private void Paint(Vector2 mousePosGrid) {
-        Vector2 mouseVel = m_mouseWorldDelta / Time.deltaTime; // we also need to take the cellsize into consideration
-        mouseVel *= brushStrength;
-        Vec2f velocity = new(mouseVel.x, mouseVel.y);
+    private void Paint(Vector2 mousePosWorld) {
+        // Calculate the world-space velocity
+        Vector2 mouseWorldDelta = mousePosWorld - m_prevMousePosWorld;
+        Vector2 mouseVel = mouseWorldDelta / Time.deltaTime; // we also need to take the cellsize into consideration
 
+        // Calculate the brush size in grid-space
         float widthWorld = transform.localScale.x;
         int widthGrid = m_simulationAdapter.Width;
-        m_brushSizeGrid =  brushSize * widthGrid / widthWorld;
+        m_brushSizeGrid = brushSize * widthGrid / widthWorld;
 
-        if (Input.GetMouseButton(0))
-            m_simulationAdapter.ApplyVelocityImpulse(mousePosGrid, velocity, m_brushSizeGrid);
-
-        if (Input.GetMouseButton(1))
+        Vector2 mousePosGrid = m_simulationAdapter.WorldToGridPoint(mousePosWorld);
+        if (Input.GetMouseButton(0)) {
+            Vec2f effectiveVel = new(mouseVel.x * brushStrength, mouseVel.y * brushStrength);
+            m_simulationAdapter.ApplyVelocityImpulse(mousePosGrid, effectiveVel, m_brushSizeGrid);
+        }
+        if (Input.GetMouseButton(1)) {
             m_simulationAdapter.ApplySmokeCircle(mousePosGrid, brushStrength, m_brushSizeGrid);
+        }
     }
 }

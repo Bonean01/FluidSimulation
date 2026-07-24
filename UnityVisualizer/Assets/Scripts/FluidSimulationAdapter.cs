@@ -19,7 +19,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
         m_width = width;
         m_height = height;
         m_simulation = new(m_width, m_height, cellWidth, density, kinematicViscosity, solverIterationCount);
-        //DrawSolidCells();
+        DrawSolidCells();
     }
 
 
@@ -135,7 +135,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
         texture.Apply();
     }
 
-    // returning the min and max in this method doesn't seem clean
+
     private (float min, float max, float total) UpdateScalarFieldTexture(ref Texture2D texture, IEnumerable<float> scalarCollection) {
         int x = 0, y = 0;
         float total = 0;
