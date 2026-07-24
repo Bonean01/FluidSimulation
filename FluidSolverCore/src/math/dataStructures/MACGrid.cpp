@@ -58,22 +58,57 @@ void MACGrid2D::setValue(int i, int j, Vec2f value) {
 
 
 Vec2f MACGrid2D::sampleBilinear(float x, float y) const {
-	x = std::clamp(x, 0.0f, (float)m_width - 2.0f);
+	float resX = sampleBilinearX(x, y);
+	float resY = sampleBilinearY(x, y);
+	return { resX, resY };
+}
+
+
+float MACGrid2D::sampleBilinearX(float x, float y) const {
+	x = std::clamp(x, 0.0f, (float)m_width - 2.0f) + 0.5f;
 	y = std::clamp(y, 0.0f, (float)m_height - 2.0f);
 
 	int x1 = (int)std::floor(x);
 	int x2 = x1 + 1;
 	int y1 = (int)std::floor(y);
 	int y2 = y1 + 1;
+
 	float tX = x - x1;
 	float tY = y - y1;
 
-	Vec2f A = getValue(x1, y1);
-	Vec2f B = getValue(x2, y1);
-	Vec2f C = getValue(x1, y2);
-	Vec2f D = getValue(x2, y2);
+	float a = getEdgeX(x1, y1);
+	float b = getEdgeX(x2, y1);
+	float c = getEdgeX(x1, y2);
+	float d = getEdgeX(x2, y2);
 
-	return Vec2f::biLerp(A, B, C, D, tX, tY);
+	float e = std::lerp(a, b, tX);
+	float f = std::lerp(c, d, tX);
+
+	return std::lerp(e, f, tY);
+}
+
+
+float MACGrid2D::sampleBilinearY(float x, float y) const {
+	x = std::clamp(x, 0.0f, (float)m_width - 2.0f);
+	y = std::clamp(y, 0.0f, (float)m_height - 2.0f) + 0.5f;
+
+	int x1 = (int)std::floor(x);
+	int x2 = x1 + 1;
+	int y1 = (int)std::floor(y);
+	int y2 = y1 + 1;
+
+	float tX = x - x1;
+	float tY = y - y1;
+
+	float a = getEdgeY(x1, y1);
+	float b = getEdgeY(x2, y1);
+	float c = getEdgeY(x1, y2);
+	float d = getEdgeY(x2, y2);
+
+	float e = std::lerp(a, b, tX);
+	float f = std::lerp(c, d, tX);
+
+	return std::lerp(e, f, tY);
 }
 
 

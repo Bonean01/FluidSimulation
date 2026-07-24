@@ -465,7 +465,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09ac10085ffc99346ae4f5256ff9d538, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FLuidVisualizer
-  displayedProperty: 5
+  displayedProperty: 1
   speedGradient:
     serializedVersion: 2
     key0: {r: 0, g: 0, b: 0, a: 1}

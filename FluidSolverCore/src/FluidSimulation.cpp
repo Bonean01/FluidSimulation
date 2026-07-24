@@ -62,6 +62,8 @@ void FluidSimulation::advect(MACGrid2D& field, float dt) {
 			if (isSolid(i, j) || isSolid(i - 1, j)) { auxField.setEdgeX(i, j, 0.0f); continue; }
 			Vec2f position = { (float)i - 0.5f, (float)j };
 			Vec2f currentVel = field.sampleBilinear(position);
+			if (i == 3 && j == 1)
+				std::cout << "currentVel: " << currentVel.x << ", " << currentVel.y << std::endl;
 			Vec2f newValue = field.sampleBilinear(position - currentVel * dt);
 			auxField.setEdgeX(i, j, newValue.x);
 		}

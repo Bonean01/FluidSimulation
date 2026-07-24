@@ -43,4 +43,7 @@ private:
 
 	int getIndexX(int i, int j) const { return j * (m_width + 1) + i; }
 	int getIndexY(int i, int j) const { return j * m_width + i; }
+
+	float sampleBilinearX(float x, float y) const;
+	float sampleBilinearY(float x, float y) const;
 };
