@@ -6,13 +6,13 @@
 
 
 static void printSimulationState(const FluidSimulation& simulation) {
-	const MACGrid2D& velField = simulation.getVelocityField();
+	const VectorField2D& velField = simulation.getVelocityField();
 
 	int width = velField.width();
 	int height = velField.height();
 
-	for (int i = 0; i < width; i++) {
-		for (int j = 0; j < height; j++) {
+	for (int j = 0; j < height; j++) {
+		for (int i = 0; i < width; i++) {
 			Vec2f vec = simulation.getVelocity(i, j);
 			bool isSolid = simulation.isSolid(i, j) == 1;
 			std::cout << "(" << vec.x << ", " << vec.y << ")";
@@ -54,16 +54,15 @@ int main(int argc, char* argv[]) {
 	int height = 5;
 	FluidSimulation simulation{ width, height, 1.0f, 1.0f, 0.0f, 60 };
 	for (int j = 0; j < height; j++) {
-		simulation.setVelocity(3, j, { 0.0f, j * 10.0f });
+		simulation.setVelocity(1, j, { 10.0f, 0.0f });
 	}
 
-	printSimulationState(simulation);
+	//printSimulationState(simulation);
 
-	simulation.step(1.0f / 60);
-	std::cout << "================== STEP TAKEN ===================" << std::endl;
-
-	for (int i = 0; i < 1000; i++)
+	for (int i = 0; i < 1; i++)
 		simulation.step(1.0f / 60);
-	
+
+	//std::cout << "================== STEPS TAKEN ===================" << std::endl;
+
 	printSimulationState(simulation);
 }

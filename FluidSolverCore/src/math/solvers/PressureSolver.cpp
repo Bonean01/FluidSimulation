@@ -1,7 +1,5 @@
 #include "math/solvers/PressureSolver.h"
 
-#include <iostream>
-
 
 void PressureSolver::solve(ScalarField2D& result, unsigned int iterationCount) {
 	int width = result.width();
@@ -16,30 +14,46 @@ void PressureSolver::solve(ScalarField2D& result, unsigned int iterationCount) {
 	float alpha = -cellSize;
 	for (unsigned int i = 0; i < iterationCount; i++) {
 		m_jacobiSolver.solve(auxField, result, m_velocityDivergence, alpha, beta);
-		std::swap(auxField, result);
+		if (i < iterationCount - 1)
+			std::swap(auxField, result);
 	}
 }
 
 
-float PressureSolver::solveCell(ScalarField2D& prevPressureField, int i, int j) {
-	if (m_solidCellMap.getValue(i, j) == 1) return 0.0f;
-	int right = m_solidCellMap.getValue(i + 1, j);
-	int left = m_solidCellMap.getValue(i - 1, j);
-	int top = m_solidCellMap.getValue(i, j + 1);
-	int bottom = m_solidCellMap.getValue(i, j - 1);
-	int solidCells = right + left + top + bottom;
+//void PressureSolver::solveJacobi(ScalarField2D& result, float fixedDeltaTime, unsigned int iterationCount) {
+//	int width = result.width();
+//	int height = result.height();
+//	for (unsigned int k = 0; k < iterationCount; k++) {
+//		for (int i = 0; i < width; i++) {
+//			for (int j = 0; j < height; j++) {
+//				float newCellValue = solveCell(m_auxScalarField, fixedDeltaTime, i, j);
+//				result.setValue(i, j, newCellValue);
+//			}
+//		}
+//		if (k < iterationCount - 1)
+//			std::swap(result, m_auxScalarField);
+//	}
+//}
 
-	float velocityDivergence = m_velocityField.divergence(i, j);
 
-	float dx = m_velocityField.cellWidth();
-	float cellSize = dx * dx;
-
-	int beta = 4 - solidCells;
-	if (beta == 0) beta = 1;
-	float alpha = -cellSize;
-	float res = m_jacobiSolver.solveCell(i, j, prevPressureField, velocityDivergence, alpha, (float)beta);
-	return res;
-}
+//float PressureSolver::solveCell(ScalarField2D& prevPressureField, float fixedDeltaTime, int i, int j) {
+//	float right = prevPressureField.getValue(i + 1, j);
+//	float left = prevPressureField.getValue(i - 1, j);
+//	float top = prevPressureField.getValue(i, j + 1);
+//	float bottom = prevPressureField.getValue(i, j - 1);
+//
+//	float rightVel = m_velocityField.getEdgeX(i + 1, j);
+//	float leftVel = m_velocityField.getEdgeX(i, j);
+//	float topVel = m_velocityField.getEdgeY(i, j + 1);
+//	float bottomVel = m_velocityField.getEdgeY(i, j);
+//
+//	float k = m_cellWidth * m_density / fixedDeltaTime;
+//	float newPressure = (right + left + top + bottom);
+//	newPressure -= k * (rightVel - leftVel + topVel - bottomVel);
+//	newPressure /= 4;
+//
+//	return newPressure;
+//}
 
 
 float PressureSolver::calculateError() {
