@@ -58,8 +58,6 @@ int main(int argc, char* argv[]) {
 		simulation.setVelocity(1, j, { 10.0f, 0.0f });
 	}
 
-	std::cout << "vel 0,0: " << simulation.getVelocityField().getEdgeY(0, 1) << std::endl;
-
 	printSimulationState(simulation);
 
 	for (int i = 0; i < 1; i++)

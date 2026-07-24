@@ -8,7 +8,7 @@ void FluidSimulation::step(float dt) {
 	advect(m_velocityField, dt);
 	advect(m_velocityField, m_smokeField, dt);
 	//diffuse(m_velocityField, dt);
-	//project(m_velocityField, dt);
+	project(m_velocityField, dt);
 	m_velocityField.divergence(m_divergenceField);
 }
 

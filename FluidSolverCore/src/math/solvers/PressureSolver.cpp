@@ -59,7 +59,7 @@ float PressureSolver::solveCell(ScalarField2D& prevPressureField, float fixedDel
 	float bottomVel = m_velocityField.getEdgeY(i, j) * bottomFluid;
 
 
-	float k = fixedDeltaTime / (m_cellWidth * m_density);
+	float k = (m_cellWidth * m_density) / fixedDeltaTime;
 	float newPressure = (rightPres + leftPres + topPres + bottomPres);
 	newPressure -= k * (rightVel - leftVel + topVel - bottomVel);
 	newPressure /= totalFluidCells;
