@@ -49,8 +49,8 @@ public:
 	const float getKinematicViscosity() const { return m_kinematicViscosity; }
 	const float getCellWidth() const { return m_cellWidth; }
 
-	void setVelocity(int i, int j, Vec2f velocity) { m_velocityField.setValue(i, j, velocity); }
-	Vec2f getVelocity(int i, int j) const { return m_velocityField.getValue(i, j); }
+	void setVelocity(int i, int j, Vec2f velocity) { m_velocityField.setCellValue(i, j, velocity); }
+	Vec2f getVelocity(int i, int j) const { return m_velocityField.getCellValue(i, j); }
 	void addVelocity(int i, int j, Vec2f deltaVel) { setVelocity(i, j, getVelocity(i, j) + deltaVel); }
 
 	float getPressure(int i, int j) { return m_pressureField.getValue(i, j); }
@@ -59,8 +59,6 @@ public:
 	
 	void setSolidCell(int i, int j, bool isSolid) { m_solidCellMap.setValue(i, j, isSolid); }
 	bool isSolid(int i, int j) const { return m_solidCellMap.getValue(i, j); }
-
-	float getProjectionError() { return m_projectionError; };
 
 
 private:
@@ -75,14 +73,10 @@ private:
 
 	PressureSolver m_pressureSolver;
 	int m_iterationCount;
-	float m_projectionError = 0;
 	
-	void advect(VectorField2D& field, float dt);
-	void advect(VectorField2D& velocityField, ScalarField2D& field, float dt);
 	void advect(MACGrid2D& field, float dt);
-	void advect(MACGrid2D& velocityField, ScalarField2D& field, float dt);
+	void advect(const MACGrid2D& velocityField, ScalarField2D& field, float dt);
 	void diffuse(VectorField2D& field, float dt);
 	void applyExternalForces(VectorField2D& field);
-	void project(VectorField2D& field, float dt);
-	void project(MACGrid2D& field, float dt);
+	void project(float dt);
 };

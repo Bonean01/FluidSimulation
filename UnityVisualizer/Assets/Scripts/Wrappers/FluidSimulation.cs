@@ -17,9 +17,6 @@ public class FluidSimulation : IDisposable {
 
     [DllImport("FluidSolver")] private extern static void Step(IntPtr handle, float dt);
 
-    [DllImport("FluidSolver")] private extern static float GetProjectionError(IntPtr handle);
-
-    //[DllImport("FluidSolver")] private extern static IntPtr GetVelocityFieldPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static IntPtr GetPressureFieldPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static IntPtr GetDivergenceFieldPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static IntPtr GetSmokeFieldPtr(IntPtr handle);
@@ -49,18 +46,9 @@ public class FluidSimulation : IDisposable {
     }
 
 
-    public float GetProjectionError() => GetProjectionError(m_handle);
-
-
     unsafe private T GetElementFromPointer<T>(IntPtr ptr, int index) where T : unmanaged {
         return ((T*)ptr)[index];
     }
-
-    //public IEnumerable<Vec2f> VelocityVectors() {
-    //    IntPtr ptr = GetVelocityFieldPtr(m_handle);
-    //    for (int i = 0; i < m_cellCount; i++)
-    //        yield return GetElementFromPointer<Vec2f>(ptr, i);
-    //}
 
     public IEnumerable<float> PressureValues() {
         IntPtr ptr = GetPressureFieldPtr(m_handle); 
@@ -80,7 +68,7 @@ public class FluidSimulation : IDisposable {
             yield return GetElementFromPointer<float>(ptr, i);
     }
 
-    public IEnumerable<byte> IsSolidCellValues() {
+    public IEnumerable<float> IsSolidCellValues() {
         IntPtr ptr = GetSolidCellMapPtr(m_handle);
         for (int i = 0; i < m_cellCount; i++)
             yield return GetElementFromPointer<byte>(ptr, i);

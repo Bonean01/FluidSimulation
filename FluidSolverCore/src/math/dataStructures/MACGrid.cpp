@@ -36,7 +36,7 @@ void MACGrid2D::setEdgeY(int i, int j, float value) {
 }
 
 
-Vec2f MACGrid2D::getValue(int i, int j) const {
+Vec2f MACGrid2D::getCellValue(int i, int j) const {
 	float right = getEdgeX(i + 1, j);
 	float left = getEdgeX(i, j);
 	float top = getEdgeY(i, j + 1);
@@ -47,13 +47,18 @@ Vec2f MACGrid2D::getValue(int i, int j) const {
 }
 
 
-void MACGrid2D::setValue(int i, int j, Vec2f value) {
+void MACGrid2D::setCellValue(int i, int j, Vec2f value) {
 	float x = value.x;
 	float y = value.y;
 	setEdgeX(i, j, x);
 	setEdgeX(i + 1, j, x);
 	setEdgeY(i, j, y);
 	setEdgeY(i, j + 1, y);
+}
+
+
+Vec2f MACGrid2D::sampleBilinear(const Vec2f& position) const {
+	return sampleBilinear(position.x, position.y);
 }
 
 
@@ -109,11 +114,6 @@ float MACGrid2D::sampleBilinearY(float x, float y) const {
 	float f = std::lerp(c, d, tX);
 
 	return std::lerp(e, f, tY);
-}
-
-
-Vec2f MACGrid2D::sampleBilinear(const Vec2f& position) const {
-	return sampleBilinear(position.x, position.y);
 }
 
 

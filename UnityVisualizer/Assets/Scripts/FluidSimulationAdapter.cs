@@ -105,13 +105,6 @@ public class FluidSimulationAdapter : MonoBehaviour {
     //              TEXTURE HANDLING
     // ##########################################
 
-
-    private Texture2D GetTextureFromPointer(IntPtr ptr, int size) {
-        //return Texture2D.CreateExternalTexture()
-        throw new NotImplementedException("Would be cool huh");
-    }
-
-
     /*Maybe we could instead have the first two color channels be for the velocity vector, the third one for the pressure and the last one for some extra
     property such as temperature, then if we need fluid color we can dedicate another texture for that instead of having one texture per property.*/
 
@@ -124,46 +117,30 @@ public class FluidSimulationAdapter : MonoBehaviour {
         return res;
     }
 
-    private void UpdateVectorFieldTexture(ref Texture2D texture, IEnumerable<Vec2f> vectorCollection) {
-        int x = 0, y = 0;
-        foreach (Vec2f vec in vectorCollection) {
-            if (y >= m_height) throw new Exception("The number of values is greater than the number of cells in the simulation");
-            Color color = new (vec.x, vec.y, 0.0f, 1.0f);
-            texture.SetPixel(x, y, color);
-            if (++x >= m_width) { x = 0; y++; }
-        }
-        texture.Apply();
-    }
-
 
     private (float min, float max, float total) UpdateScalarFieldTexture(ref Texture2D texture, IEnumerable<float> scalarCollection) {
         int x = 0, y = 0;
         float total = 0;
         float min = float.MaxValue, max = float.MinValue;
+
+        // Traverse the collection such that it gets arranged in a grid that aligns with the texture
         foreach (float value in scalarCollection) {
-            if (y >= m_height) throw new Exception("The number of values is greater than the number of cells in the simulation");
+            if (y >= m_height)
+                throw new Exception("The number of values is greater than the number of cells in the simulation");
+
+            Color color = new (value, 0.0f, 0.0f, 1.0f);
+            texture.SetPixel(x, y, color);
+            
             if (min > value) min = value;
             if (max < value) max = value;
             total += value;
-            Color color = new (value, 0.0f, 0.0f, 1.0f);
-            texture.SetPixel(x, y, color);
+
             if (++x >= m_width) { x = 0; y++; }
         }
         texture.Apply();
         return (min, max, total);
     }
 
-    // TODO: fix this mess
-    private void UpdateSolidMapCellTexture(ref Texture2D texture, IEnumerable<byte> scalarCollection) {
-        int x = 0, y = 0;
-        foreach (byte value in scalarCollection) {
-            if (y >= m_height) throw new Exception("The number of values is greater than the number of cells in the simulation");
-            Color color = new (value, 0.0f, 0.0f, 1.0f);
-            texture.SetPixel(x, y, color);
-            if (++x >= m_width) { x = 0; y++; }
-        }
-        texture.Apply();
-    }
 
     public void UpdateVelocityTexture(ref Texture2D velocityTexture) {
         for (int i = 0; i < m_width; i++) {
@@ -178,7 +155,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
     
 
     public void UpdateSolidMapCellTexture(ref Texture2D solidMapCellTexture) {
-        UpdateSolidMapCellTexture(ref solidMapCellTexture, m_simulation.IsSolidCellValues());
+        UpdateScalarFieldTexture(ref solidMapCellTexture, m_simulation.IsSolidCellValues());
     }
 
     public (float min, float max) UpdatePressureTexture(ref Texture2D pressureTexture) {

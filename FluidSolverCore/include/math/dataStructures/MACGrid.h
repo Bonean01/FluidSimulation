@@ -17,8 +17,6 @@ public:
 	int height() const { return m_height; }
 	float cellWidth() const { return m_cellWidth; }
 
-
-	// SAMPLED AT CELL EDGE
 	float getEdgeX(int i, int j) const;
 	float getEdgeY(int i, int j) const;
 	void setEdgeX(int i, int j, float value);
@@ -28,8 +26,8 @@ public:
 	Vec2f sampleBilinear(float i, float j) const;
 	Vec2f sampleBilinear(const Vec2f& position) const;
 
-	void setValue(int i, int j, Vec2f value);
-	Vec2f getValue(int i, int j) const;
+	Vec2f getCellValue(int i, int j) const;
+	void setCellValue(int i, int j, Vec2f value);
 
 	float divergence(int i, int j) const;
 	void divergence(ScalarField2D& result) const;

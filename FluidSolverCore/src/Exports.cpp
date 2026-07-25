@@ -1,65 +1,68 @@
 #include "FluidSimulation.h"
 
-// TODO: Add preprocessor directives to set the appropriate export depending on the platform
 
-extern "C" _declspec(dllexport) FluidSimulation* CreateSimulation(int width, int height, float cellWidth, float density, float kinematicViscosity, unsigned int iterationCount) {
+#if defined(__CYGWIN__)
+	#define INTERFACE_EXPORT __declspec(dllexport)
+#elif defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(_WIN64) || defined(WINAPI_FAMILY)
+	#define INTERFACE_EXPORT __declspec(dllexport)
+#elif defined(__MACH__) || defined(__ANDROID__) || defined(__linux__) || defined(LUMIN)
+	#define INTERFACE_EXPORT __attribute__ ((visibility ("default")))
+#else
+	#define INTERFACE_EXPORT
+#endif
+
+
+extern "C" INTERFACE_EXPORT FluidSimulation* CreateSimulation(int width, int height, float cellWidth, float density, float kinematicViscosity, unsigned int iterationCount) {
 	return new FluidSimulation(width, height, cellWidth, density, kinematicViscosity, iterationCount);
 }
 
-extern "C" _declspec(dllexport) void DestroySimulation(FluidSimulation* handle) {
+extern "C" INTERFACE_EXPORT void DestroySimulation(FluidSimulation* handle) {
 	delete handle;
 }
 
 
-extern "C" _declspec(dllexport) void Step(FluidSimulation* handle, float dt) {
+extern "C" INTERFACE_EXPORT void Step(FluidSimulation* handle, float dt) {
 	handle->step(dt);
 }
 
 
-extern "C" _declspec(dllexport) float GetProjectionError(FluidSimulation* handle) {
-	return handle->getProjectionError();
-}
-
-
-
-//extern "C" _declspec(dllexport) const Vec2f* GetVelocityFieldPtr(FluidSimulation* handle) {
-//	return handle->getVelocityField().getValuesPtr();
-//}
-
-extern "C" _declspec(dllexport) const float* GetPressureFieldPtr(FluidSimulation* handle) {
+extern "C" INTERFACE_EXPORT const float* GetPressureFieldPtr(FluidSimulation* handle) {
 	return handle->getPressureField().getValuesPtr();
 }
 
-extern "C" _declspec(dllexport) const float* GetDivergenceFieldPtr(FluidSimulation* handle) {
+extern "C" INTERFACE_EXPORT const float* GetDivergenceFieldPtr(FluidSimulation* handle) {
 	return handle->getDivergenceField().getValuesPtr();
 }
 
-extern "C" _declspec(dllexport) const float* GetSmokeFieldPtr(FluidSimulation* handle) {
+extern "C" INTERFACE_EXPORT const float* GetSmokeFieldPtr(FluidSimulation* handle) {
 	return handle->getSmokeField().getValuesPtr();
 }
 
-extern "C" _declspec(dllexport) const uint8_t* GetSolidCellMapPtr(FluidSimulation* handle) {
+extern "C" INTERFACE_EXPORT const uint8_t* GetSolidCellMapPtr(FluidSimulation* handle) {
 	return handle->getSolidCellMap().getValuesPtr();
 }
 
-extern "C" _declspec(dllexport) void SetVelocity(FluidSimulation* handle, int i, int j, Vec2f velocity) {
+
+extern "C" INTERFACE_EXPORT void SetVelocity(FluidSimulation* handle, int i, int j, Vec2f velocity) {
 	handle->setVelocity(i, j, velocity);
 }
 
 struct CVec2f { float x, y; };
-extern "C" _declspec(dllexport) CVec2f GetVelocity(FluidSimulation* handle, int i, int j) {
+extern "C" INTERFACE_EXPORT CVec2f GetVelocity(FluidSimulation* handle, int i, int j) {
 	Vec2f vel = handle->getVelocity(i, j);
 	return CVec2f{ vel.x, vel.y };
 }
 
-extern "C" _declspec(dllexport) void AddVelocity(FluidSimulation* handle, int i, int j, Vec2f deltaVel) {
+extern "C" INTERFACE_EXPORT void AddVelocity(FluidSimulation* handle, int i, int j, Vec2f deltaVel) {
 	handle->addVelocity(i, j, deltaVel);
 }
 
-extern "C" _declspec(dllexport) void AddSmoke(FluidSimulation* handle, int i, int j, float deltaSmoke) {
+
+extern "C" INTERFACE_EXPORT void AddSmoke(FluidSimulation* handle, int i, int j, float deltaSmoke) {
 	handle->addSmoke(i, j, deltaSmoke);
 }
 
-extern "C" _declspec(dllexport) void SetSolidCell(FluidSimulation* handle, int i, int j, bool isSolid) {
+
+extern "C" INTERFACE_EXPORT void SetSolidCell(FluidSimulation* handle, int i, int j, bool isSolid) {
 	handle->setSolidCell(i, j, isSolid);
 }
