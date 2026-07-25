@@ -1,5 +1,4 @@
 #include <iostream>
-#include <cstdio>
 #include "FluidSimulation.h"
 #include "math/dataStructures/VectorField.h"
 #include "math/dataStructures/Vector.h"

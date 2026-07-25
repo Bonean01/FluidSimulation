@@ -1,13 +1,17 @@
 # Create executable for testing
-add_executable (FluidSolverTesting "main.cpp")
+add_executable (Playground "Playground.cpp")
+
+# Create executable for each test // temp until catch2
+add_executable (BilinearInterpolationTest "unitTests/BiLerpTest.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
-	set_property(TARGET FluidSolverTesting PROPERTY CXX_STANDARD 20)
+	set_property(TARGET Playground PROPERTY CXX_STANDARD 20)
+	set_property(TARGET BilinearInterpolationTest PROPERTY CXX_STANDARD 20)
 endif()
 
-target_link_libraries(FluidSolverTesting PRIVATE FluidSolverStatic)
+# Link the test executables with the library
+target_link_libraries(Playground PRIVATE FluidSolverStatic)
+target_link_libraries(BilinearInterpolationTest PRIVATE FluidSolverStatic)
 
-target_include_directories(FluidSolverTesting
-    PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-)
+# Create the tests
+add_test("BilinearInterpolation"  BilinearInterpolationTest)

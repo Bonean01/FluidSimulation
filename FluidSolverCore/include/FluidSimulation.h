@@ -74,9 +74,9 @@ private:
 	PressureSolver m_pressureSolver;
 	int m_iterationCount;
 	
-	void advect(MACGrid2D& field, float dt);
+	void advect(MACGrid2D& velocityField, float dt);
 	void advect(const MACGrid2D& velocityField, ScalarField2D& field, float dt);
-	void diffuse(VectorField2D& field, float dt);
+	void diffuse(MACGrid2D& velocityField, float dt);
 	void applyExternalForces(VectorField2D& field);
-	void project(float dt);
+	void project(MACGrid2D& velocityField, float dt);
 };

@@ -14,6 +14,7 @@ endif()
 project ("FluidSimulation")
 
 
+
 # Define a variable that contains the source files
 set (SOURCE_FILES
 	"include/FluidSimulation.h"
@@ -24,7 +25,7 @@ set (SOURCE_FILES
 	"include/math/dataStructures/VectorField.h"
 	"include/math/dataStructures/MACGrid.h"
 
-	"include/math/solvers/JacobiIterationSolver.h"
+	
 	"include/math/solvers/PressureSolver.h"
 
 	"src/Exports.cpp"
@@ -62,5 +63,6 @@ target_include_directories (FluidSolverStatic
 	${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 
+enable_testing()
 # Compile the testing code
 add_subdirectory("testing")
