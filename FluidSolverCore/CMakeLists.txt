@@ -63,6 +63,5 @@ target_include_directories (FluidSolverStatic
 	${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 
-enable_testing()
 # Compile the testing code
 add_subdirectory("testing")
