@@ -115,27 +115,3 @@ float MACGrid2D::sampleBilinearY(float x, float y) const {
 
 	return std::lerp(e, f, tY);
 }
-
-
-float MACGrid2D::divergence(int i, int j) const {
-	float right = getEdgeX(i + 1, j);
-	float left = getEdgeX(i, j);
-	float top = getEdgeY(i, j + 1);
-	float bottom = getEdgeY(i, j);
-	return (right - left + top - bottom) / m_cellWidth;
-}
-
-
-void MACGrid2D::divergence(ScalarField2D& result) const {
-	for (int i = 0; i < m_width; i++) {
-		for (int j = 0; j < m_height; j++) {
-			float value = divergence(i, j);
-			result.setValue(i, j, value);
-		}
-	}
-}
-
-
-Vec2f MACGrid2D::laplacian(int i, int j) const {
-	return { 0.0f, 0.0f };
-}

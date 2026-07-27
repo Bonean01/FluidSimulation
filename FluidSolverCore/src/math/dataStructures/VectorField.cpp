@@ -25,36 +25,3 @@ Vec2f VectorField2D::sampleBilinear(float x, float y) const {
 Vec2f VectorField2D::sampleBilinear(const Vec2f& position) const {
 	return sampleBilinear(position.x, position.y);
 }
-
-
-float VectorField2D::divergence(int i, int j) const {
-	Vec2f right = getValue(i + 1, j);
-	Vec2f left = getValue(i - 1, j);
-	Vec2f top = getValue(i, j + 1);
-	Vec2f bottom = getValue(i, j - 1);
-	return (right.x - left.x + top.y - bottom.y) / (2 * m_cellWidth);
-}
-
-
-void VectorField2D::divergence(ScalarField2D& result) const {
-	for (int i = 0; i < m_width; i++) {
-		for (int j = 0; j < m_height; j++) {
-			float value = divergence(i, j);
-			result.setValue(i, j, value);
-		}
-	}
-}
-
-
-
-Vec2f VectorField2D::laplacian(int i, int j) const {
-	Vec2f center = getValue(i, j);
-	Vec2f right = getValue(i + 1, j);
-	Vec2f left = getValue(i - 1, j);
-	Vec2f top = getValue(i, j + 1);
-	Vec2f bottom = getValue(i, j - 1);
-	return Vec2f {
-		(right.x + left.x + top.x + bottom.x - 4 * center.x),
-		(right.y + left.y + top.y + bottom.y - 4 * center.y)
-	} / (m_cellWidth * m_cellWidth);
-}

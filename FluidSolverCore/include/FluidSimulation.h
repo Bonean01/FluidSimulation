@@ -78,5 +78,5 @@ private:
 	void advect(const MACGrid2D& velocityField, ScalarField2D& field, float dt);
 	void diffuse(MACGrid2D& velocityField, float dt);
 	void applyExternalForces(VectorField2D& field);
-	void project(MACGrid2D& velocityField, float dt);
+	void project(MACGrid2D& velocityField, float dt) const;
 };

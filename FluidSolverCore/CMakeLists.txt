@@ -14,7 +14,6 @@ endif()
 project ("FluidSimulation")
 
 
-
 # Define a variable that contains the source files
 set (SOURCE_FILES
 	"include/FluidSimulation.h"
@@ -25,7 +24,9 @@ set (SOURCE_FILES
 	"include/math/dataStructures/VectorField.h"
 	"include/math/dataStructures/MACGrid.h"
 
-	
+	"include/math/operators/FiniteDifference.h"
+	"include/math/operators/Staggered.h"
+
 	"include/math/solvers/PressureSolver.h"
 
 	"src/Exports.cpp"
@@ -36,6 +37,10 @@ set (SOURCE_FILES
 	"src/math/dataStructures/VectorField.cpp"
 	"src/math/dataStructures/MACGrid.cpp"
 	
+	"src/math/operators/Gradient.cpp"
+	"src/math/operators/Divergence.cpp"
+	"src/math/operators/Laplacian.cpp"
+
 	"src/math/solvers/PressureSolver.cpp"
 )
 
