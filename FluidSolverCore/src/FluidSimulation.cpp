@@ -6,14 +6,15 @@
 
 void FluidSimulation::step(float dt) {
 	advect(m_velocityField, dt);
-	advect(m_velocityField, m_smokeField, dt);
 
 	//diffuse(m_velocityField, dt);
 	
 	m_pressureSolver.solveJacobi(m_pressureField, dt, m_iterationCount);
 	project(m_velocityField, dt);
-	
 	Staggered::divergence(m_divergenceField, m_velocityField);
+
+	advect(m_velocityField, m_smokeField, dt);
+	
 }
 
 
@@ -24,8 +25,8 @@ void FluidSimulation::advect(MACGrid2D& velocityField, float dt) {
 	if (auxField.width() != width || auxField.height() != height) return;
 
 	// --- horizontal ---
-	for (int i = 0; i < width + 1; i++) {
-		for (int j = 0; j < height; j++) {
+	for (int j = 0; j < height; j++) {
+		for (int i = 0; i < width + 1; i++) {
 			if (isSolid(i, j) || isSolid(i - 1, j)) { auxField.setEdgeX(i, j, 0.0f); continue; }
 			Vec2f position = { (float)i - 0.5f, (float)j };
 			Vec2f currentVel = velocityField.sampleBilinear(position);
@@ -34,8 +35,8 @@ void FluidSimulation::advect(MACGrid2D& velocityField, float dt) {
 		}
 	}
 	// --- vertical ---
-	for (int i = 0; i < width; i++) {
-		for (int j = 0; j < height + 1; j++) {
+	for (int j = 0; j < height + 1; j++) {
+		for (int i = 0; i < width; i++) {
 			if (isSolid(i, j) || isSolid(i, j - 1)) { auxField.setEdgeY(i, j, 0.0f); continue; }
 			Vec2f position = { (float)i, (float)j - 0.5f };
 			Vec2f currentVel = velocityField.sampleBilinear(position);
@@ -53,8 +54,8 @@ void FluidSimulation::advect(const MACGrid2D& velocityField, ScalarField2D& fiel
 	ScalarField2D& auxField = m_auxScalarField;
 	if (auxField.width() != width || auxField.height() != height) return;
 
-	for (int i = 0; i < width; i++) {
-		for (int j = 0; j < height; j++) {
+	for (int j = 0; j < height; j++) {
+		for (int i = 0; i < width; i++) {
 			if (isSolid(i, j)) { auxField.setValue(i, j, 0.0f); continue; }
 			Vec2f position = { (float)i, (float)j };
 			Vec2f currentVel = velocityField.sampleBilinear(position);
@@ -72,8 +73,8 @@ void FluidSimulation::diffuse(MACGrid2D& velocityField, float dt) {
 	VectorField2D& auxField = m_auxVectorField;
 	if (auxField.width() != width || auxField.height() != height) return;
 
-	for (int i = 0; i < width; i++) {
-		for (int j = 0; j < height; j++) {
+	for (int j = 0; j < height; j++) {
+		for (int i = 0; i < width; i++) {
 			
 		}
 	}
@@ -86,8 +87,8 @@ void FluidSimulation::project(MACGrid2D& velocityField, float dt) const {
 
 	// Subtract the divergent component of the velocity field from it
 	// --- horizontal ---
-	for (int i = 0; i < width + 1; i++) {
-		for (int j = 0; j < height; j++) {
+	for (int j = 0; j < height; j++) {
+		for (int i = 0; i < width + 1; i++) {
 			if (isSolid(i, j) || isSolid(i - 1, j)) { velocityField.setEdgeX(i, j, 0.0f); continue; }
 			float gradientX = Staggered::gradientX(i, j, m_pressureField);
 			float currentVel = velocityField.getEdgeX(i, j);
@@ -96,8 +97,8 @@ void FluidSimulation::project(MACGrid2D& velocityField, float dt) const {
 		}
 	}
 	// --- vertical ---
-	for (int i = 0; i < width; i++) {
-		for (int j = 0; j < height + 1; j++) {
+	for (int j = 0; j < height + 1; j++) {
+		for (int i = 0; i < width; i++) {
 			if (isSolid(i, j) || isSolid(i, j - 1)) { velocityField.setEdgeY(i, j, 0.0f); continue; }
 			float gradientY = Staggered::gradientY(i, j, m_pressureField);
 			float currentVel = velocityField.getEdgeY(i, j);

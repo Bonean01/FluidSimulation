@@ -24,18 +24,7 @@ public:
 		m_auxScalarField(gridWidth, gridHeight, m_cellWidth),
 
 		m_pressureSolver(density, kinematicViscosity, m_velocityField, m_solidCellMap),
-		m_iterationCount(iterationCount) {
-		
-		// Initialize all the outer cells to be solid (boundary condition: u = 0)
-		for (int i = 0; i < gridWidth; i++) {
-			m_solidCellMap.setValue(i, 0, 1);
-			m_solidCellMap.setValue(i, gridHeight - 1, 1);
-		}
-		for (int j = 0; j < gridHeight; j++) {
-			m_solidCellMap.setValue(0, j, 1);
-			m_solidCellMap.setValue(gridWidth - 1, j, 1);
-		}
-	}
+		m_iterationCount(iterationCount) { }
 
 	void step(float dt);
 

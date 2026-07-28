@@ -19,11 +19,21 @@ public class FluidSimulationAdapter : MonoBehaviour {
         m_width = width;
         m_height = height;
         m_simulation = new(m_width, m_height, cellWidth, density, kinematicViscosity, solverIterationCount);
-        DrawSolidCells();
+        SetSolidCells();
     }
 
 
-    private void DrawSolidCells() {
+    private void SetSolidCells() {
+        for (int i = 0; i < m_width; i++) {
+            m_simulation.SetSolidCell(i, 0, true);
+            m_simulation.SetSolidCell(i, m_height - 1, true);
+        }
+        
+        for (int j = 0; j < m_height; j++) {
+            m_simulation.SetSolidCell(0, j, true);
+            //m_simulation.SetSolidCell(m_width - 1, j, true);
+        }
+
         Vector2Int origin = new(m_width / 2 + 5, m_height / 2);
         for (int i = 0; i < m_width; i++) {
             for (int j = 0; j < m_height; j++) {
@@ -37,8 +47,13 @@ public class FluidSimulationAdapter : MonoBehaviour {
 
 
     public void StepSimulation(float dt) {
+        ApplyVerticalVelocityStream(50.0f);
+        //ApplyVelocityImpulse(new(5, 5), new(0.0f, 10.0f), 10);
+        for (int j = 33 / 2 - 5; j <= 33 / 2 + 5; j++) {
+            m_simulation.AddSmoke(1, j, 0.01f);
+        }
+        
         m_simulation.Step(dt);
-        if (OnStateUpdated == null) print("bruh");
         OnStateUpdated?.Invoke();
     }
 
@@ -85,6 +100,14 @@ public class FluidSimulationAdapter : MonoBehaviour {
             }
         }
         OnStateUpdated?.Invoke();
+    }
+
+
+    public void ApplyVerticalVelocityStream(float value) {
+        for (int j = 0; j < m_height; j++) {
+            m_simulation.SetVelocity(1, j, new(value, 0.0f));
+            m_simulation.SetVelocity(m_width - 1, j, new(value, 0.0f));
+        }
     }
 
 
