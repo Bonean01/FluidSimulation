@@ -3,6 +3,7 @@
 #include "math/dataStructures/VectorField.h"
 #include "math/dataStructures/Vector.h"
 #include "math/dataStructures/MACGrid.h"
+#include "math/operators/Staggered.h"
 
 
 static void printSimulationState(const FluidSimulation& simulation) {
@@ -14,7 +15,7 @@ static void printSimulationState(const FluidSimulation& simulation) {
 	for (int j = height - 1; j >= 0; j--) {
 		for (int i = 0; i < width; i++) {
 			Vec2f vec = simulation.getVelocity(i, j);
-			bool isSolid = simulation.isSolid(i, j) == 1;
+			bool isSolid = simulation.getSolidCellMap().getValue(i, j);
 			std::cout << "(" << vec.x << ", " << vec.y << ")";
 			std::cout << (isSolid ? "@" : "-") << "\t\t";
 		}
@@ -50,23 +51,21 @@ static void printDivergenceField(FluidSimulation simulation) {
 
 
 int main(int argc, char* argv[]) {
-	int width = 5;
-	int height = 5;
-	FluidSimulation simulation{ width, height, 1.0f, 1.0f, 0.0f, 60 };
-	for (int j = 0; j < height; j++) {
-		simulation.setVelocity(1, j, { 10.0f, 0.0f });
+	MACGrid2D field{ 5, 5, 1.0f };
+	for (int j = 0; j < 5; j++) {
+		for (int i = 0; i < 6; i++) {
+			if (i == 1 && j == 1) { field.setEdgeX(i, j, 5.0f); continue; }
+			field.setEdgeX(i, j, 1.0f);
+		}
+	}
+	
+	for (int j = 0; j < 6; j++) {
+		for (int i = 0; i < 5; i++) {
+			field.setEdgeY(i, j, 1.0f);
+		}
 	}
 
-	printSimulationState(simulation);
-
-	for (int i = 0; i < 1; i++)
-		simulation.step(1.0f / 60);
-
-	std::cout << "================== STEPS TAKEN ===================" << std::endl;
-
-	std::cout << "PRESSURE FIELD" << std::endl;
-	printPressureField(simulation);
-
-	std::cout << "\nVELOCITY FIELD" << std::endl;
-	printSimulationState(simulation);
+	MACGrid2D laplacian{ 5, 5, 1.0f };
+	Staggered::laplacian(laplacian, field);
+	std::cout << laplacian.getEdgeX(1, 1) << std::endl;
 }

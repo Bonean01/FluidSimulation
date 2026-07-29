@@ -21,8 +21,8 @@ extern "C" INTERFACE_EXPORT void DestroySimulation(FluidSimulation* handle) {
 }
 
 
-extern "C" INTERFACE_EXPORT void Step(FluidSimulation* handle, float dt) {
-	handle->step(dt);
+extern "C" INTERFACE_EXPORT void Step(FluidSimulation* handle, float timeStep) {
+	handle->step(timeStep);
 }
 
 

@@ -18,6 +18,10 @@ project ("FluidSimulation")
 set (SOURCE_FILES
 	"include/FluidSimulation.h"
 
+	"include/steps/Advection.h"
+	"include/steps/Diffusion.h"
+	"include/steps/Projection.h"
+
 	"include/math/dataStructures/Vector.h"
 	"include/math/dataStructures/Grid.h"
 	"include/math/dataStructures/ScalarField.h"
@@ -31,6 +35,9 @@ set (SOURCE_FILES
 
 	"src/Exports.cpp"
 	"src/FluidSimulation.cpp"
+
+	"src/steps/Advection.cpp"
+	"src/steps/Projection.cpp"
 
 	"src/math/dataStructures/Vector.cpp"
 	"src/math/dataStructures/ScalarField.cpp"
@@ -46,10 +53,10 @@ set (SOURCE_FILES
 
 
 # Create a library from the project.
-add_library (FluidSolver SHARED ${SOURCE_FILES})
+add_library (FluidSolver SHARED ${SOURCE_FILES} "src/steps/Diffusion.cpp")
 
 # Create a static library for testing.
-add_library (FluidSolverStatic STATIC ${SOURCE_FILES})
+add_library (FluidSolverStatic STATIC ${SOURCE_FILES} "src/steps/Diffusion.cpp")
 
 	
 if (CMAKE_VERSION VERSION_GREATER 3.12)

@@ -4,7 +4,13 @@
 #include "math/dataStructures/ScalarField.h"
 #include "math/dataStructures/VectorField.h"
 #include "math/dataStructures/MACGrid.h"
+
 #include "math/solvers/PressureSolver.h"
+
+#include "steps/Advection.h"
+#include "steps/Projection.h"
+#include "steps/Diffusion.h"
+
 
 class FluidSimulation {
 public:
@@ -19,14 +25,14 @@ public:
 		m_smokeField(gridWidth, gridHeight, m_cellWidth),
 		m_solidCellMap(gridWidth, gridHeight),
 
-		m_auxMacGrid(gridWidth, gridHeight, m_cellWidth),
-		m_auxVectorField(gridWidth, gridHeight, m_cellWidth),
-		m_auxScalarField(gridWidth, gridHeight, m_cellWidth),
+		m_advection(gridWidth, gridHeight, m_cellWidth),
+		m_projection(),
+		m_diffusion(),
 
-		m_pressureSolver(density, kinematicViscosity, m_velocityField, m_solidCellMap),
+		m_pressureSolver(m_velocityField, m_solidCellMap),
 		m_iterationCount(iterationCount) { }
 
-	void step(float dt);
+	void step(float timeStep);
 
 	const MACGrid2D& getVelocityField() const { return m_velocityField; }
 	const ScalarField2D& getPressureField() const { return m_pressureField; }
@@ -42,30 +48,22 @@ public:
 	Vec2f getVelocity(int i, int j) const { return m_velocityField.getCellValue(i, j); }
 	void addVelocity(int i, int j, Vec2f deltaVel) { setVelocity(i, j, getVelocity(i, j) + deltaVel); }
 
-	float getPressure(int i, int j) { return m_pressureField.getValue(i, j); }
-
 	void addSmoke(int i, int j, float deltaSmoke) { m_smokeField.setValue(i, j, m_smokeField.getValue(i, j) + deltaSmoke); }
 	
 	void setSolidCell(int i, int j, bool isSolid) { m_solidCellMap.setValue(i, j, isSolid); }
-	bool isSolid(int i, int j) const { return m_solidCellMap.getValue(i, j); }
 
 
 private:
 	float m_density, m_kinematicViscosity, m_cellWidth;
 
 	MACGrid2D m_velocityField;
-	MACGrid2D m_auxMacGrid;
-	VectorField2D m_auxVectorField;
-	ScalarField2D m_pressureField, m_divergenceField, m_smokeField, m_auxScalarField;
-	// 0 => not solid, 1 => solid
-	Grid2D<uint8_t> m_solidCellMap;
+	ScalarField2D m_pressureField, m_divergenceField, m_smokeField;
+	Grid2D<uint8_t> m_solidCellMap;  // 0 => not solid, 1 => solid
+
+	Advection m_advection;
+	Projection m_projection;
+	Diffusion m_diffusion;
 
 	PressureSolver m_pressureSolver;
 	int m_iterationCount;
-	
-	void advect(MACGrid2D& velocityField, float dt);
-	void advect(const MACGrid2D& velocityField, ScalarField2D& field, float dt);
-	void diffuse(MACGrid2D& velocityField, float dt);
-	void applyExternalForces(VectorField2D& field);
-	void project(MACGrid2D& velocityField, float dt) const;
 };

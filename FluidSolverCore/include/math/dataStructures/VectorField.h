@@ -12,7 +12,4 @@ public:
 	
 	Vec2f sampleBilinear(float x, float y) const;
 	Vec2f sampleBilinear(const Vec2f& position) const;
-	float divergence(int i, int j) const;
-	void divergence(ScalarField2D& result) const;
-	Vec2f laplacian(int i, int j) const;
 };

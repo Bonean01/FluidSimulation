@@ -9,6 +9,4 @@ public:
 	
 	float sampleBilinear(float x, float y) const;
 	float sampleBilinear(const Vec2f& position) const;
-	Vec2f gradient(int i, int j) const;
-	float laplacian(int i, int j) const;
 };

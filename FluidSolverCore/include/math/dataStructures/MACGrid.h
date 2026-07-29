@@ -2,7 +2,6 @@
 
 #include <vector>
 #include "Vector.h"
-#include "ScalarField.h"
 
 class MACGrid2D {
 public:
@@ -28,10 +27,6 @@ public:
 
 	Vec2f getCellValue(int i, int j) const;
 	void setCellValue(int i, int j, Vec2f value);
-
-	float divergence(int i, int j) const;
-	void divergence(ScalarField2D& result) const;
-	Vec2f laplacian(int i, int j) const;
 
 
 private:

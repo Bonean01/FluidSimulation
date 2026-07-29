@@ -1,7 +1,5 @@
 #pragma once
 
-#include <concepts>
-
 struct Vec2f {
 	float x, y;
 

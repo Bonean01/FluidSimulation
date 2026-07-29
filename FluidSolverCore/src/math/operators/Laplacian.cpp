@@ -1,4 +1,5 @@
 #include "math/operators/FiniteDifference.h"
+#include "math/operators/Staggered.h"
 
 
 namespace FiniteDifference {
@@ -25,5 +26,32 @@ namespace FiniteDifference {
 			(right.x + left.x + top.x + bottom.x - 4 * center.x),
 			(right.y + left.y + top.y + bottom.y - 4 * center.y)
 		} / (dx * dx);
+	}
+}
+
+
+
+namespace Staggered {
+	void laplacian(MACGrid2D& result, const MACGrid2D& vectorField) {
+		int width = vectorField.width();
+		int height = vectorField.height();
+
+		ScalarField2D divergence{ width, height, vectorField.cellWidth() };
+		Staggered::divergence(divergence, vectorField);
+		
+		// === horizontal ===
+		for (int j = 0; j < height; j++) {
+			for (int i = 0; i < width + 1; i++) {
+				float x = gradientX(i, j, divergence);
+				result.setEdgeX(i, j, x);
+			}
+		}
+		// === vertical ===
+		for (int j = 0; j < height + 1; j++) {
+			for (int i = 0; i < width; i++) {
+				float y = gradientY(i, j, divergence);
+				result.setEdgeY(i, j, y);
+			}
+		}
 	}
 }
