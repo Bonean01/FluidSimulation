@@ -13,7 +13,8 @@ FetchContent_MakeAvailable(Catch2)
 # Define a variable that contains all the test source files
 set(TEST_SOURCE_FILES
 	"unitTests/BiLerpTest.cpp"
-	"unitTests/PressureSolverTest.cpp"
+	"unitTests/AdvectionTest.cpp"
+	"unitTests/ProjectionTest.cpp"
 )
 
 

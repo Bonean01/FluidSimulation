@@ -1,13 +1,13 @@
 #include "math/solvers/PressureSolver.h"
 
 
-void PressureSolver::solveJacobi(ScalarField2D& result, float density, float dt, unsigned int iterationCount) {
+void PressureSolver::solveJacobi(ScalarField2D& result, float density, float timeStep, unsigned int iterationCount) {
 	int width = result.width();
 	int height = result.height();
 	for (unsigned int k = 0; k < iterationCount; k++) {
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width; i++) {
-				float newCellValue = solveCell(i, j, m_auxScalarField, density, dt);
+				float newCellValue = solveCell(i, j, m_auxScalarField, density, timeStep);
 				result.setValue(i, j, newCellValue);
 			}
 		}
@@ -17,7 +17,7 @@ void PressureSolver::solveJacobi(ScalarField2D& result, float density, float dt,
 }
 
 
-float PressureSolver::solveCell(int i, int j, ScalarField2D& pressureField, float density, float dt) {
+float PressureSolver::solveCell(int i, int j, ScalarField2D& pressureField, float density, float timeStep) {
 	bool isSolid = m_solidCellMap.getValue(i, j) == 1;
 
 	uint8_t rightFluid = 1 - m_solidCellMap.getValue(i + 1, j);
@@ -40,7 +40,7 @@ float PressureSolver::solveCell(int i, int j, ScalarField2D& pressureField, floa
 	float bottomVel = m_velocityField.getEdgeY(i, j) * bottomFluid;
 
 	float pressureSum = rightPres + leftPres + topPres + bottomPres;
-	float k = m_cellWidth * density / dt;
+	float k = m_cellWidth * density / timeStep;
 
 	float newPressure = pressureSum - k * (rightVel - leftVel + topVel - bottomVel);
 	newPressure /= totalFluidCells;
