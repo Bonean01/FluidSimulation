@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include "math/dataStructures/ScalarField.h"
 #include "math/dataStructures/VectorField.h"
 #include "math/dataStructures/MACGrid.h"
