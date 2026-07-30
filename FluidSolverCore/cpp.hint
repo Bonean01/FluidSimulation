@@ -8,3 +8,7 @@
 #define RAND_MAX
 #define REQUIRE_THAT(arg, matcher) INTERNAL_CHECK_THAT( "REQUIRE_THAT", matcher, Catch::ResultDisposition::Normal, arg )
 #define REQUIRE_THAT(arg, matcher) (void)(0)
+#define INFO(msg) INTERNAL_CATCH_INFO( "INFO", msg )
+#define INFO(msg) (void)(0)
+#define CAPTURE(__VA_ARGS__) INTERNAL_CATCH_CAPTURE( INTERNAL_CATCH_UNIQUE_NAME(capturer), "CAPTURE", true, __VA_ARGS__ )
+#define CAPTURE(__VA_ARGS__) (void)(0)

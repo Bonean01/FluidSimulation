@@ -18,7 +18,7 @@ void PressureSolver::solveJacobi(ScalarField2D& result, float density, float tim
 
 
 float PressureSolver::solveCell(int i, int j, ScalarField2D& pressureField, float density, float timeStep) {
-	bool isSolid = m_solidCellMap.getValue(i, j) == 1;
+	bool isSolid = m_solidCellMap.getValue(i, j);
 
 	uint8_t rightFluid = 1 - m_solidCellMap.getValue(i + 1, j);
 	uint8_t leftFluid = 1 - m_solidCellMap.getValue(i - 1, j);
