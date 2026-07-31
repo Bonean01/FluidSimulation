@@ -12,7 +12,7 @@
 
 using namespace Catch;
 
-TEST_CASE("Projection - Constant field preserves zero divergence after projection") {
+TEST_CASE("Projection - Divergence free field remains unchanged after projection") {
 	int width = 100;
 	int height = 100;
 	float cellWidth = 1.0f;
