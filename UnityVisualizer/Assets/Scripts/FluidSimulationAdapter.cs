@@ -34,15 +34,15 @@ public class FluidSimulationAdapter : MonoBehaviour {
             m_simulation.SetSolidCell(m_width - 1, j, true);
         }
 
-        Vector2Int origin = new(m_width / 2 + 5, m_height / 2);
-        for (int i = 0; i < m_width; i++) {
-            for (int j = 0; j < m_height; j++) {
-                Vector2Int pos = new(i, j);
-                if ((origin - pos).magnitude < 5) {
-                    m_simulation.SetSolidCell(i, j, true);
-                }
-            }
-        }
+        //Vector2Int origin = new(m_width / 2 + 5, m_height / 2);
+        //for (int i = 0; i < m_width; i++) {
+        //    for (int j = 0; j < m_height; j++) {
+        //        Vector2Int pos = new(i, j);
+        //        if ((origin - pos).magnitude < 5) {
+        //            m_simulation.SetSolidCell(i, j, true);
+        //        }
+        //    }
+        //}
     }
 
 

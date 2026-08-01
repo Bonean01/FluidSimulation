@@ -14,6 +14,7 @@ void Diffusion::execute(MACGrid2D& velocityField, float kinematicViscosity, floa
 		// === horizontal ===
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width + 1; i++) {
+				if (j == height - 1) continue;
 				float currentVelX = velocityField.getEdgeX(i, j);
 				float laplacianX = m_laplacianField.getEdgeX(i, j);
 				float newVelX = (currentVelX + alpha * laplacianX) / beta;

@@ -9,7 +9,11 @@ void Advection::execute(MACGrid2D& velocityField, const Grid2D<uint8_t>& solidCe
 	// === horizontal ===
 	for (int j = 0; j < height; j++) {
 		for (int i = 0; i < width + 1; i++) {
-			if (solidCellMap.getValue(i, j) || solidCellMap.getValue(i - 1, j)) { m_auxMacGrid.setEdgeX(i, j, 0.0f); continue; }
+			if (solidCellMap.getValue(i, j) || solidCellMap.getValue(i - 1, j)) {
+				if (j == height - 1) m_auxMacGrid.setEdgeX(i, j, 1.0f);
+				else m_auxMacGrid.setEdgeX(i, j, 0.0f);
+				continue;
+			}
 
 			Vec2f position = { (float)i - 0.5f, (float)j };
 			Vec2f currentVel = velocityField.sampleBilinear(position);
