@@ -742,7 +742,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FLuidVisualizer
   simulationAdapter: {fileID: 1486929792}
-  displayedProperty: 5
+  displayedProperty: 1
   speedGradient:
     serializedVersion: 2
     key0: {r: 0, g: 0, b: 0, a: 1}
@@ -790,8 +790,8 @@ MonoBehaviour:
   height: 33
   cellWidth: 0.15
   density: 1
-  kinematicViscosity: 0
-  solverIterationCount: 60
+  kinematicViscosity: 0.002
+  solverIterationCount: 30
 --- !u!114 &1486929793
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -22,10 +22,7 @@ namespace FiniteDifference {
 		Vec2f bottom = vectorField.getValue(i, j - 1);
 		float dx = vectorField.cellWidth();
 		
-		return Vec2f{
-			(right.x + left.x + top.x + bottom.x - 4 * center.x),
-			(right.y + left.y + top.y + bottom.y - 4 * center.y)
-		} / (dx * dx);
+		return (right + left + top + bottom - 4 * center) / (dx * dx);
 	}
 }
 

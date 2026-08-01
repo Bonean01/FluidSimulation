@@ -29,7 +29,7 @@ public:
 
 		m_advection(gridWidth, gridHeight, m_cellWidth),
 		m_projection(),
-		m_diffusion(),
+		m_diffusion(gridWidth, gridHeight, m_cellWidth),
 
 		m_pressureSolver(m_velocityField, m_solidCellMap),
 		m_iterationCount(iterationCount) { }
