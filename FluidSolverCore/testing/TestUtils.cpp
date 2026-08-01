@@ -1,5 +1,7 @@
 #include "TestUtils.h"
 
+
+
 void TestUtils::initializeRandomVelocities(MACGrid2D& velocityField, float min, float max, unsigned int seed) {
 	std::srand(seed);
 
@@ -50,5 +52,21 @@ void TestUtils::initializeSolidBoundaries(Grid2D<uint8_t>& solidCellMap) {
 	for (int j = 0; j < height; j++) {
 		solidCellMap.setValue(0, j, true);
 		solidCellMap.setValue(width - 1, j, true);
+	}
+}
+
+
+void TestUtils::initializeSolidBoundaries(Grid2D<CellData>& cellData) {
+	int width = cellData.width();
+	int height = cellData.height();
+	CellData solidCell{ CellType::Solid, BoundaryType::NoSlip, 0.0f };
+
+	for (int i = 0; i < width; i++) {
+		cellData.setValue(i, 0, solidCell);
+		cellData.setValue(i, width - 1, solidCell);
+	}
+	for (int j = 0; j < height; j++) {
+		cellData.setValue(j, 0, solidCell);
+		cellData.setValue(j, height - 1, solidCell);
 	}
 }

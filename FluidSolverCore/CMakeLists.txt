@@ -18,6 +18,10 @@ project ("FluidSimulation")
 set (SOURCE_FILES
 	"include/FluidSimulation.h"
 
+	"include/domain/CellType.h"
+	"include/domain/BoundaryType.h"
+	"include/domain/CellData.h"
+
 	"include/steps/Advection.h"
 	"include/steps/Diffusion.h"
 	"include/steps/Projection.h"

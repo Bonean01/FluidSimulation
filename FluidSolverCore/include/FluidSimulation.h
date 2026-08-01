@@ -13,6 +13,8 @@
 #include "steps/Projection.h"
 #include "steps/Diffusion.h"
 
+#include "domain/CellData.h"
+
 
 class FluidSimulation {
 public:
@@ -26,10 +28,11 @@ public:
 		m_divergenceField(gridWidth, gridHeight, m_cellWidth),
 		m_smokeField(gridWidth, gridHeight, m_cellWidth),
 		m_solidCellMap(gridWidth, gridHeight),
+		m_cellData(gridWidth * gridHeight),
 
 		m_advection(gridWidth, gridHeight, m_cellWidth),
-		m_projection(),
 		m_diffusion(gridWidth, gridHeight, m_cellWidth),
+		m_projection(),
 
 		m_pressureSolver(m_velocityField, m_solidCellMap),
 		m_iterationCount(iterationCount) { }
@@ -53,6 +56,7 @@ public:
 	void addSmoke(int i, int j, float deltaSmoke) { m_smokeField.setValue(i, j, m_smokeField.getValue(i, j) + deltaSmoke); }
 	
 	void setSolidCell(int i, int j, bool isSolid) { m_solidCellMap.setValue(i, j, isSolid); }
+	//void setCell(int i, int j, CellData cellData) { m_cellData.setValue(i, j, cellData); }
 
 
 private:
@@ -61,6 +65,7 @@ private:
 	MACGrid2D m_velocityField;
 	ScalarField2D m_pressureField, m_divergenceField, m_smokeField;
 	Grid2D<uint8_t> m_solidCellMap;  // 0 => not solid, 1 => solid
+	std::vector<CellData> m_cellData;
 
 	Advection m_advection;
 	Projection m_projection;

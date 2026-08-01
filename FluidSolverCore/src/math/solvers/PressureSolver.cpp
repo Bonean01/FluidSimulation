@@ -25,8 +25,6 @@ float PressureSolver::solveCell(int i, int j, ScalarField2D& pressureField, floa
 	uint8_t topFluid = 1 - m_solidCellMap.getValue(i, j + 1);
 	uint8_t bottomFluid = 1 - m_solidCellMap.getValue(i, j - 1);
 	
-	// Once we have air cells don't exclude them from the coefficient, since their value will be 0 instead of
-	// p_c they need to be included
 	int totalFluidCells = rightFluid + leftFluid + topFluid + bottomFluid;
 
 	if (isSolid || totalFluidCells == 0) return 0.0f;
