@@ -35,21 +35,31 @@ namespace Staggered {
 	void laplacian(MACGrid2D& result, const MACGrid2D& vectorField) {
 		int width = vectorField.width();
 		int height = vectorField.height();
-
-		ScalarField2D divergence{ width, height, vectorField.cellWidth() };
-		Staggered::divergence(divergence, vectorField);
+		float dx = vectorField.cellWidth();
 		
 		// === horizontal ===
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width + 1; i++) {
-				float x = gradientX(i, j, divergence);
+				float center = vectorField.getEdgeX(i, j);
+				float right = vectorField.getEdgeX(i + 1, j);
+				float left = vectorField.getEdgeX(i - 1, j);
+				float top = vectorField.getEdgeX(i, j + 1);
+				float bottom = vectorField.getEdgeX(i, j - 1);
+
+				float x = (right + left + top + bottom - 4 * center) / (dx * dx);
 				result.setEdgeX(i, j, x);
 			}
 		}
 		// === vertical ===
 		for (int j = 0; j < height + 1; j++) {
 			for (int i = 0; i < width; i++) {
-				float y = gradientY(i, j, divergence);
+				float center = vectorField.getEdgeY(i, j);
+				float right = vectorField.getEdgeY(i + 1, j);
+				float left = vectorField.getEdgeY(i - 1, j);
+				float top = vectorField.getEdgeY(i, j + 1);
+				float bottom = vectorField.getEdgeY(i, j - 1);
+
+				float y = (right + left + top + bottom - 4 * center) / (dx * dx);
 				result.setEdgeY(i, j, y);
 			}
 		}

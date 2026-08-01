@@ -1,4 +1,7 @@
 #include <iostream>
+
+#include "TestUtils.h"
+
 #include "FluidSimulation.h"
 #include "math/dataStructures/VectorField.h"
 #include "math/dataStructures/Vector.h"
@@ -51,21 +54,22 @@ static void printDivergenceField(FluidSimulation simulation) {
 
 
 int main(int argc, char* argv[]) {
-	MACGrid2D field{ 5, 5, 1.0f };
-	for (int j = 0; j < 5; j++) {
-		for (int i = 0; i < 6; i++) {
-			if (i == 1 && j == 1) { field.setEdgeX(i, j, 5.0f); continue; }
-			field.setEdgeX(i, j, 1.0f);
-		}
-	}
-	
-	for (int j = 0; j < 6; j++) {
-		for (int i = 0; i < 5; i++) {
-			field.setEdgeY(i, j, 1.0f);
-		}
-	}
+	MACGrid2D field{ 5, 5, 0.5f };
+	TestUtils::initializeRandomVelocities(field, -10.0f, 10.0f, 0);
+	field.setEdgeX(1, 1, 5.0f);
 
-	MACGrid2D laplacian{ 5, 5, 1.0f };
+	MACGrid2D laplacian{ 5, 5, 0.5f };
 	Staggered::laplacian(laplacian, field);
-	std::cout << laplacian.getEdgeX(1, 1) << std::endl;
+	float laplacian1 = laplacian.getEdgeX(1, 1);
+	std::cout << laplacian1 << std::endl;
+
+	float right = field.getEdgeX(2, 1);
+	float left = field.getEdgeX(0, 1);
+	float top = field.getEdgeX(1, 2);
+	float bottom = field.getEdgeX(1, 0);
+	float center = field.getEdgeX(1, 1);
+	float dx = field.cellWidth();
+
+	float laplacian2 = (right + left + top + bottom - 4 * center) / (dx * dx);
+	std::cout << laplacian2 << std::endl;
 }
