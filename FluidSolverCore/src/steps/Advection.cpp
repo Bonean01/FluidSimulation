@@ -16,7 +16,7 @@ void Advection::execute(MACGrid2D& velocityField, const Grid2D<CellData>& cellDa
 
 			if (rightCellData.boundaryType != BoundaryType::None || leftCellData.boundaryType != BoundaryType::None) {
 				CellData cellData = rightCellData.boundaryType != BoundaryType::None ? rightCellData : leftCellData;
-				BoundaryConditions::applyVelocityX(i, j, m_auxMacGrid, cellData);
+				BoundaryConditions::applyVelocity(VectorComponent::X, i, j, m_auxMacGrid, cellData);
 				continue;
 			}
 
@@ -34,7 +34,7 @@ void Advection::execute(MACGrid2D& velocityField, const Grid2D<CellData>& cellDa
 
 			if (topCellData.boundaryType != BoundaryType::None || bottomCellData.boundaryType != BoundaryType::None) {
 				CellData cellData = topCellData.boundaryType != BoundaryType::None ? topCellData : bottomCellData;
-				BoundaryConditions::applyVelocityY(i, j, m_auxMacGrid, cellData);
+				BoundaryConditions::applyVelocity(VectorComponent::Y, i, j, m_auxMacGrid, cellData);
 				continue;
 			}
 			

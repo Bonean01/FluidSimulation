@@ -3,30 +3,22 @@
 #include "math/dataStructures/MACGrid.h"
 #include "CellData.h"
 
+
 namespace BoundaryConditions {
-	void applyVelocityX(int i, int j, MACGrid2D& velocityField, CellData cellData) {
+	void applyVelocity(VectorComponent component, int i, int j, MACGrid2D& velocityField, const CellData& cellData) {
+		using enum VectorComponent;
+
 		switch (cellData.boundaryType) {
 			using enum BoundaryType;
+
 			case NoSlip:
-				velocityField.setEdgeX(i, j, cellData.prescribedVelocity.x);
+					velocityField.setEdge(component, i, j, cellData.prescribedVelocity.get(component));
 				break;
+
 			case FreeSlip:
 			case Inlet:
 			case Outlet:
 				break;
-		}
-	}
-
-	void applyVelocityY(int i, int j, MACGrid2D& velocityField, CellData cellData) {
-		switch (cellData.boundaryType) {
-			using enum BoundaryType;
-		case NoSlip:
-			velocityField.setEdgeY(i, j, cellData.prescribedVelocity.y);
-			break;
-		case FreeSlip:
-		case Inlet:
-		case Outlet:
-			break;
 		}
 	}
 }

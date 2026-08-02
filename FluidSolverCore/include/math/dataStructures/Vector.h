@@ -1,9 +1,23 @@
 #pragma once
 
+enum VectorComponent {
+	X,
+	Y
+};
+
+
 struct Vec2f {
 	float x, y;
 
 	Vec2f(float x = 0, float y = 0) : x(x), y(y) {}
+	float get(const VectorComponent& component) const {
+		using enum VectorComponent;
+		switch (component) {
+			case X: return x;
+			case Y: return y;
+		}
+	}
+
 	static Vec2f lerp(const Vec2f& A, const Vec2f& B, float t);
 	static Vec2f biLerp(const Vec2f& A, const Vec2f& B, const Vec2f& C, const Vec2f& D, float tX, float tY);
 

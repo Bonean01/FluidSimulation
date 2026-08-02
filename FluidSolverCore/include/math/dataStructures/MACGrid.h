@@ -18,8 +18,10 @@ public:
 
 	float getEdgeX(int i, int j) const;
 	float getEdgeY(int i, int j) const;
+	float getEdge(const VectorComponent& component, int i, int j) const;
 	void setEdgeX(int i, int j, float value);
 	void setEdgeY(int i, int j, float value);
+	void setEdge(const VectorComponent& component, int i, int j, float value);
 
 	// Sampled at cell center
 	Vec2f sampleBilinear(float i, float j) const;
@@ -36,7 +38,5 @@ private:
 
 	int getIndexX(int i, int j) const { return j * (m_width + 1) + i; }
 	int getIndexY(int i, int j) const { return j * m_width + i; }
-
-	float sampleBilinearX(float x, float y) const;
-	float sampleBilinearY(float x, float y) const;
+	float sampleBilinear(const VectorComponent& component, float x, float y) const;
 };
