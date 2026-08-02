@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cstdint>
-
 #include "math/dataStructures/Vector.h"
 #include "math/dataStructures/ScalarField.h"
 #include "math/dataStructures/VectorField.h"
@@ -27,14 +25,13 @@ public:
 		m_pressureField(gridWidth, gridHeight, m_cellWidth),
 		m_divergenceField(gridWidth, gridHeight, m_cellWidth),
 		m_smokeField(gridWidth, gridHeight, m_cellWidth),
-		m_solidCellMap(gridWidth, gridHeight),
-		m_cellData(gridWidth * gridHeight),
+		m_cellData(gridWidth, gridHeight),
 
 		m_advection(gridWidth, gridHeight, m_cellWidth),
 		m_diffusion(gridWidth, gridHeight, m_cellWidth),
 		m_projection(),
 
-		m_pressureSolver(m_velocityField, m_solidCellMap),
+		m_pressureSolver(gridWidth, gridHeight, m_cellWidth),
 		m_iterationCount(iterationCount) { }
 
 	void step(float timeStep);
@@ -43,7 +40,7 @@ public:
 	const ScalarField2D& getPressureField() const { return m_pressureField; }
 	const ScalarField2D& getDivergenceField() const { return m_divergenceField; }
 	const ScalarField2D& getSmokeField() const { return m_smokeField; }
-	const Grid2D<uint8_t>& getSolidCellMap() const { return m_solidCellMap; }
+	const Grid2D<CellData>& getCellData() const { return m_cellData; }
 
 	const float getDensity() const { return m_density; }
 	const float getKinematicViscosity() const { return m_kinematicViscosity; }
@@ -55,17 +52,14 @@ public:
 
 	void addSmoke(int i, int j, float deltaSmoke) { m_smokeField.setValue(i, j, m_smokeField.getValue(i, j) + deltaSmoke); }
 	
-	void setSolidCell(int i, int j, bool isSolid) { m_solidCellMap.setValue(i, j, isSolid); }
-	//void setCell(int i, int j, CellData cellData) { m_cellData.setValue(i, j, cellData); }
-
+	void setCellData(int i, int j, CellData cellData) { m_cellData.setValue(i, j, cellData); }
 
 private:
 	float m_density, m_kinematicViscosity, m_cellWidth;
 
 	MACGrid2D m_velocityField;
 	ScalarField2D m_pressureField, m_divergenceField, m_smokeField;
-	Grid2D<uint8_t> m_solidCellMap;  // 0 => not solid, 1 => solid
-	std::vector<CellData> m_cellData;
+	Grid2D<CellData> m_cellData;
 
 	Advection m_advection;
 	Projection m_projection;

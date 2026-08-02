@@ -19,19 +19,21 @@ public class FluidSimulationAdapter : MonoBehaviour {
         m_width = width;
         m_height = height;
         m_simulation = new(m_width, m_height, cellWidth, density, kinematicViscosity, solverIterationCount);
-        SetSolidCells();
+        SetCellData();
     }
 
 
-    private void SetSolidCells() {
+    private void SetCellData() {
+        CellData movingWall = new(CellType.Solid, BoundaryType.NoSlip, new(1.0f, 0.0f));
+        CellData staticWall = new(CellType.Solid, BoundaryType.NoSlip, new());
         for (int i = 0; i < m_width; i++) {
-            m_simulation.SetSolidCell(i, 0, true);
-            m_simulation.SetSolidCell(i, m_height - 1, true);
+            m_simulation.SetCellData(i, 0, staticWall);
+            m_simulation.SetCellData(i, m_height - 1, movingWall);
         }
         
-        for (int j = 0; j < m_height; j++) {
-            m_simulation.SetSolidCell(0, j, true);
-            m_simulation.SetSolidCell(m_width - 1, j, true);
+        for (int j = 0; j < m_height - 1; j++) {
+            m_simulation.SetCellData(0, j, staticWall);
+            m_simulation.SetCellData(m_width - 1, j, staticWall);
         }
 
         //Vector2Int origin = new(m_width / 2 + 5, m_height / 2);
@@ -178,7 +180,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
     
 
     public void UpdateSolidMapCellTexture(ref Texture2D solidMapCellTexture) {
-        UpdateScalarFieldTexture(ref solidMapCellTexture, m_simulation.IsSolidCellValues());
+        //UpdateScalarFieldTexture(ref solidMapCellTexture, m_simulation.CellDataValues());
     }
 
     public (float min, float max) UpdatePressureTexture(ref Texture2D pressureTexture) {

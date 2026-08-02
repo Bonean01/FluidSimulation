@@ -18,7 +18,7 @@ static void printSimulationState(const FluidSimulation& simulation) {
 	for (int j = height - 1; j >= 0; j--) {
 		for (int i = 0; i < width; i++) {
 			Vec2f vec = simulation.getVelocity(i, j);
-			bool isSolid = simulation.getSolidCellMap().getValue(i, j);
+			bool isSolid = simulation.getCellData().getValue(i, j).cellType == CellType::Solid;
 			std::cout << "(" << vec.x << ", " << vec.y << ")";
 			std::cout << (isSolid ? "@" : "-") << "\t\t";
 		}

@@ -20,13 +20,13 @@ public class FluidSimulation : IDisposable {
     [DllImport("FluidSolver")] private extern static IntPtr GetPressureFieldPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static IntPtr GetDivergenceFieldPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static IntPtr GetSmokeFieldPtr(IntPtr handle);
-    [DllImport("FluidSolver")] private extern static IntPtr GetSolidCellMapPtr(IntPtr handle);
+    [DllImport("FluidSolver")] private extern static IntPtr GetCellDataPtr(IntPtr handle);
 
     [DllImport("FluidSolver")] private extern static void SetVelocity(IntPtr handle, int i, int j, Vec2f velocity);
     [DllImport("FluidSolver")] private extern static Vec2f GetVelocity(IntPtr handle, int i, int j);
     [DllImport("FluidSolver")] private extern static void AddVelocity(IntPtr handle, int i, int j, Vec2f deltaVel);
     [DllImport("FluidSolver")] private extern static void AddSmoke(IntPtr handle, int i, int j, float deltaSmoke);
-    [DllImport("FluidSolver")] private extern static void SetSolidCell(IntPtr handle, int i, int j, bool isSolid);
+    [DllImport("FluidSolver")] private extern static void SetCellData(IntPtr handle, int i, int j, CellData cellData);
 
 
     public FluidSimulation(int width, int height, float cellWidth, float density = 1, float kinematicViscosity = 0, uint iterationCount = 60) {
@@ -68,10 +68,10 @@ public class FluidSimulation : IDisposable {
             yield return GetElementFromPointer<float>(ptr, i);
     }
 
-    public IEnumerable<float> IsSolidCellValues() {
-        IntPtr ptr = GetSolidCellMapPtr(m_handle);
+    public IEnumerable<CellData> CellDataValues() {
+        IntPtr ptr = GetCellDataPtr(m_handle);
         for (int i = 0; i < m_cellCount; i++)
-            yield return GetElementFromPointer<byte>(ptr, i);
+            yield return GetElementFromPointer<CellData>(ptr, i);
     }
 
 
@@ -80,5 +80,5 @@ public class FluidSimulation : IDisposable {
     public void AddVelocity(int i, int j, Vec2f deltaVel) => AddVelocity(m_handle, i, j, deltaVel);
     public void AddSmoke(int i, int j, float deltaSmoke) => AddSmoke(m_handle, i, j, deltaSmoke);
 
-    public void SetSolidCell(int i, int j, bool isSolid) => SetSolidCell(m_handle, i, j, isSolid);
+    public void SetCellData(int i, int j, CellData cellData) => SetCellData(m_handle, i, j, cellData);
 }

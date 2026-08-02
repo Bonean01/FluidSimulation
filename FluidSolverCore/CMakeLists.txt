@@ -21,6 +21,7 @@ set (SOURCE_FILES
 	"include/domain/CellType.h"
 	"include/domain/BoundaryType.h"
 	"include/domain/CellData.h"
+	"include/domain/BoundaryConditions.h"
 
 	"include/steps/Advection.h"
 	"include/steps/Diffusion.h"

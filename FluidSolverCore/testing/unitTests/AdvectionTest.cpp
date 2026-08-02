@@ -18,28 +18,28 @@ TEST_CASE("Advection - Constant velocity remains constant") {
 	float timeStep = 1.0f / 60.0f;
 
 	MACGrid2D velocityField{ width, height, cellWidth };
-	Grid2D<uint8_t> solidCellMap{ width, height, cellWidth };
+	Grid2D<CellData> cellData{ width, height, cellWidth };
 	const float CONSTANT = 10.0f;
 
 	Advection advection{ width, height, cellWidth };
 
 
 	TestUtils::initializeConstantVelocities(velocityField, CONSTANT);
-	TestUtils::initializeSolidBoundaries(solidCellMap);
+	TestUtils::initializeSolidBoundaries(cellData);
 
-	advection.execute(velocityField, solidCellMap, timeStep);
+	advection.execute(velocityField, cellData, timeStep);
 
 	// Check that all of the values remain the same
 	for (int j = 0; j < height; j++) {
 		for (int i = 0; i < width + 1; i++) {
-			if (solidCellMap.getValue(i, j) || solidCellMap.getValue(i - 1, j)) continue;
+			if (cellData.getValue(i, j).cellType == CellType::Solid || cellData.getValue(i - 1, j).cellType == CellType::Solid) continue;
 			float edgeX = velocityField.getEdgeX(i, j);
 			CHECK_THAT(edgeX, Matchers::WithinRel(CONSTANT));
 		}
 	}
 	for (int j = 0; j < height + 1; j++) {
 		for (int i = 0; i < width; i++) {
-			if (solidCellMap.getValue(i, j) || solidCellMap.getValue(i, j - 1)) continue;
+			if (cellData.getValue(i, j).cellType == CellType::Solid || cellData.getValue(i - 1, j).cellType == CellType::Solid) continue;
 			float edgeY = velocityField.getEdgeY(i, j);
 			CHECK_THAT(edgeY, Matchers::WithinRel(CONSTANT));
 		}

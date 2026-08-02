@@ -3,7 +3,7 @@
 #include "math/operators/Staggered.h"
 
 
-void Projection::execute(MACGrid2D& velocityField, const ScalarField2D& pressureField, const Grid2D<uint8_t>& solidCellMap, float density, float timeStep) {
+void Projection::execute(MACGrid2D& velocityField, const ScalarField2D& pressureField, float density, float timeStep) {
 	int width = velocityField.width();
 	int height = velocityField.height();
 

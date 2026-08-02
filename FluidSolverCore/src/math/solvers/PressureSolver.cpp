@@ -1,13 +1,13 @@
 #include "math/solvers/PressureSolver.h"
 
 
-void PressureSolver::solveJacobi(ScalarField2D& result, float density, float timeStep, unsigned int iterationCount) {
+void PressureSolver::solveJacobi(ScalarField2D& result, MACGrid2D& velocityField, const Grid2D<CellData>& cellData, float density, float timeStep, unsigned int iterationCount) {
 	int width = result.width();
 	int height = result.height();
 	for (unsigned int k = 0; k < iterationCount; k++) {
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width; i++) {
-				float newCellValue = solveCell(i, j, m_auxScalarField, density, timeStep);
+				float newCellValue = solveCell(i, j, m_auxScalarField, velocityField, cellData, density, timeStep);
 				result.setValue(i, j, newCellValue);
 			}
 		}
@@ -17,13 +17,13 @@ void PressureSolver::solveJacobi(ScalarField2D& result, float density, float tim
 }
 
 
-float PressureSolver::solveCell(int i, int j, ScalarField2D& pressureField, float density, float timeStep) {
-	bool isSolid = m_solidCellMap.getValue(i, j);
+float PressureSolver::solveCell(int i, int j, ScalarField2D& pressureField, MACGrid2D& velocityField, const Grid2D<CellData>& cellData, float density, float timeStep) {
+	bool isSolid = cellData.getValue(i, j).cellType == CellType::Solid;
 
-	uint8_t rightFluid = 1 - m_solidCellMap.getValue(i + 1, j);
-	uint8_t leftFluid = 1 - m_solidCellMap.getValue(i - 1, j);
-	uint8_t topFluid = 1 - m_solidCellMap.getValue(i, j + 1);
-	uint8_t bottomFluid = 1 - m_solidCellMap.getValue(i, j - 1);
+	bool rightFluid = cellData.getValue(i + 1, j).cellType == CellType::Fluid;
+	bool leftFluid = cellData.getValue(i - 1, j).cellType == CellType::Fluid;
+	bool topFluid = cellData.getValue(i, j + 1).cellType == CellType::Fluid;
+	bool bottomFluid = cellData.getValue(i, j - 1).cellType == CellType::Fluid;
 	
 	int totalFluidCells = rightFluid + leftFluid + topFluid + bottomFluid;
 
@@ -34,10 +34,10 @@ float PressureSolver::solveCell(int i, int j, ScalarField2D& pressureField, floa
 	float topPres = pressureField.getValue(i, j + 1);
 	float bottomPres = pressureField.getValue(i, j - 1);
 	
-	float rightVel = m_velocityField.getEdgeX(i + 1, j);
-	float leftVel = m_velocityField.getEdgeX(i, j);
-	float topVel = m_velocityField.getEdgeY(i, j + 1);
-	float bottomVel = m_velocityField.getEdgeY(i, j);
+	float rightVel = velocityField.getEdgeX(i + 1, j);
+	float leftVel = velocityField.getEdgeX(i, j);
+	float topVel = velocityField.getEdgeY(i, j + 1);
+	float bottomVel = velocityField.getEdgeY(i, j);
 
 	// Don't include pressure's that come from solid cells
 	// (theoretically they have 1 pressure value per face)
@@ -47,7 +47,8 @@ float PressureSolver::solveCell(int i, int j, ScalarField2D& pressureField, floa
 	if (topFluid) { pressureSum += topPres; }
 	if (bottomFluid) { pressureSum += bottomPres; }
 
-	float k = m_cellWidth * density / timeStep;
+	float cellWidth = velocityField.cellWidth();
+	float k = cellWidth * density / timeStep;
 
 	float newPressure = pressureSum - k * (rightVel - leftVel + topVel - bottomVel);
 	newPressure /= totalFluidCells;

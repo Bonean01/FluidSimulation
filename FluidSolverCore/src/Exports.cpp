@@ -38,8 +38,8 @@ extern "C" INTERFACE_EXPORT const float* GetSmokeFieldPtr(FluidSimulation* handl
 	return handle->getSmokeField().getValuesPtr();
 }
 
-extern "C" INTERFACE_EXPORT const uint8_t* GetSolidCellMapPtr(FluidSimulation* handle) {
-	return handle->getSolidCellMap().getValuesPtr();
+extern "C" INTERFACE_EXPORT const CellData* GetCellDataPtr(FluidSimulation* handle) {
+	return handle->getCellData().getValuesPtr();
 }
 
 
@@ -63,6 +63,6 @@ extern "C" INTERFACE_EXPORT void AddSmoke(FluidSimulation* handle, int i, int j,
 }
 
 
-extern "C" INTERFACE_EXPORT void SetSolidCell(FluidSimulation* handle, int i, int j, bool isSolid) {
-	handle->setSolidCell(i, j, isSolid);
+extern "C" INTERFACE_EXPORT void SetCellData(FluidSimulation* handle, int i, int j, CellData cellData) {
+	handle->setCellData(i, j, cellData);
 }

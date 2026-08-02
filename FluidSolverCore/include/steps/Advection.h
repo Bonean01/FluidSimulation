@@ -1,11 +1,10 @@
 #pragma once
 
-#include <cstdint>
-
 #include "math/dataStructures/MACGrid.h"
 #include "math/dataStructures/Grid.h"
 #include "math/dataStructures/ScalarField.h"
 
+#include "domain/CellData.h"
 
 class Advection {
 public:
@@ -14,8 +13,8 @@ public:
 		m_auxScalarField(gridWidth, gridHeight, cellWidth) {}
 
 	// self-advection
-	void execute(MACGrid2D& velocityField, const Grid2D<uint8_t>& solidCellMap, float timeStep);
-	void execute(ScalarField2D& field, const MACGrid2D& velocityField, const Grid2D<uint8_t>& solidCellMap, float timeStep);
+	void execute(MACGrid2D& velocityField, const Grid2D<CellData>& cellData, float timeStep);
+	void execute(ScalarField2D& field, const MACGrid2D& velocityField, const Grid2D<CellData>& cellData, float timeStep);
 
 
 private:

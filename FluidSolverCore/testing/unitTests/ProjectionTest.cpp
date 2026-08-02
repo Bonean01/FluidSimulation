@@ -20,15 +20,15 @@ TEST_CASE("Projection - Divergence free field remains unchanged after projection
 	float timeStep = 1.0f / 60.0f;
 	int iterationCount = 60;
 	MACGrid2D velocityField{ width, height, cellWidth };
-	Grid2D<uint8_t> solidCellMap{ width, height, cellWidth };
+	Grid2D<CellData> cellData{ width, height, cellWidth };
 	ScalarField2D pressureField{ width, height, cellWidth };
-	PressureSolver pressureSolver{ velocityField, solidCellMap };
+	PressureSolver pressureSolver{ width, height, cellWidth };
 	Projection projection{};
 
 	TestUtils::initializeConstantVelocities(velocityField, 10.0f);
 
-	pressureSolver.solveJacobi(pressureField, density, timeStep, iterationCount);
-	projection.execute(velocityField, pressureField, solidCellMap, density, timeStep);
+	pressureSolver.solveJacobi(pressureField, velocityField, cellData , density, timeStep, iterationCount);
+	projection.execute(velocityField, pressureField, density, timeStep);
 	
 	for (int j = 0; j < height; j++) {
 		for (int i = 0; i < width; i++) {

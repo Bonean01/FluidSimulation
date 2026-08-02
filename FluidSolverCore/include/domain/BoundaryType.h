@@ -1,6 +1,8 @@
 #pragma once
 
-enum BoundaryType {
+#include <cstdint>
+
+enum BoundaryType : uint8_t {
 	None,
 	NoSlip,
 	FreeSlip,

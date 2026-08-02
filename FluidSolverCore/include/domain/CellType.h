@@ -1,6 +1,8 @@
 #pragma once
 
-enum CellType {
+#include <cstdint>
+
+enum CellType : uint8_t{
 	Fluid,
-	Solid
+	Solid = 1
 };

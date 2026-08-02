@@ -44,8 +44,8 @@ public class FluidVisualizer : MonoBehaviour {
         m_smokeTexture = m_simulationAdapter.CreateTexture();
         m_solidCellMapTexture = m_simulationAdapter.CreateTexture();
 
-        m_simulationAdapter.UpdateSolidMapCellTexture(ref m_solidCellMapTexture);
-        m_spriteRenderer.material.SetTexture("_SolidCellMapTexture", m_solidCellMapTexture);
+        //m_simulationAdapter.UpdateSolidMapCellTexture(ref m_solidCellMapTexture);
+        //m_spriteRenderer.material.SetTexture("_SolidCellMapTexture", m_solidCellMapTexture);
 
         float aspectRatio = (float)m_simulationAdapter.Height / m_simulationAdapter.Width;
         transform.localScale.Set(transform.localScale.x, transform.localScale.x * aspectRatio, transform.localScale.z);
