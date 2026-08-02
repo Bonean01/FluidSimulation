@@ -22,8 +22,9 @@ float MACGrid2D::getEdgeY(int i, int j) const {
 
 
 float MACGrid2D::getEdge(const VectorComponent& component, int i, int j) const {
-	if		(component == VectorComponent::X) { return getEdgeX(i, j); }
+	if (component == VectorComponent::X) { return getEdgeX(i, j); }
 	else if (component == VectorComponent::Y) { return getEdgeY(i, j); }
+	else throw std::exception("MACGrid2D only has X and Y components.");
 }
 
 

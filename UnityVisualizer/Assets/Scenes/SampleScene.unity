@@ -788,9 +788,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FluidSimulationAdapter
   width: 33
   height: 33
-  cellWidth: 0.24242425
+  cellWidth: 0.030303031
   density: 1
-  kinematicViscosity: 0.0001
+  kinematicViscosity: 0.00001
   solverIterationCount: 30
 --- !u!114 &1486929793
 MonoBehaviour:
@@ -804,7 +804,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 482acafe0d8620945944c789eb241a99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FluidSimulationPlayer
-  fixedFrameRate: 60
+  fixedFrameRate: 120
   startPaused: 0
 --- !u!114 &1486929794
 MonoBehaviour:

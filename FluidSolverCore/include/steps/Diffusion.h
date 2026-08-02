@@ -9,7 +9,7 @@ public:
 		m_laplacianField(gridWidth, gridHeight, cellWidth),
 		m_auxMacGrid(gridWidth, gridHeight, cellWidth) {}
 
-	void execute(MACGrid2D& velocityField, float kinematicViscosity, float timeStep, int iterationCount);
+	void execute(MACGrid2D& velocityField, float kinematicViscosity, float timeStep, unsigned int iterationCount);
 
 private:
 	MACGrid2D m_laplacianField, m_auxMacGrid;

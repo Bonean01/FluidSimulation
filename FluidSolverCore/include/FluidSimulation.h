@@ -16,7 +16,7 @@
 
 class FluidSimulation {
 public:
-	FluidSimulation(int gridWidth, int gridHeight, float cellWidth, float density = 1, float kinematicViscosity = 0, int iterationCount = 60) :
+	FluidSimulation(int gridWidth, int gridHeight, float cellWidth, float density = 1, float kinematicViscosity = 0, unsigned int iterationCount = 60) :
 		m_cellWidth(cellWidth),
 		m_density(density),
 		m_kinematicViscosity(kinematicViscosity),

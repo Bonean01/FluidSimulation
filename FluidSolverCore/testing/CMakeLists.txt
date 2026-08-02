@@ -11,18 +11,23 @@ FetchContent_MakeAvailable(Catch2)
 
 
 # Define a variable that contains all the test source files
-set(TEST_SOURCE_FILES
+set (TEST_SOURCE_FILES
 	"unitTests/BiLerpTest.cpp"
 	"unitTests/AdvectionTest.cpp"
 	"unitTests/ProjectionTest.cpp"
 )
 
+set (TEST_UTILS
+	"TestUtils.h"
+	"TestUtils.cpp"
+)
+
 
 # Create executable for testing
-add_executable (Playground "Playground.cpp"  "TestUtils.h" "TestUtils.cpp")
+add_executable (Playground "Playground.cpp"  ${TEST_UTILS})
 
 # Create executable for running the unit tests
-add_executable (FluidSimulationTests ${TEST_SOURCE_FILES} "TestUtils.h" "TestUtils.cpp")
+add_executable (FluidSimulationTests ${TEST_SOURCE_FILES} ${TEST_UTILS})
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
 	set_property(TARGET Playground PROPERTY CXX_STANDARD 20)

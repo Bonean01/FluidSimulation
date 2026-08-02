@@ -2,14 +2,14 @@
 #include "math/operators/Staggered.h"
 
 
-void Diffusion::execute(MACGrid2D& velocityField, float kinematicViscosity, float timeStep, int iterationCount) {
+void Diffusion::execute(MACGrid2D& velocityField, float kinematicViscosity, float timeStep, unsigned int iterationCount) {
 	int width = velocityField.width();
 	int height = velocityField.height();
 	float dx = velocityField.cellWidth();
 	float alpha = (kinematicViscosity * timeStep) / dx;
 	float beta = 1 + 4 * alpha;
 
-	for (int k = 0; k < iterationCount; k++) {
+	for (unsigned int k = 0; k < iterationCount; k++) {
 		Staggered::laplacian(m_laplacianField, velocityField);
 		// === horizontal ===
 		for (int j = 0; j < height; j++) {
