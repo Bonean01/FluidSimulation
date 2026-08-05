@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdexcept>
+#include <exception>
 
 enum VectorComponent {
 	X,
@@ -17,7 +17,7 @@ struct Vec2f {
 		switch (component) {
 			case X: return x;
 			case Y: return y;
-			default: throw std::exception("Vec2f only has X and Y components.");
+			//default: throw std::exception("Vec2f only has X and Y components.");
 		}
 	}
 
