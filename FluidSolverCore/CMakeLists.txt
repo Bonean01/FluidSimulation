@@ -83,6 +83,3 @@ target_include_directories (FluidSolverStatic
 
 # Compile the testing code
 add_subdirectory("testing")
-
-# Compile the validation code
-add_subdirectory("validation")
