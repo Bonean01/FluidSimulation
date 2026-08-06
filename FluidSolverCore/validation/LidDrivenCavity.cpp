@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
 
 
 	std::cout << "Writting results..." << std::endl;
-	std::filesystem::create_directory("Results");
+	std::filesystem::create_directory("results");
 	std::ofstream resultsFile{"Results/LidDrivenCavity.csv"};
 
 	const MACGrid2D& velocityField = simulation.getVelocityField();
