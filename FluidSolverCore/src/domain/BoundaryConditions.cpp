@@ -12,12 +12,13 @@ namespace BoundaryConditions {
 		switch (cellData.boundaryType) {
 			using enum BoundaryType;
 
+		case Inlet:
 		case NoSlip:
 			velocityField.setEdge(component, i, j, cellData.prescribedVelocity.get(component));
 			break;
 
 		case FreeSlip:
-		case Inlet:
+			break;
 		case Outlet:
 			break;
 		}
