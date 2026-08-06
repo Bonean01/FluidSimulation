@@ -41,6 +41,8 @@ set (SOURCE_FILES
 	"src/Exports.cpp"
 	"src/FluidSimulation.cpp"
 
+	"src/domain/BoundaryConditions.cpp"
+
 	"src/steps/Advection.cpp"
 	"src/steps/Diffusion.cpp"
 	"src/steps/Projection.cpp"

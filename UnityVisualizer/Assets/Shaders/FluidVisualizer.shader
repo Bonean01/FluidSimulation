@@ -108,8 +108,8 @@ Shader "Custom/FluidVisualizer" {
                         color = float4(smoke.xxx, 1.0f);
                         break;
                 }
-                float solid = SAMPLE_TEXTURE2D(_SolidCellMapTexture, sampler_SolidCellMapTexture, uv).x;
-                if (_DisplayedField == 5) color = solid ? float4(0.5f, 0.25f, 0.1f, 1) : color;
+                //float solid = SAMPLE_TEXTURE2D(_SolidCellMapTexture, sampler_SolidCellMapTexture, uv).x;
+                //if (_DisplayedField == 5) color = solid ? float4(0.5f, 0.25f, 0.1f, 1) : color;
                 return color;
             }
             ENDHLSL

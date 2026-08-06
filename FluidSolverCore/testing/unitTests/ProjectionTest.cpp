@@ -28,7 +28,7 @@ TEST_CASE("Projection - Divergence free field remains unchanged after projection
 	TestUtils::initializeConstantVelocities(velocityField, 10.0f);
 
 	pressureSolver.solveJacobi(pressureField, velocityField, cellData , density, timeStep, iterationCount);
-	projection.execute(velocityField, pressureField, density, timeStep);
+	projection.execute(velocityField, pressureField, cellData, density, timeStep);
 	
 	for (int j = 0; j < height; j++) {
 		for (int i = 0; i < width; i++) {

@@ -11,7 +11,7 @@ density: c_float = 1.0
 kinematic_viscosity: c_float = 1e-05
 iteration_count: c_int = 30
 
-lid_speed: int = 1.0
+lid_speed: float = 1.0
 time_step: c_float = 1.0 / 120.0
 simulation_iteration_count: int = 1000
 
@@ -22,17 +22,15 @@ for i, string in enumerate(sys.argv):
 
     match string:
         case "--grid-side-length":
-            side_length = c_int(sys.argv[i + 1])
-        case "--cell-width":
-            cell_width = c_float(sys.argv[i + 1])
+            side_length = int(sys.argv[i + 1])
         case "--density":
-            density = c_float(sys.argv[i + 1])
+            density = float(sys.argv[i + 1])
         case "--kinematic-viscosity":
-            kinematic_viscosity = c_float(sys.argv[i + 1])
+            kinematic_viscosity = float(sys.argv[i + 1])
         case "--lid-speed":
-            lid_speed = int(sys.argv[i + 1])
+            lid_speed = float(sys.argv[i + 1])
         case "--time-step":
-            time_step = c_float(sys.argv[i + 1])
+            time_step = float(sys.argv[i + 1])
         case "--iterations":
             simulation_iteration_count = int(sys.argv[i + 1])
         case _:
@@ -41,7 +39,6 @@ for i, string in enumerate(sys.argv):
                 "Available options:\n" +
                 "================================================\n" +
                 "--grid-side-length\n" +
-                "--cell-width\n" +
                 "--density\n" +
                 "--kinematic-viscosity\n" +
                 "--lid-speed\n" +
@@ -56,7 +53,6 @@ print(
     "\nRunning lid-driven cavity with parameters:\n" +
     "================================================\n" +
     f"grid_side_length: {side_length}\n" +
-    f"cell_width: {cell_width}\n"
     f"density: {density}\n" +
     f"kinematic_viscosity: {kinematic_viscosity}\n" +
     f"lid_speed: {lid_speed}\n" +

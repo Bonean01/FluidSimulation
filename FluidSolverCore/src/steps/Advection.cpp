@@ -11,14 +11,7 @@ void Advection::execute(MACGrid2D& velocityField, const Grid2D<CellData>& cellDa
 	// === horizontal ===
 	for (int j = 0; j < height; j++) {
 		for (int i = 0; i < width + 1; i++) {
-			CellData rightCellData = cellData.getValue(i, j);
-			CellData leftCellData = cellData.getValue(i - 1, j);
-
-			if (rightCellData.boundaryType != BoundaryType::None || leftCellData.boundaryType != BoundaryType::None) {
-				CellData cellData = rightCellData.boundaryType != BoundaryType::None ? rightCellData : leftCellData;
-				BoundaryConditions::applyVelocity(VectorComponent::X, i, j, m_auxMacGrid, cellData);
-				continue;
-			}
+			if (not BoundaryConditions::isBoundaryNone(VectorComponent::X, cellData, i, j)) continue;
 
 			Vec2f position = { (float)i - 0.5f, (float)j };
 			Vec2f currentVel = velocityField.sampleBilinear(position);
@@ -29,14 +22,7 @@ void Advection::execute(MACGrid2D& velocityField, const Grid2D<CellData>& cellDa
 	// === vertical ===
 	for (int j = 0; j < height + 1; j++) {
 		for (int i = 0; i < width; i++) {
-			CellData topCellData = cellData.getValue(i, j);
-			CellData bottomCellData = cellData.getValue(i, j - 1);
-
-			if (topCellData.boundaryType != BoundaryType::None || bottomCellData.boundaryType != BoundaryType::None) {
-				CellData cellData = topCellData.boundaryType != BoundaryType::None ? topCellData : bottomCellData;
-				BoundaryConditions::applyVelocity(VectorComponent::Y, i, j, m_auxMacGrid, cellData);
-				continue;
-			}
+			if (not BoundaryConditions::isBoundaryNone(VectorComponent::Y, cellData, i, j)) continue;
 			
 			Vec2f position = { (float)i, (float)j - 0.5f };
 			Vec2f currentVel = velocityField.sampleBilinear(position);
