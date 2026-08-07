@@ -27,7 +27,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
         CellData movingWall = new(CellType.Solid, BoundaryType.NoSlip, new(1.0f, 0.0f));
         CellData staticWall = new(CellType.Solid, BoundaryType.NoSlip, new());
         CellData inlet = new(CellType.Fluid, BoundaryType.Inlet, new(10.0f, 0.0f));
-        CellData outlet = new(CellType.Fluid, BoundaryType.None, new(0.0f, 0.0f));
+        CellData outlet = new(CellType.Fluid, BoundaryType.Outlet, new(0.0f, 0.0f));
         for (int i = 0; i < m_width; i++) {
             m_simulation.SetCellData(i, 0, staticWall);
             m_simulation.SetCellData(i, m_height - 1, staticWall);

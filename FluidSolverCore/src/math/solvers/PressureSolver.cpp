@@ -7,6 +7,7 @@ void PressureSolver::solveJacobi(ScalarField2D& result, MACGrid2D& velocityField
 	for (unsigned int k = 0; k < iterationCount; k++) {
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width; i++) {
+				if (cellData.getValue(i, j).boundaryType == BoundaryType::Outlet) continue;
 				float newCellValue = solveCell(i, j, m_auxScalarField, velocityField, cellData, density, timeStep);
 				result.setValue(i, j, newCellValue);
 			}

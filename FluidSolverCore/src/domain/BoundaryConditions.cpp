@@ -12,20 +12,22 @@ namespace BoundaryConditions {
 		switch (cellData.boundaryType) {
 			using enum BoundaryType;
 
-		case Inlet:
-		case NoSlip:
-			velocityField.setEdge(component, i, j, cellData.prescribedVelocity.get(component));
-			break;
+			case Inlet:
+			case NoSlip:
+				velocityField.setEdge(component, i, j, cellData.prescribedVelocity.get(component));
+				break;
 
-		case FreeSlip:
-			break;
-		case Outlet:
-			break;
+			case Outlet:
+				if (component == VectorComponent::X) {
+					float left = velocityField.getEdgeX(i - 1, j);
+					velocityField.setEdgeX(i, j, left);
+				}		
+				break;
 		}
 	}
 
 
-	void applyVelocity(MACGrid2D& velocityField, Grid2D<CellData> cellData) {
+	void applyVelocity(MACGrid2D& velocityField, const Grid2D<CellData>& cellData) {
 		int width = velocityField.width();
 		int height = velocityField.height();
 		// -- horizontal --
@@ -55,9 +57,28 @@ namespace BoundaryConditions {
 	}
 
 
+	void applyPressure(ScalarField2D& pressureField, const Grid2D<CellData>& cellData) {
+		int width = pressureField.width();
+		int height = pressureField.height();
+		for (int j = 0; j < height; j++) {
+			for (int i = 0; i < width; i++) {
+				CellData currentData = cellData.getValue(i, j);
+
+				switch (currentData.boundaryType) {
+					using enum BoundaryType;
+
+					case Outlet:
+						pressureField.setValue(i, j, 0.0f);
+						break;
+				}
+			}
+		}
+	}
+
+
 	const bool isBoundaryNone(VectorComponent component, const Grid2D<CellData>& cellData, int i, int j) {
 		if (component == VectorComponent::X)
-			return cellData.getValue(i, j).boundaryType == BoundaryType::None
+			return cellData.getValue(i, j).cellType == BoundaryType::None
 			&& cellData.getValue(i - 1, j).boundaryType == BoundaryType::None;
 
 		if (component == VectorComponent::Y)

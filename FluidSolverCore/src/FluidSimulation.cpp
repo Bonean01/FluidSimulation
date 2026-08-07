@@ -8,6 +8,7 @@
 
 void FluidSimulation::step(float timeStep) {
 	BoundaryConditions::applyVelocity(m_velocityField, m_cellData);
+	BoundaryConditions::applyPressure(m_pressureField, m_cellData);
 
 	m_advection.execute(m_velocityField, m_cellData, timeStep);
 

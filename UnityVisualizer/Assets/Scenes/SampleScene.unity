@@ -773,7 +773,7 @@ MonoBehaviour:
     m_ColorSpace: 0
     m_NumColorKeys: 7
     m_NumAlphaKeys: 2
-  maxSpeed: 10
+  maxSpeed: 13
 --- !u!114 &1486929792
 MonoBehaviour:
   m_ObjectHideFlags: 0
