@@ -11,7 +11,7 @@ void Projection::execute(MACGrid2D& velocityField, const ScalarField2D& pressure
 	// === horizontal ===
 	for (int j = 0; j < height; j++) {
 		for (int i = 0; i < width + 1; i++) {
-			if (not BoundaryConditions::isBoundaryNone(VectorComponent::X, cellData, i, j)) continue;
+			if (BoundaryUtils::hasBoundaryPrescribedVelocity(VectorComponent::X, cellData, i, j)) continue;
 
 			float gradientX = Staggered::gradientX(i, j, pressureField);
 			float currentVel = velocityField.getEdgeX(i, j);
@@ -22,7 +22,7 @@ void Projection::execute(MACGrid2D& velocityField, const ScalarField2D& pressure
 	// === vertical ===
 	for (int j = 0; j < height + 1; j++) {
 		for (int i = 0; i < width; i++) {
-			if (not BoundaryConditions::isBoundaryNone(VectorComponent::Y,cellData, i, j)) continue;
+			if (BoundaryUtils::hasBoundaryPrescribedVelocity(VectorComponent::Y, cellData, i, j)) continue;
 
 			float gradientY = Staggered::gradientY(i, j, pressureField);
 			float currentVel = velocityField.getEdgeY(i, j);

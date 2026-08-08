@@ -18,13 +18,14 @@ class BoundaryType(IntEnum):
     NONE = 0
     NO_SLIP = 1
     FREE_SLIP = 2
-    INLET = 3
-    OUTLET = 4
+    VELOCITY_INLET = 3
+    VELOCITY_OUTLET = 4
 
 class CellData(Structure):
     _fields_ = [
         ("cell_type", c_uint8),
         ("boundary_type", c_uint8),
+        ("has_prescribed_velocity", c_bool),
         ("prescribed_velocity", Vec2f)
     ]
 

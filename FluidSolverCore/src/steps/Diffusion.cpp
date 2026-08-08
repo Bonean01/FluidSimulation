@@ -16,7 +16,7 @@ void Diffusion::execute(MACGrid2D& velocityField, const Grid2D<CellData>& cellDa
 		// === horizontal ===
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width + 1; i++) {
-				if (not BoundaryConditions::isBoundaryNone(VectorComponent::X, cellData, i, j)) continue;
+				if (BoundaryUtils::hasBoundaryPrescribedVelocity(VectorComponent::X, cellData, i, j)) continue;
 
 				float currentVelX = velocityField.getEdgeX(i, j);
 				float laplacianX = m_laplacianField.getEdgeX(i, j);
@@ -27,7 +27,7 @@ void Diffusion::execute(MACGrid2D& velocityField, const Grid2D<CellData>& cellDa
 		// === vertical ===
 		for (int j = 0; j < height + 1; j++) {
 			for (int i = 0; i < width; i++) {
-				if (not BoundaryConditions::isBoundaryNone(VectorComponent::Y, cellData, i, j)) continue;
+				if (BoundaryUtils::hasBoundaryPrescribedVelocity(VectorComponent::Y, cellData, i, j)) continue;
 				
 				float currentVelY = velocityField.getEdgeY(i, j);
 				float laplacianY = m_laplacianField.getEdgeY(i, j);
