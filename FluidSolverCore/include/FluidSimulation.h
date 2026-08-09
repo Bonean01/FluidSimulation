@@ -40,7 +40,7 @@ public:
 
 	void step(float timeStep);
 
-	const MACGrid2D& getVelocityField() const { return m_velocityField; }
+	const StaggeredVectorField2D getVelocityField() const { return m_velocityField; }
 	const ScalarField2D& getPressureField() const { return m_pressureField; }
 	const ScalarField2D& getDivergenceField() const { return m_divergenceField; }
 	const ScalarField2D& getSmokeField() const { return m_smokeField; }
@@ -62,7 +62,7 @@ public:
 private:
 	float m_density, m_kinematicViscosity, m_cellWidth;
 
-	MACGrid2D m_velocityField;
+	StaggeredVectorField2D m_velocityField;
 	ScalarField2D m_pressureField, m_divergenceField, m_smokeField;
 	Grid2D<CellData> m_cellData;
 	StaggeredGrid2D<BoundaryData> m_boundaryData;

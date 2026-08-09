@@ -29,7 +29,7 @@ namespace FiniteDifference {
 
 
 namespace Staggered {
-	void laplacian(MACGrid2D& result, const MACGrid2D& vectorField) {
+	void laplacian(StaggeredVectorField2D& result, const StaggeredVectorField2D& vectorField) {
 		int width = vectorField.width();
 		int height = vectorField.height();
 		float dx = vectorField.cellWidth();
@@ -37,27 +37,27 @@ namespace Staggered {
 		// === horizontal ===
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width + 1; i++) {
-				float center = vectorField.getEdgeX(i, j);
-				float right = vectorField.getEdgeX(i + 1, j);
-				float left = vectorField.getEdgeX(i - 1, j);
-				float top = vectorField.getEdgeX(i, j + 1);
-				float bottom = vectorField.getEdgeX(i, j - 1);
+				float center = vectorField.getEdgeValue<X>(i, j);
+				float right = vectorField.getEdgeValue<X>(i + 1, j);
+				float left = vectorField.getEdgeValue<X>(i - 1, j);
+				float top = vectorField.getEdgeValue<X>(i, j + 1);
+				float bottom = vectorField.getEdgeValue<X>(i, j - 1);
 
 				float x = (right + left + top + bottom - 4 * center) / (dx * dx);
-				result.setEdgeX(i, j, x);
+				result.setEdgeValue<X>(i, j, x);
 			}
 		}
 		// === vertical ===
 		for (int j = 0; j < height + 1; j++) {
 			for (int i = 0; i < width; i++) {
-				float center = vectorField.getEdgeY(i, j);
-				float right = vectorField.getEdgeY(i + 1, j);
-				float left = vectorField.getEdgeY(i - 1, j);
-				float top = vectorField.getEdgeY(i, j + 1);
-				float bottom = vectorField.getEdgeY(i, j - 1);
+				float center = vectorField.getEdgeValue<Y>(i, j);
+				float right = vectorField.getEdgeValue<Y>(i + 1, j);
+				float left = vectorField.getEdgeValue<Y>(i - 1, j);
+				float top = vectorField.getEdgeValue<Y>(i, j + 1);
+				float bottom = vectorField.getEdgeValue<Y>(i, j - 1);
 
 				float y = (right + left + top + bottom - 4 * center) / (dx * dx);
-				result.setEdgeY(i, j, y);
+				result.setEdgeValue<Y>(i, j, y);
 			}
 		}
 	}

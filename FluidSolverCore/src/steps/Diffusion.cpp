@@ -4,7 +4,7 @@
 #include "domain/BoundaryUtils.h"
 
 
-void Diffusion::execute(MACGrid2D& velocityField, const Grid2D<CellData>& cellData, float kinematicViscosity, float timeStep, unsigned int iterationCount) {
+void Diffusion::execute(StaggeredVectorField2D& velocityField, const Grid2D<CellData>& cellData, float kinematicViscosity, float timeStep, unsigned int iterationCount) {
 	int width = velocityField.width();
 	int height = velocityField.height();
 	float dx = velocityField.cellWidth();
@@ -18,10 +18,10 @@ void Diffusion::execute(MACGrid2D& velocityField, const Grid2D<CellData>& cellDa
 			for (int i = 0; i < width + 1; i++) {
 				if (BoundaryUtils::hasBoundaryPrescribedVelocity(VectorComponent::X, cellData, i, j)) continue;
 
-				float currentVelX = velocityField.getEdgeX(i, j);
-				float laplacianX = m_laplacianField.getEdgeX(i, j);
+				float currentVelX = velocityField.getEdgeValue<X>(i, j);
+				float laplacianX = m_laplacianField.getEdgeValue<X>(i, j);
 				float newVelX = (currentVelX + alpha * laplacianX) / beta;
-				m_auxMacGrid.setEdgeX(i, j, newVelX);
+				m_auxStaggeredVectorField.setEdgeValue<X>(i, j, newVelX);
 			}
 		}
 		// === vertical ===
@@ -29,13 +29,13 @@ void Diffusion::execute(MACGrid2D& velocityField, const Grid2D<CellData>& cellDa
 			for (int i = 0; i < width; i++) {
 				if (BoundaryUtils::hasBoundaryPrescribedVelocity(VectorComponent::Y, cellData, i, j)) continue;
 				
-				float currentVelY = velocityField.getEdgeY(i, j);
-				float laplacianY = m_laplacianField.getEdgeY(i, j);
+				float currentVelY = velocityField.getEdgeValue<Y>(i, j);
+				float laplacianY = m_laplacianField.getEdgeValue<Y>(i, j);
 				float newVelY = (currentVelY + alpha * laplacianY) / beta;
-				m_auxMacGrid.setEdgeY(i, j, newVelY);
+				m_auxStaggeredVectorField.setEdgeValue<Y>(i, j, newVelY);
 			}
 		}
 		if (k < iterationCount)
-			std::swap(m_auxMacGrid, velocityField);
+			std::swap(m_auxStaggeredVectorField, velocityField);
 	}
 }

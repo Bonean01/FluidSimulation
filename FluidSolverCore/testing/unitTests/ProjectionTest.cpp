@@ -19,7 +19,7 @@ TEST_CASE("Projection - Divergence free field remains unchanged after projection
 	float density = 1.0f;
 	float timeStep = 1.0f / 60.0f;
 	int iterationCount = 60;
-	MACGrid2D velocityField{ width, height, cellWidth };
+	StaggeredVectorField2D velocityField{ width, height, cellWidth };
 	Grid2D<CellData> cellData{ width, height, cellWidth };
 	ScalarField2D pressureField{ width, height, cellWidth };
 	PressureSolver pressureSolver{ width, height, cellWidth };

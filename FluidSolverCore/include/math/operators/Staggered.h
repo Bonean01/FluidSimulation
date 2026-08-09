@@ -12,5 +12,5 @@ namespace Staggered {
 	float divergence(int i, int j, const StaggeredVectorField2D& vectorField);
 	void divergence(ScalarField2D& result, const StaggeredVectorField2D& vectorField);
 	float laplacian(int i, int j, const MACGrid2D& vectorField);
-	void laplacian(MACGrid2D&result, const MACGrid2D& vectorField);
+	void laplacian(StaggeredVectorField2D&result, const StaggeredVectorField2D& vectorField);
 }

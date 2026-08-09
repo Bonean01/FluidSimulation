@@ -6,7 +6,7 @@
 
 
 namespace BoundaryUtils {
-	static void applyVelocityBoundaryConditions(VectorComponent component, int i, int j, MACGrid2D& velocityField, const CellData& cellData) {
+	static void applyVelocityBoundaryConditions(VectorComponent component, int i, int j, StaggeredVectorField2D& velocityField, const CellData& cellData) {
 		using enum VectorComponent;
 
 		switch (cellData.boundaryType) {
@@ -14,7 +14,10 @@ namespace BoundaryUtils {
 
 			case VelocityInlet:
 			case NoSlip:
-				velocityField.setEdge(component, i, j, cellData.prescribedVelocity.get(component));
+				if (component == X)
+					velocityField.setEdgeValue<X>(i, j, cellData.prescribedVelocity.get(component));
+				if (component == Y)
+					velocityField.setEdgeValue<Y>(i, j, cellData.prescribedVelocity.get(component));
 				break;
 
 			case VelocityOutlet:
@@ -25,7 +28,7 @@ namespace BoundaryUtils {
 	}
 
 
-	void applyVelocityBoundaryConditions(MACGrid2D& velocityField, const Grid2D<CellData>& cellData) {
+	void applyVelocityBoundaryConditions(StaggeredVectorField2D& velocityField, const Grid2D<CellData>& cellData) {
 		int width = velocityField.width();
 		int height = velocityField.height();
 		// -- horizontal --

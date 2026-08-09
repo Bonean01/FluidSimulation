@@ -3,10 +3,12 @@
 #include "domain/BoundaryUtils.h"
 
 
-void Advection::execute(MACGrid2D& velocityField, const Grid2D<CellData>& cellData, float timeStep) {
+void Advection::execute(StaggeredVectorField2D& velocityField, const Grid2D<CellData>& cellData, float timeStep) {
+	using enum VectorComponent;
+
 	int width = velocityField.width();
 	int height = velocityField.height();
-	if (m_auxMacGrid.width() != width || m_auxMacGrid.height() != height) return;
+	if (m_auxStaggeredVectorField.width() != width || m_auxStaggeredVectorField.height() != height) return;
 
 	// === horizontal ===
 	for (int j = 0; j < height; j++) {
@@ -16,7 +18,7 @@ void Advection::execute(MACGrid2D& velocityField, const Grid2D<CellData>& cellDa
 			Vec2f position = { (float)i - 0.5f, (float)j };
 			Vec2f currentVel = velocityField.sampleBilinear(position);
 			Vec2f newValue = velocityField.sampleBilinear(position - currentVel * timeStep);
-			m_auxMacGrid.setEdgeX(i, j, newValue.x);
+			m_auxStaggeredVectorField.setEdgeValue<X>(i, j, newValue.x);
 		}
 	}
 	// === vertical ===
@@ -27,14 +29,14 @@ void Advection::execute(MACGrid2D& velocityField, const Grid2D<CellData>& cellDa
 			Vec2f position = { (float)i, (float)j - 0.5f };
 			Vec2f currentVel = velocityField.sampleBilinear(position);
 			Vec2f newValue = velocityField.sampleBilinear(position - currentVel * timeStep);
-			m_auxMacGrid.setEdgeY(i, j, newValue.y);
+			m_auxStaggeredVectorField.setEdgeValue<Y>(i, j, newValue.y);
 		}
 	}
-	std::swap(velocityField, m_auxMacGrid);
+	std::swap(velocityField, m_auxStaggeredVectorField);
 }
 
 
-void Advection::execute(ScalarField2D& field, const MACGrid2D& velocityField, const Grid2D<CellData>& cellData, float timeStep) {
+void Advection::execute(ScalarField2D& field, const StaggeredVectorField2D& velocityField, const Grid2D<CellData>& cellData, float timeStep) {
 	int width = field.width();
 	int height = field.height();
 	if (m_auxScalarField.width() != width || m_auxScalarField.height() != height) return;

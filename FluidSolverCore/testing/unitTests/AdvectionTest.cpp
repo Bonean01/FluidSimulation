@@ -17,7 +17,7 @@ TEST_CASE("Advection - Constant velocity remains constant") {
 	float density = 1.0f;
 	float timeStep = 1.0f / 60.0f;
 
-	MACGrid2D velocityField{ width, height, cellWidth };
+	StaggeredVectorField2D velocityField{ width, height, cellWidth };
 	Grid2D<CellData> cellData{ width, height, cellWidth };
 	const float CONSTANT = 10.0f;
 
@@ -33,14 +33,14 @@ TEST_CASE("Advection - Constant velocity remains constant") {
 	for (int j = 0; j < height; j++) {
 		for (int i = 0; i < width + 1; i++) {
 			if (cellData.getValue(i, j).cellType == CellType::Solid || cellData.getValue(i - 1, j).cellType == CellType::Solid) continue;
-			float edgeX = velocityField.getEdgeX(i, j);
+			float edgeX = velocityField.getEdgeValue<X>(i, j);
 			CHECK_THAT(edgeX, Matchers::WithinRel(CONSTANT));
 		}
 	}
 	for (int j = 0; j < height + 1; j++) {
 		for (int i = 0; i < width; i++) {
 			if (cellData.getValue(i, j).cellType == CellType::Solid || cellData.getValue(i - 1, j).cellType == CellType::Solid) continue;
-			float edgeY = velocityField.getEdgeY(i, j);
+			float edgeY = velocityField.getEdgeValue<Y>(i, j);
 			CHECK_THAT(edgeY, Matchers::WithinRel(CONSTANT));
 		}
 	}
