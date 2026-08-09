@@ -1,15 +1,15 @@
 #include "steps/Advection.h"
 
 
-void Advection::execute(StaggeredVectorField2D& velocityField, const Grid2D<CellData>& cellData, float timeStep) {
+void Advection::execute(StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData, float timeStep) {
 	using enum VectorComponent;
 
 	int width = velocityField.width();
 	int height = velocityField.height();
 	if (m_auxStaggeredVectorField.width() != width || m_auxStaggeredVectorField.height() != height) return;
 
-	advectComponent<X>(velocityField, cellData, timeStep);
-	advectComponent<Y>(velocityField, cellData, timeStep);
+	advectComponent(X, velocityField, boundaryData, timeStep);
+	advectComponent(Y, velocityField, boundaryData, timeStep);
 
 	std::swap(velocityField, m_auxStaggeredVectorField);
 }
@@ -30,4 +30,20 @@ void Advection::execute(ScalarField2D& field, const StaggeredVectorField2D& velo
 		}
 	}
 	std::swap(field, m_auxScalarField);
+}
+
+
+void Advection::advectComponent(const VectorComponent& C, StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData, float timeStep) {
+	int width = velocityField.getValuesWidth(C);
+	int height = velocityField.getValuesHeight(C);
+	for (int j = 0; j < height; j++) {
+		for (int i = 0; i < width; i++) {
+			if (BoundaryUtils::hasBoundaryPrescribedVelocity(C, i, j, boundaryData)) continue;
+
+			Vec2f position = velocityField.getEdgePosition(C, i, j);
+			Vec2f currentVel = velocityField.sampleBilinear(position);
+			Vec2f newValue = velocityField.sampleBilinear(position - currentVel * timeStep);
+			m_auxStaggeredVectorField.setEdgeValue(C, i, j, newValue.get(C));
+		}
+	}
 }

@@ -69,10 +69,10 @@ namespace FiniteDifference {
 namespace Staggered {
 	float divergence(int i, int j, const StaggeredVectorField2D& vectorField) {
 		using enum VectorComponent;
-		float right = vectorField.getEdgeValue<X>(i + 1, j);
-		float left = vectorField.getEdgeValue<X>(i, j);
-		float top = vectorField.getEdgeValue<Y>(i, j + 1);
-		float bottom = vectorField.getEdgeValue<Y>(i, j);
+		float right = vectorField.getEdgeValue(X, i + 1, j);
+		float left = vectorField.getEdgeValue(X, i, j);
+		float top = vectorField.getEdgeValue(Y, i, j + 1);
+		float bottom = vectorField.getEdgeValue(Y, i, j);
 		float dx = vectorField.cellWidth();
 		return (right - left + top - bottom) / dx;
 	}

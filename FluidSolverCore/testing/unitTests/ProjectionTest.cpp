@@ -20,6 +20,7 @@ TEST_CASE("Projection - Divergence free field remains unchanged after projection
 	int iterationCount = 60;
 	StaggeredVectorField2D velocityField{ width, height, cellWidth };
 	Grid2D<CellData> cellData{ width, height, cellWidth };
+	StaggeredGrid2D<BoundaryData> boundaryData{ width, height, cellWidth };
 	ScalarField2D pressureField{ width, height, cellWidth };
 	PressureSolver pressureSolver{ width, height, cellWidth };
 	Projection projection{};
@@ -27,7 +28,7 @@ TEST_CASE("Projection - Divergence free field remains unchanged after projection
 	TestUtils::initializeConstantVelocities(velocityField, 10.0f);
 
 	pressureSolver.solveJacobi(pressureField, velocityField, cellData , density, timeStep, iterationCount);
-	projection.execute(velocityField, pressureField, cellData, density, timeStep);
+	projection.execute(velocityField, pressureField, boundaryData, density, timeStep);
 	
 	for (int j = 0; j < height; j++) {
 		for (int i = 0; i < width; i++) {

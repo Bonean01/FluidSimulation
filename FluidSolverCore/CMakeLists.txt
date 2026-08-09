@@ -53,6 +53,7 @@ set (SOURCE_FILES
 	"src/math/dataStructures/Vector.cpp"
 	"src/math/dataStructures/ScalarField.cpp"
 	"src/math/dataStructures/VectorField.cpp"
+	"src/math/dataStructures/StaggeredVectorField.cpp"
 	
 	"src/math/operators/Gradient.cpp"
 	"src/math/operators/Divergence.cpp"

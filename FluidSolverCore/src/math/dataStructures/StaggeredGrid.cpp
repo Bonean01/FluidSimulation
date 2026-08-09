@@ -6,20 +6,21 @@
 
 
 template<typename T>
-const T& StaggeredGrid2D<T>::getEdgeValue(const VectorComponent& C, int i, int j) const {
+template<VectorComponent C>
+const T& StaggeredGrid2D<T>::getEdgeValue(int i, int j) const {
     using enum VectorComponent;
 
-    if (C == X) {
+    if constexpr (C == X) {
         i = std::clamp(i, 0, m_width);
         j = std::clamp(j, 0, m_height - 1);
-        int index = getIndex(X, i, j);
+        int index = getIndex<X>(i, j);
 
         return m_valuesX[index];
     }
-    else if (C == Y) {
+    else if constexpr (C == Y) {
         i = std::clamp(i, 0, m_width - 1);
         j = std::clamp(j, 0, m_height);
-        int index = getIndex(Y, i, j);
+        int index = getIndex<Y>(i, j);
 
         return m_valuesY[index];
     }
@@ -31,9 +32,10 @@ const T& StaggeredGrid2D<T>::getEdgeValue(const VectorComponent& C, int i, int j
 
 
 template<typename T>
-void StaggeredGrid2D<T>::setEdgeValue(const VectorComponent& C, int i, int j, T value) {
+template<VectorComponent C>
+void StaggeredGrid2D<T>::setEdgeValue(int i, int j, T value) {
     using enum VectorComponent;
-    int index = getIndex(C, i, j);
+    int index = getIndex<C>(i, j);
 
     if (C == X) {
 	    if (index < 0 || index >= m_valuesX.size()) return;
@@ -51,9 +53,10 @@ void StaggeredGrid2D<T>::setEdgeValue(const VectorComponent& C, int i, int j, T 
 
 
 template<typename T>
-int StaggeredGrid2D<T>::getValuesWidth(const VectorComponent& C) const {
-    if (C == X) return m_width + 1;
-    else if (C == Y) return m_width;
+template<VectorComponent C>
+int StaggeredGrid2D<T>::getValuesWidth() const {
+    if constexpr (C == X) return m_width + 1;
+    else if constexpr (C == Y) return m_width;
     else
         throw std::runtime_error(
             "StaggeredGrid2D only has components X and Y but accessed: " + C
@@ -62,9 +65,10 @@ int StaggeredGrid2D<T>::getValuesWidth(const VectorComponent& C) const {
 
 
 template<typename T>
-int StaggeredGrid2D<T>::getValuesHeight(const VectorComponent& C) const {
-    if (C == X) return m_height + 1;
-    else if (C == Y) return m_height;
+template<VectorComponent C>
+int StaggeredGrid2D<T>::getValuesHeight() const {
+    if constexpr (C == X) return m_height + 1;
+    else if constexpr (C == Y) return m_height;
     else
         throw std::runtime_error(
             "StaggeredGrid2D only has components X and Y but accessed: " + C
@@ -73,9 +77,10 @@ int StaggeredGrid2D<T>::getValuesHeight(const VectorComponent& C) const {
 
 
 template<typename T>
-Vec2f StaggeredGrid2D<T>::getEdgePosition(const VectorComponent& C, int i, int j) const {
-    if (C == X) return { (float)i - 0.5f, (float)j };
-    else if (C == Y) return { (float)i, (float)j - 0.5f };
+template<VectorComponent C>
+Vec2f StaggeredGrid2D<T>::getEdgePosition(int i, int j) const {
+    if constexpr (C == X) return { (float)i - 0.5f, (float)j };
+    else if constexpr (C == Y) return { (float)i, (float)j - 0.5f };
     else
         throw std::runtime_error(
             "StaggeredGrid2D only has components X and Y but accessed: " + C
@@ -83,12 +88,12 @@ Vec2f StaggeredGrid2D<T>::getEdgePosition(const VectorComponent& C, int i, int j
 }
 
 
-template<typename T>
-int StaggeredGrid2D<T>::getIndex(const VectorComponent& C, int i, int j) const {
+template<VectorComponent C>
+int StaggeredGrid2D<T>::getIndex(int i, int j) const {
     using enum VectorComponent;
     
-    if (C == X)      return j * (m_width + 1) + i;
-    else if (C == Y) return j * m_width + 1;
+    if constexpr (C == X)      return j * (m_width + 1) + i;
+    else if constexpr (C == Y) return j * m_width + 1;
     else
         throw std::runtime_error(
             "StaggeredGrid2D only has components X and Y but accessed: " + C

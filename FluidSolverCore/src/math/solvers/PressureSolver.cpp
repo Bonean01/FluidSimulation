@@ -35,10 +35,10 @@ float PressureSolver::solveCell(int i, int j, ScalarField2D& pressureField, Stag
 	float topPres = pressureField.getValue(i, j + 1);
 	float bottomPres = pressureField.getValue(i, j - 1);
 	
-	float rightVel = velocityField.getEdgeValue<X>(i + 1, j);
-	float leftVel = velocityField.getEdgeValue<X>(i, j);
-	float topVel = velocityField.getEdgeValue<Y>(i, j + 1);
-	float bottomVel = velocityField.getEdgeValue<Y>(i, j);
+	float rightVel = velocityField.getEdgeValue(X, i + 1, j);
+	float leftVel = velocityField.getEdgeValue(X, i, j);
+	float topVel = velocityField.getEdgeValue(Y, i, j + 1);
+	float bottomVel = velocityField.getEdgeValue(Y, i, j);
 
 	// Don't include pressure's that come from solid cells
 	// (theoretically they have 1 pressure value per face)

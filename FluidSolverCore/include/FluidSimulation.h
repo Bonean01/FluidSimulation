@@ -55,7 +55,6 @@ public:
 
 	void addSmoke(int i, int j, float deltaSmoke) { m_smokeField.setValue(i, j, m_smokeField.getValue(i, j) + deltaSmoke); }
 	
-	void setCellData(int i, int j, CellData cellData) { m_cellData.setValue(i, j, cellData); }
 	void setCell(int i, int j, CellData, BoundaryData);
 
 private:

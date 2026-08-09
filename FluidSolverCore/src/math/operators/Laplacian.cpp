@@ -29,36 +29,31 @@ namespace FiniteDifference {
 
 
 namespace Staggered {
+	static void laplacian(const VectorComponent& C, StaggeredVectorField2D& result, const StaggeredVectorField2D& vectorField) {
+		int width = vectorField.getValuesWidth(C);
+		int height = vectorField.getValuesHeight(C);
+		float dx = vectorField.cellWidth();
+		
+		for (int j = 0; j < height; j++) {
+			for (int i = 0; i < width; i++) {
+				float center = vectorField.getEdgeValue(C, i, j);
+				float right = vectorField.getEdgeValue(C, i + 1, j);
+				float left = vectorField.getEdgeValue(C, i - 1, j);
+				float top = vectorField.getEdgeValue(C, i, j + 1);
+				float bottom = vectorField.getEdgeValue(C, i, j - 1);
+
+				float res = (right + left + top + bottom - 4 * center) / (dx * dx);
+				result.setEdgeValue(C, i, j, res);
+			}
+		}
+	}
+
 	void laplacian(StaggeredVectorField2D& result, const StaggeredVectorField2D& vectorField) {
 		int width = vectorField.width();
 		int height = vectorField.height();
 		float dx = vectorField.cellWidth();
 		
-		// === horizontal ===
-		for (int j = 0; j < height; j++) {
-			for (int i = 0; i < width + 1; i++) {
-				float center = vectorField.getEdgeValue<X>(i, j);
-				float right = vectorField.getEdgeValue<X>(i + 1, j);
-				float left = vectorField.getEdgeValue<X>(i - 1, j);
-				float top = vectorField.getEdgeValue<X>(i, j + 1);
-				float bottom = vectorField.getEdgeValue<X>(i, j - 1);
-
-				float x = (right + left + top + bottom - 4 * center) / (dx * dx);
-				result.setEdgeValue<X>(i, j, x);
-			}
-		}
-		// === vertical ===
-		for (int j = 0; j < height + 1; j++) {
-			for (int i = 0; i < width; i++) {
-				float center = vectorField.getEdgeValue<Y>(i, j);
-				float right = vectorField.getEdgeValue<Y>(i + 1, j);
-				float left = vectorField.getEdgeValue<Y>(i - 1, j);
-				float top = vectorField.getEdgeValue<Y>(i, j + 1);
-				float bottom = vectorField.getEdgeValue<Y>(i, j - 1);
-
-				float y = (right + left + top + bottom - 4 * center) / (dx * dx);
-				result.setEdgeValue<Y>(i, j, y);
-			}
-		}
+		laplacian(X, result, vectorField);
+		laplacian(Y, result, vectorField);
 	}
 }
