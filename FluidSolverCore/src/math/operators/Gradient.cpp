@@ -69,21 +69,3 @@ namespace FiniteDifference {
 		}
 	}
 }
-
-
-
-namespace Staggered {
-	float gradientX(int i, int j, const ScalarField2D& scalarField) {
-		float left = scalarField.getValue(i - 1, j);
-		float right = scalarField.getValue(i, j);
-		float dx = scalarField.cellWidth();
-		return (right - left) / dx;
-	}
-
-	float gradientY(int i, int j, const ScalarField2D& scalarField) {
-		float bottom = scalarField.getValue(i, j - 1);
-		float top = scalarField.getValue(i, j);
-		float dx = scalarField.cellWidth();
-		return (top - bottom) / dx;
-	}
-}
