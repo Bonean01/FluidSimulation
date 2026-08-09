@@ -35,7 +35,6 @@ set (SOURCE_FILES
 	"include/math/dataStructures/ScalarField.h"
 	"include/math/dataStructures/VectorField.h"
 	"include/math/dataStructures/StaggeredVectorField.h"
-	"include/math/dataStructures/MACGrid.h"
 
 	"include/math/operators/FiniteDifference.h"
 	"include/math/operators/Staggered.h"
@@ -54,7 +53,6 @@ set (SOURCE_FILES
 	"src/math/dataStructures/Vector.cpp"
 	"src/math/dataStructures/ScalarField.cpp"
 	"src/math/dataStructures/VectorField.cpp"
-	"src/math/dataStructures/MACGrid.cpp"
 	
 	"src/math/operators/Gradient.cpp"
 	"src/math/operators/Divergence.cpp"

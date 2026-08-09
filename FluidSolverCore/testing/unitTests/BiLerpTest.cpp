@@ -3,7 +3,7 @@
 
 #include "math/dataStructures/ScalarField.h"
 #include "math/dataStructures/VectorField.h"
-#include "math/dataStructures/MACGrid.h"
+#include "math/dataStructures/StaggeredVectorField.h"
 
 
 using namespace Catch;
@@ -28,9 +28,9 @@ TEST_CASE("Bilinear Sampling") {
 	CHECK_THAT(resV.x, Matchers::WithinRel(2.5f, 0.001f));
 	CHECK_THAT(resV.y, Matchers::WithinRel(2.5f, 0.001f));
 
-	MACGrid2D macGrid{ 2, 2, 1.0f };
-	macGrid.setCellValue(0, 0, { 1.0f, 4.0f });
-	resV = macGrid.sampleBilinear(0, 0);
+	StaggeredVectorField2D staggered{ 2, 2, 1.0f };
+	staggered.setCellValue(0, 0, { 1.0f, 4.0f });
+	resV = staggered.sampleBilinear(0, 0);
 	CHECK_THAT(resV.x, Matchers::WithinRel(1.0f, 0.001f));
 	CHECK_THAT(resV.y, Matchers::WithinRel(4.0f, 0.001f));
 }

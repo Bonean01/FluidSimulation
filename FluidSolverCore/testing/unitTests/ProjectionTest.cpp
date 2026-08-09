@@ -4,7 +4,6 @@
 #include <cstdint>
 
 #include "TestUtils.h"
-#include "math/dataStructures/MACGrid.h"
 #include "math/solvers/PressureSolver.h"
 #include "math/operators/Staggered.h"
 #include "steps/Projection.h"

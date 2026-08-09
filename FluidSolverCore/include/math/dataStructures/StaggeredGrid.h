@@ -23,6 +23,14 @@ public:
     template<VectorComponent>
     void setEdgeValue(int i, int j, T value);
     
+    template<VectorComponent>
+    int getValuesWidth() const;
+
+    template<VectorComponent>
+    int getValuesHeight() const;
+
+    template<VectorComponent>
+    Vec2f getEdgePosition(int i, int j) const;
 
 protected:
     int m_width, m_height;

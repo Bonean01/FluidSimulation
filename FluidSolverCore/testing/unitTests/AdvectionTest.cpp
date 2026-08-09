@@ -4,7 +4,6 @@
 #include <cstdint>
 
 #include "TestUtils.h"
-#include "math/dataStructures/MACGrid.h"
 #include "steps/Advection.h"
 
 

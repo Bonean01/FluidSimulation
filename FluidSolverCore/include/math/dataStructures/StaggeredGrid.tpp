@@ -54,6 +54,42 @@ void StaggeredGrid2D<T>::setEdgeValue(int i, int j, T value) {
 
 template<typename T>
 template<VectorComponent C>
+int StaggeredGrid2D<T>::getValuesWidth() const {
+    if constexpr (C == X) return m_width + 1;
+    else if constexpr (C == Y) return m_width;
+    else
+        throw std::runtime_error(
+            "StaggeredGrid2D only has components X and Y but accessed: " + C
+        );
+}
+
+
+template<typename T>
+template<VectorComponent C>
+int StaggeredGrid2D<T>::getValuesHeight() const {
+    if constexpr (C == X) return m_height + 1;
+    else if constexpr (C == Y) return m_height;
+    else
+        throw std::runtime_error(
+            "StaggeredGrid2D only has components X and Y but accessed: " + C
+        );
+}
+
+
+template<typename T>
+template<VectorComponent C>
+Vec2f StaggeredGrid2D<T>::getEdgePosition(int i, int j) const {
+    if constexpr (C == X) return { (float)i - 0.5f, (float)j };
+    else if constexpr (C == Y) return { (float)i, (float)j - 0.5f };
+    else
+        throw std::runtime_error(
+            "StaggeredGrid2D only has components X and Y but accessed: " + C
+        );
+}
+
+
+template<typename T>
+template<VectorComponent C>
 int StaggeredGrid2D<T>::getIndex(int i, int j) const {
     using enum VectorComponent;
     

@@ -5,7 +5,6 @@
 #include "FluidSimulation.h"
 #include "math/dataStructures/VectorField.h"
 #include "math/dataStructures/Vector.h"
-#include "math/dataStructures/MACGrid.h"
 #include "math/operators/Staggered.h"
 
 
