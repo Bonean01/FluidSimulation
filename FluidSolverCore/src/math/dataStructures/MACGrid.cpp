@@ -1,6 +1,6 @@
 #include <algorithm>
 #include <cmath>
-#include <exception>
+#include <stdexcept>
 #include "math/dataStructures/MACGrid.h"
 
 
@@ -25,7 +25,7 @@ float MACGrid2D::getEdgeY(int i, int j) const {
 float MACGrid2D::getEdge(const VectorComponent& component, int i, int j) const {
 	if (component == VectorComponent::X) { return getEdgeX(i, j); }
 	else if (component == VectorComponent::Y) { return getEdgeY(i, j); }
-	else return 0.0f; //throw std::exception("MACGrid2D only has X and Y components.");
+	else throw std::runtime_error("MACGrid2D only has X and Y components.");
 }
 
 

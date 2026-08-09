@@ -30,8 +30,11 @@ set (SOURCE_FILES
 
 	"include/math/dataStructures/Vector.h"
 	"include/math/dataStructures/Grid.h"
+	"include/math/dataStructures/StaggeredGrid.h"
+	"include/math/dataStructures/StaggeredGrid.tpp"
 	"include/math/dataStructures/ScalarField.h"
 	"include/math/dataStructures/VectorField.h"
+	"include/math/dataStructures/StaggeredVectorField.h"
 	"include/math/dataStructures/MACGrid.h"
 
 	"include/math/operators/FiniteDifference.h"

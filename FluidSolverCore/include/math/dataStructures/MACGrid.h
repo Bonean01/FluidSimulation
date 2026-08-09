@@ -24,7 +24,7 @@ public:
 	void setEdge(const VectorComponent& component, int i, int j, float value);
 
 	// Sampled at cell center
-	Vec2f sampleBilinear(float i, float j) const;
+	Vec2f sampleBilinear(float x, float y) const;
 	Vec2f sampleBilinear(const Vec2f& position) const;
 
 	Vec2f getCellValue(int i, int j) const;

@@ -19,3 +19,12 @@ void FluidSimulation::step(float timeStep) {
 
 	m_advection.execute(m_smokeField, m_velocityField, m_cellData, timeStep);
 }
+
+
+void FluidSimulation::setCell(int i, int j, CellData cellData, BoundaryData boundaryData) {
+	m_cellData.setValue(i, j, cellData);
+	m_boundaryData.setEdgeValue<X>(i, j, boundaryData);
+	m_boundaryData.setEdgeValue<X>(i + 1, j, boundaryData);
+	m_boundaryData.setEdgeValue<Y>(i, j, boundaryData);
+	m_boundaryData.setEdgeValue<Y>(i, j + 1, boundaryData);
+}

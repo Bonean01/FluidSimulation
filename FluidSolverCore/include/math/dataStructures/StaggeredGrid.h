@@ -9,14 +9,16 @@ public:
     StaggeredGrid2D(int width, int height, float cellWidth = 1) :
         m_width(width),
         m_height(height),
-        m_cellWidth(cellWidth) {}
+        m_cellWidth(cellWidth),
+        m_valuesX((width + 1) * height),
+        m_valuesY(width * (height + 1)) {}
 
-    int width() { return m_width; }
-    int height() { return m_height; }
-    float cellWidth() { return m_cellWidth; }
+    int width() const { return m_width; }
+    int height() const { return m_height; }
+    float cellWidth() const { return m_cellWidth; }
 
     template<VectorComponent>
-    T& getEdgeValue(int i, int j) const;
+    const T& getEdgeValue(int i, int j) const;
 
     template<VectorComponent>
     void setEdgeValue(int i, int j, T value);

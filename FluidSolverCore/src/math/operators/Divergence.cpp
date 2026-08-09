@@ -87,4 +87,27 @@ namespace Staggered {
 			}
 		}
 	}
+	
+
+	float divergence(int i, int j, const StaggeredVectorField2D& vectorField) {
+		using enum VectorComponent;
+		float right = vectorField.getEdgeValue<X>(i + 1, j);
+		float left = vectorField.getEdgeValue<X>(i, j);
+		float top = vectorField.getEdgeValue<Y>(i, j + 1);
+		float bottom = vectorField.getEdgeValue<Y>(i, j);
+		float dx = vectorField.cellWidth();
+		return (right - left + top - bottom) / dx;
+	}
+
+	void divergence(ScalarField2D& result, const StaggeredVectorField2D& vectorField) {
+		int width = vectorField.width();
+		int height = vectorField.height();
+
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				float divergence = Staggered::divergence(i, j, vectorField);
+				result.setValue(i, j, divergence);
+			}
+		}
+	}
 }
