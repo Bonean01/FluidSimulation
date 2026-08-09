@@ -3,7 +3,7 @@
 #include "math/operators/Staggered.h"
 #include "math/solvers/PressureSolver.h"
 
-#include "domain/BoundaryConditions.h"
+#include "domain/BoundaryUtils.h"
 
 
 void FluidSimulation::step(float timeStep) {

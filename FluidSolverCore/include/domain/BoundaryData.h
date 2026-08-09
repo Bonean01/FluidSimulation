@@ -36,7 +36,7 @@ We are just missing a better way to iterate through the two components of the st
     
 Potential solution maybe?
     - Expose both component arrays through getter methods, prepare generic methods for each component and
-    call them separately and make them independent from their location, aka rather than X: i + 1, j
+    call them separately and make them independent from their location, ie rather than X: i + 1, j
     and Y: i, j + 1, have smth like X, Y: getAdyacent(VectorComponent) or getOposite(VectorComponent), or
     even better design to not need those methods. Then have Advection::execute(VectorComponent::X)
     and Advection::execute(VectorComponent::Y), same for diffusion, same for projection. Also have

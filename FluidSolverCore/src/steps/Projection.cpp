@@ -1,7 +1,7 @@
 #include "steps/Projection.h"
 
 #include "math/operators/Staggered.h"
-#include "domain/BoundaryConditions.h"
+#include "domain/BoundaryUtils.h"
 
 // TODO: Refactor the boundary checking so that cells next to cells with prescribed pressure get properly projected
 void Projection::execute(MACGrid2D& velocityField, const ScalarField2D& pressureField, const Grid2D<CellData>& cellData, float density, float timeStep) {

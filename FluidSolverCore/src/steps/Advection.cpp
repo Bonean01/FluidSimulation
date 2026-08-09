@@ -1,6 +1,6 @@
 #include "steps/Advection.h"
 
-#include "domain/BoundaryConditions.h"
+#include "domain/BoundaryUtils.h"
 
 
 void Advection::execute(MACGrid2D& velocityField, const Grid2D<CellData>& cellData, float timeStep) {

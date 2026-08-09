@@ -1,7 +1,7 @@
 #include "steps/Diffusion.h"
 
 #include "math/operators/Staggered.h"
-#include "domain/BoundaryConditions.h"
+#include "domain/BoundaryUtils.h"
 
 
 void Diffusion::execute(MACGrid2D& velocityField, const Grid2D<CellData>& cellData, float kinematicViscosity, float timeStep, unsigned int iterationCount) {

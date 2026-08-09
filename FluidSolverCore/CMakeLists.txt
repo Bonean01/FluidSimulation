@@ -21,7 +21,8 @@ set (SOURCE_FILES
 	"include/domain/CellType.h"
 	"include/domain/BoundaryType.h"
 	"include/domain/CellData.h"
-	"include/domain/BoundaryConditions.h"
+	"include/domain/BoundaryUtils.h"
+	"include/domain/BoundaryData.h"
 
 	"include/steps/Advection.h"
 	"include/steps/Diffusion.h"
@@ -41,7 +42,7 @@ set (SOURCE_FILES
 	"src/Exports.cpp"
 	"src/FluidSimulation.cpp"
 
-	"src/domain/BoundaryConditions.cpp"
+	"src/domain/BoundaryUtils.cpp"
 
 	"src/steps/Advection.cpp"
 	"src/steps/Diffusion.cpp"

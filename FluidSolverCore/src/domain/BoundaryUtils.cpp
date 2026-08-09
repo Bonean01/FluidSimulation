@@ -1,4 +1,4 @@
-#include "domain/BoundaryConditions.h"
+#include "domain/BoundaryUtils.h"
 
 // For the time being, boundaries are determined by the cell they belong to, if a cell has BoundaryType::NoSlip, then all its faces will have that 
 // boundary condition, if a cell right next to it has the BoundaryType::None, the interface between them will still have NoSlip. As of right now

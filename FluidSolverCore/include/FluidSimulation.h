@@ -1,5 +1,7 @@
 #pragma once
 
+#include "math/dataStructures/Grid.h"
+#include "math/dataStructures/StaggeredGrid.h"
 #include "math/dataStructures/Vector.h"
 #include "math/dataStructures/ScalarField.h"
 #include "math/dataStructures/VectorField.h"
@@ -12,6 +14,7 @@
 #include "steps/Diffusion.h"
 
 #include "domain/CellData.h"
+#include "domain/BoundaryData.h"
 
 
 class FluidSimulation {
@@ -26,6 +29,7 @@ public:
 		m_divergenceField(gridWidth, gridHeight, m_cellWidth),
 		m_smokeField(gridWidth, gridHeight, m_cellWidth),
 		m_cellData(gridWidth, gridHeight),
+		m_boundaryData(gridWidth, gridHeight),
 
 		m_advection(gridWidth, gridHeight, m_cellWidth),
 		m_diffusion(gridWidth, gridHeight, m_cellWidth),
@@ -60,6 +64,7 @@ private:
 	MACGrid2D m_velocityField;
 	ScalarField2D m_pressureField, m_divergenceField, m_smokeField;
 	Grid2D<CellData> m_cellData;
+	StaggeredGrid2D<BoundaryData> m_boundaryData;
 
 	Advection m_advection;
 	Projection m_projection;
