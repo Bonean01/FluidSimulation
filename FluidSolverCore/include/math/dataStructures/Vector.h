@@ -3,7 +3,7 @@
 #include <stdexcept>
 
 
-enum VectorComponent {
+enum class VectorComponent {
 	X,
 	Y
 };

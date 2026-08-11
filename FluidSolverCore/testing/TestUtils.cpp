@@ -2,7 +2,7 @@
 
 
 
-void TestUtils::initializeRandomVelocities(MACGrid2D& velocityField, float min, float max, unsigned int seed) {
+void TestUtils::initializeRandomVelocities(StaggeredVectorField2D& velocityField, float min, float max, unsigned int seed) {
 	std::srand(seed);
 
 	int width = velocityField.width();
@@ -11,31 +11,31 @@ void TestUtils::initializeRandomVelocities(MACGrid2D& velocityField, float min, 
 		for (int i = 0; i < width + 1; i++) {
 			float t = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
 			float value = std::lerp(min, max, t);
-			velocityField.setEdgeX(i, j, value);
+			velocityField.setEdgeValue(VectorComponent::X, i, j, value);
 		}
 	}
 	for (int j = 0; j < height + 1; j++) {
 		for (int i = 0; i < width; i++) {
 			float t = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
 			float value = std::lerp(min, max, t);
-			velocityField.setEdgeY(i, j, value);
+			velocityField.setEdgeValue(VectorComponent::Y, i, j, value);
 		}
 	}
 }
 
 
-void TestUtils::initializeConstantVelocities(MACGrid2D& velocityField, float constant) {
+void TestUtils::initializeConstantVelocities(StaggeredVectorField2D& velocityField, float constant) {
 	int width = velocityField.width();
 	int height = velocityField.height();
 
 	for (int j = 0; j < height; j++) {
 		for (int i = 0; i < width + 1; i++) {
-			velocityField.setEdgeX(i, j, constant);
+			velocityField.setEdgeValue(VectorComponent::X, i, j, constant);
 		}
 	}
 	for (int j = 0; j < height + 1; j++) {
 		for (int i = 0; i < width; i++) {
-			velocityField.setEdgeY(i, j, constant);
+			velocityField.setEdgeValue(VectorComponent::Y, i, j, constant);
 		}
 	}
 }
@@ -59,7 +59,7 @@ void TestUtils::initializeSolidBoundaries(Grid2D<uint8_t>& solidCellMap) {
 void TestUtils::initializeSolidBoundaries(Grid2D<CellData>& cellData) {
 	int width = cellData.width();
 	int height = cellData.height();
-	CellData solidCell{ CellType::Solid, BoundaryType::NoSlip, 0.0f };
+	CellData solidCell{ CellType::Solid, 0.0f };
 
 	for (int i = 0; i < width; i++) {
 		cellData.setValue(i, 0, solidCell);

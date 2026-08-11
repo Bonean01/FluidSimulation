@@ -17,12 +17,15 @@ public:
     int height() const { return m_height; }
     float cellWidth() const { return m_cellWidth; }
 
-    template<VectorComponent>
-    const T& getEdgeValue(int i, int j) const;
+    const T& getEdgeValue(const VectorComponent& C, int i, int j) const;
 
-    template<VectorComponent>
-    void setEdgeValue(int i, int j, T value);
+    void setEdgeValue(const VectorComponent& C, int i, int j, T value);
     
+    int getValuesWidth(const VectorComponent& C) const;
+
+    int getValuesHeight(const VectorComponent& C) const;
+
+    Vec2f getEdgePosition(const VectorComponent& C, int i, int j) const;
 
 protected:
     int m_width, m_height;
@@ -31,8 +34,7 @@ protected:
     
 
 private:
-    template<VectorComponent>
-    int getIndex(int i, int j) const;
+    int getIndex(const VectorComponent& C, int i, int j) const;
 };
 
 #include "StaggeredGrid.tpp"

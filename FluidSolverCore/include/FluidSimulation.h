@@ -5,7 +5,6 @@
 #include "math/dataStructures/Vector.h"
 #include "math/dataStructures/ScalarField.h"
 #include "math/dataStructures/VectorField.h"
-#include "math/dataStructures/MACGrid.h"
 
 #include "math/solvers/PressureSolver.h"
 
@@ -40,7 +39,7 @@ public:
 
 	void step(float timeStep);
 
-	const MACGrid2D& getVelocityField() const { return m_velocityField; }
+	const StaggeredVectorField2D getVelocityField() const { return m_velocityField; }
 	const ScalarField2D& getPressureField() const { return m_pressureField; }
 	const ScalarField2D& getDivergenceField() const { return m_divergenceField; }
 	const ScalarField2D& getSmokeField() const { return m_smokeField; }
@@ -56,13 +55,12 @@ public:
 
 	void addSmoke(int i, int j, float deltaSmoke) { m_smokeField.setValue(i, j, m_smokeField.getValue(i, j) + deltaSmoke); }
 	
-	void setCellData(int i, int j, CellData cellData) { m_cellData.setValue(i, j, cellData); }
 	void setCell(int i, int j, CellData, BoundaryData);
 
 private:
 	float m_density, m_kinematicViscosity, m_cellWidth;
 
-	MACGrid2D m_velocityField;
+	StaggeredVectorField2D m_velocityField;
 	ScalarField2D m_pressureField, m_divergenceField, m_smokeField;
 	Grid2D<CellData> m_cellData;
 	StaggeredGrid2D<BoundaryData> m_boundaryData;

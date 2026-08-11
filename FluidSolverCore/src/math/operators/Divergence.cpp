@@ -67,34 +67,12 @@ namespace FiniteDifference {
 
 
 namespace Staggered {
-	float divergence(int i, int j, const MACGrid2D& macGrid) {
-		float right = macGrid.getEdgeX(i + 1, j);
-		float left = macGrid.getEdgeX(i, j);
-		float top = macGrid.getEdgeY(i, j + 1);
-		float bottom = macGrid.getEdgeY(i, j);
-		float dx = macGrid.cellWidth();
-		return (right - left + top - bottom) / dx;
-	}
-	
-	void divergence(ScalarField2D& result, const MACGrid2D& macGrid) {
-		int width = macGrid.width();
-		int height = macGrid.height();
-
-		for (int i = 0; i < width; i++) {
-			for (int j = 0; j < height; j++) {
-				float divergence = Staggered::divergence(i, j, macGrid);
-				result.setValue(i, j, divergence);
-			}
-		}
-	}
-	
-
 	float divergence(int i, int j, const StaggeredVectorField2D& vectorField) {
 		using enum VectorComponent;
-		float right = vectorField.getEdgeValue<X>(i + 1, j);
-		float left = vectorField.getEdgeValue<X>(i, j);
-		float top = vectorField.getEdgeValue<Y>(i, j + 1);
-		float bottom = vectorField.getEdgeValue<Y>(i, j);
+		float right = vectorField.getEdgeValue(X, i + 1, j);
+		float left = vectorField.getEdgeValue(X, i, j);
+		float top = vectorField.getEdgeValue(Y, i, j + 1);
+		float bottom = vectorField.getEdgeValue(Y, i, j);
 		float dx = vectorField.cellWidth();
 		return (right - left + top - bottom) / dx;
 	}
