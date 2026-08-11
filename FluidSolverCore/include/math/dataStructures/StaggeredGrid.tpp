@@ -25,7 +25,7 @@ const T& StaggeredGrid2D<T>::getEdgeValue(const VectorComponent& C, int i, int j
     }
     else
         throw std::runtime_error(
-            "StaggeredGrid2D only has components X and Y but accessed: " + C
+            "StaggeredGrid2D only has components X and Y but accessed another one"
         );
 }
 
@@ -45,40 +45,46 @@ void StaggeredGrid2D<T>::setEdgeValue(const VectorComponent& C, int i, int j, T 
     }
     else
         throw std::runtime_error(
-            "StaggeredGrid2D only has components X and Y but accessed: " + C
+            "StaggeredGrid2D only has components X and Y but accessed another one"
         );
 }
 
 
 template<typename T>
 int StaggeredGrid2D<T>::getValuesWidth(const VectorComponent& C) const {
+    using enum VectorComponent;
+
     if (C == X) return m_width + 1;
     else if (C == Y) return m_width;
     else
         throw std::runtime_error(
-            "StaggeredGrid2D only has components X and Y but accessed: " + C
+            "StaggeredGrid2D only has components X and Y but accessed another one"
         );
 }
 
 
 template<typename T>
 int StaggeredGrid2D<T>::getValuesHeight(const VectorComponent& C) const {
-    if (C == X) return m_height + 1;
-    else if (C == Y) return m_height;
+    using enum VectorComponent;
+
+    if (C == X) return m_height;
+    else if (C == Y) return m_height + 1;
     else
         throw std::runtime_error(
-            "StaggeredGrid2D only has components X and Y but accessed: " + C
+            "StaggeredGrid2D only has components X and Y but accessed another one"
         );
 }
 
 
 template<typename T>
 Vec2f StaggeredGrid2D<T>::getEdgePosition(const VectorComponent& C, int i, int j) const {
+    using enum VectorComponent;
+
     if (C == X) return { (float)i - 0.5f, (float)j };
     else if (C == Y) return { (float)i, (float)j - 0.5f };
     else
         throw std::runtime_error(
-            "StaggeredGrid2D only has components X and Y but accessed: " + C
+            "StaggeredGrid2D only has components X and Y but accessed another one"
         );
 }
 
@@ -88,9 +94,9 @@ int StaggeredGrid2D<T>::getIndex(const VectorComponent& C, int i, int j) const {
     using enum VectorComponent;
     
     if (C == X)      return j * (m_width + 1) + i;
-    else if (C == Y) return j * m_width + 1;
+    else if (C == Y) return j * m_width + i;
     else
         throw std::runtime_error(
-            "StaggeredGrid2D only has components X and Y but accessed: " + C
+            "StaggeredGrid2D only has components X and Y but accessed another one"
         );
 }

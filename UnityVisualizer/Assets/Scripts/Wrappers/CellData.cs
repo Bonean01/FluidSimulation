@@ -5,23 +5,22 @@ public enum CellType : byte {
     Solid
 }
 
-public enum BoundaryType : byte {
-    None,
-    NoSlip,
-    FreeSlip,
-    Inlet,
-    Outlet
-}
-
 
 [StructLayout(LayoutKind.Sequential)]
-public struct CellData {
-    public CellType cellType;
-    public BoundaryType boundaryType;
-    public Vec2f prescribedVelocity;
-    public CellData(CellType cellType = CellType.Fluid, BoundaryType boundaryType = BoundaryType.None, Vec2f prescribedVelocity = new()) {
+public readonly struct CellData {
+    public readonly CellType cellType;
+    [MarshalAs(UnmanagedType.I1)] public readonly bool hasPrescribedPressure;
+    public readonly float prescribedPressure;
+    
+    public CellData(CellType cellType = CellType.Fluid) {
         this.cellType = cellType;
-        this.boundaryType = boundaryType;
-        this.prescribedVelocity = prescribedVelocity;
+        prescribedPressure = 0.0f;
+        hasPrescribedPressure = false;
+    }
+
+    public CellData(CellType cellType, float prescribedPressure) {
+        this.cellType = cellType;
+        this.prescribedPressure = prescribedPressure;
+        hasPrescribedPressure = true;
     }
 }

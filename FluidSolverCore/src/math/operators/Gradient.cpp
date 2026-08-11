@@ -74,6 +74,7 @@ namespace FiniteDifference {
 
 namespace Staggered {
 	float gradient(const VectorComponent& C, int i, int j, const ScalarField2D& scalarField) {
+		using enum VectorComponent;
 		float dx = scalarField.cellWidth();
 		if (C == X) {
 			float left = scalarField.getValue(i - 1, j);
@@ -87,7 +88,7 @@ namespace Staggered {
 		}
 		else
 			throw std::runtime_error(
-            	"StaggeredGrid2D only has components X and Y but accessed: " + C
+				"StaggeredGrid2D only has components X and Y but accessed another one"
         	);
 	}
 }

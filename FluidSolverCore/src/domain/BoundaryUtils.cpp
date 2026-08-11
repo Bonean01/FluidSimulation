@@ -2,11 +2,6 @@
 
 
 namespace BoundaryUtils {
-    const bool hasBoundaryPrescribedVelocity(const VectorComponent& C, int i, int j, const StaggeredGrid2D<BoundaryData>& boundaryData) {
-        return boundaryData.getEdgeValue(C, i, j).boundaryType == BoundaryType::None;
-	}
-	
-    
     void applyVelocityBoundaryConditions(StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData) {
         using enum VectorComponent;
 
@@ -16,12 +11,14 @@ namespace BoundaryUtils {
 
 
     void applyVelocityBCsToComponent(const VectorComponent& C, StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData) {
+        using enum VectorComponent;
+
         int width = velocityField.getValuesWidth(C);
         int height = velocityField.getValuesHeight(C);
         
         for (int j = 0; j < height; j++) {
             for (int i = 0; i < width; i++) {
-                if (not hasBoundaryPrescribedVelocity(C, i, j, boundaryData)) continue;
+                if (not boundaryData.getEdgeValue(C, i, j).hasPrescribedVelocity) continue;
                 const BoundaryData& currentData = boundaryData.getEdgeValue(C, i, j);
                 applyVelocityBCsToEdge(C, i, j, velocityField, currentData);
             }

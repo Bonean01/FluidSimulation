@@ -4,6 +4,7 @@
 #include "math/dataStructures/StaggeredVectorField.h"
 
 #include "domain/CellData.h"
+#include "domain/BoundaryData.h"
 
 class PressureSolver {
 public:

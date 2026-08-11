@@ -1,6 +1,7 @@
 #include "math/dataStructures/StaggeredVectorField.h"
 
 #include <cmath>
+#include <algorithm>
 
 
 Vec2f StaggeredVectorField2D::sampleBilinear(float x, float y) const {
@@ -15,10 +16,18 @@ Vec2f StaggeredVectorField2D::sampleBilinear(float x, float y) const {
     }
 
 	Vec2f StaggeredVectorField2D::getCellValue(int i, int j) const {
-        return sampleBilinear(i + 0.5f, j + 0.5f);
+        using enum VectorComponent;
+        float right = getEdgeValue(X, i + 1, j);
+        float left = getEdgeValue(X, i, j);
+        float top = getEdgeValue(Y, i, j + 1);
+        float bottom = getEdgeValue(Y, i, j);
+        float x = (right + left) / 2;
+        float y = (top + bottom) / 2;
+        return { x, y };
     }
     
 	void StaggeredVectorField2D::setCellValue(int i, int j, Vec2f value) {
+        using enum VectorComponent;
         float x = value.x;
         float y = value.y;
         setEdgeValue(X, i, j, x);

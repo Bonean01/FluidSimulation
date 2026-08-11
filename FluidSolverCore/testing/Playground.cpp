@@ -53,22 +53,18 @@ static void printDivergenceField(FluidSimulation simulation) {
 
 
 int main(int argc, char* argv[]) {
-	StaggeredVectorField2D field{ 5, 5, 0.5f };
-	TestUtils::initializeRandomVelocities(field, -10.0f, 10.0f, 0);
-	field.setEdgeValue(X, 1, 1, 5.0f);
+	using enum VectorComponent;
 
-	StaggeredVectorField2D laplacian{ 5, 5, 0.5f };
-	Staggered::laplacian(laplacian, field);
-	float laplacian1 = laplacian.getEdgeValue(X, 1, 1);
-	std::cout << laplacian1 << std::endl;
+	FluidSimulation simulation{ 5, 5, 1.0f, 1.0f, 0.0f, 30 };
 
-	float right = field.getEdgeValue(X, 2, 1);
-	float left = field.getEdgeValue(X, 0, 1);
-	float top = field.getEdgeValue(X, 1, 2);
-	float bottom = field.getEdgeValue(X, 1, 0);
-	float center = field.getEdgeValue(X, 1, 1);
-	float dx = field.cellWidth();
+	simulation.setVelocity(0, 0, {10.0f, 10.0f});
+	simulation.setCell(0, 0, { CellType::Solid }, { BoundaryType::NoSlip, {0.0f, 0.0f} });
 
-	float laplacian2 = (right + left + top + bottom - 4 * center) / (dx * dx);
-	std::cout << laplacian2 << std::endl;
+	Vec2f velAtEdge = simulation.getVelocity(0, 0);
+	std::cout << velAtEdge.x << ", " << velAtEdge.y << std::endl;
+	simulation.step(1.0f / 120.0f);
+	velAtEdge = simulation.getVelocity(0, 0);
+	std::cout << velAtEdge.x << ", " << velAtEdge.y << std::endl;
+	std::cout << sizeof(CellData) << std::endl;
+	std::cout << sizeof(BoundaryData) << std::endl;
 }

@@ -49,6 +49,8 @@ namespace Staggered {
 	}
 
 	void laplacian(StaggeredVectorField2D& result, const StaggeredVectorField2D& vectorField) {
+		using enum VectorComponent;
+
 		int width = vectorField.width();
 		int height = vectorField.height();
 		float dx = vectorField.cellWidth();

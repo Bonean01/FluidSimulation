@@ -28,7 +28,7 @@ void Diffusion::diffuseComponent(const VectorComponent& C, StaggeredVectorField2
 
 	for (int j = 0; j < height; j++) {
 		for (int i = 0; i < width; i++) {
-			if (BoundaryUtils::hasBoundaryPrescribedVelocity(C, i, j, boundaryData)) continue;
+			if (boundaryData.getEdgeValue(C, i, j).hasPrescribedVelocity) continue;
 
 			float currentVel = velocityField.getEdgeValue(C, i, j);
 			float laplacian = m_laplacianField.getEdgeValue(C, i, j);

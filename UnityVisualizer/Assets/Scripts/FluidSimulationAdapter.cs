@@ -20,22 +20,26 @@ public class FluidSimulationAdapter : MonoBehaviour {
         m_height = height;
         m_simulation = new(m_width, m_height, cellWidth, density, kinematicViscosity, solverIterationCount);
         SetCellData();
+        unsafe {
+            print(sizeof(CellData));
+            print(sizeof(BoundaryData));
+        }
     }
 
 
     private void SetCellData() {
-        CellData movingWall = new(CellType.Solid, BoundaryType.NoSlip, new(1.0f, 0.0f));
-        CellData staticWall = new(CellType.Solid, BoundaryType.NoSlip, new());
-        CellData inlet = new(CellType.Fluid, BoundaryType.Inlet, new(10.0f, 0.0f));
-        CellData outlet = new(CellType.Fluid, BoundaryType.Outlet, new(0.0f, 0.0f));
+        BoundaryData movingWall = new(BoundaryType.NoSlip, new(10.0f, 0.0f));
+        BoundaryData inlet = new(BoundaryType.VelocityInlet, new(10.0f, 0.0f));
+        BoundaryData outlet = new(BoundaryType.VelocityOutlet);
+        BoundaryData staticWall = new(BoundaryType.NoSlip, new(0.0f, 0.0f));
         for (int i = 0; i < m_width; i++) {
-            m_simulation.SetCellData(i, 0, staticWall);
-            m_simulation.SetCellData(i, m_height - 1, staticWall);
+            m_simulation.SetCellData(i, 0, new(CellType.Solid), staticWall);
+            m_simulation.SetCellData(i, m_height - 1, new(CellType.Solid), movingWall);
         }
         
         for (int j = 1; j < m_height - 1; j++) {
-            m_simulation.SetCellData(0, j, inlet);
-            m_simulation.SetCellData(m_width - 1, j, outlet);
+            m_simulation.SetCellData(0, j, new(CellType.Solid), staticWall);
+            m_simulation.SetCellData(m_width - 1, j, new(CellType.Solid), staticWall);
         }
 
         //Vector2Int origin = new(m_width / 2 + 5, m_height / 2);
@@ -59,6 +63,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
         
         m_simulation.Step(dt);
         OnStateUpdated?.Invoke();
+        print(m_simulation.GetVelocity(0, 0).x);
     }
 
 

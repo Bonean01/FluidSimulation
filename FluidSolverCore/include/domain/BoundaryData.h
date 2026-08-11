@@ -13,7 +13,7 @@ struct BoundaryData {
     BoundaryData(BoundaryType boundaryType) :
         boundaryType(boundaryType) { hasPrescribedVelocity = false; }
 
-    BoundaryData(BoundaryType boundaryType, float prescribedVelocity) :
+    BoundaryData(BoundaryType boundaryType, Vec2f prescribedVelocity) :
         boundaryType(boundaryType),
         prescribedVelocity(prescribedVelocity) { hasPrescribedVelocity = true; }
 };

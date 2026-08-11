@@ -15,7 +15,7 @@ void Projection::projectComponent(const VectorComponent& C, StaggeredVectorField
 
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width; i++) {
-				if (BoundaryUtils::hasBoundaryPrescribedVelocity(C, i, j, boundaryData)) continue;
+				if (boundaryData.getEdgeValue(C, i, j).hasPrescribedVelocity) continue;
 
 				float gradient = Staggered::gradient(C, i, j, pressureField);
 				float currentVel = velocityField.getEdgeValue(C, i, j);

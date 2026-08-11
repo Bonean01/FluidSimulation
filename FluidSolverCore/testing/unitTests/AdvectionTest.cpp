@@ -31,15 +31,15 @@ TEST_CASE("Advection - Constant velocity remains constant") {
 	// Check that all of the values remain the same
 	for (int j = 0; j < height; j++) {
 		for (int i = 0; i < width + 1; i++) {
-			if (BoundaryUtils::hasBoundaryPrescribedVelocity(X, i, j, boundaryData)) continue;
-			float edgeX = velocityField.getEdgeValue(X, i, j);
+			if (boundaryData.getEdgeValue(VectorComponent::X, i, j).hasPrescribedVelocity) continue;
+			float edgeX = velocityField.getEdgeValue(VectorComponent::X, i, j);
 			CHECK_THAT(edgeX, Matchers::WithinRel(CONSTANT));
 		}
 	}
 	for (int j = 0; j < height + 1; j++) {
 		for (int i = 0; i < width; i++) {
-			if (BoundaryUtils::hasBoundaryPrescribedVelocity(Y, i, j, boundaryData)) continue;
-			float edgeY = velocityField.getEdgeValue(Y, i, j);
+			if (boundaryData.getEdgeValue(VectorComponent::Y, i, j).hasPrescribedVelocity) continue;
+			float edgeY = velocityField.getEdgeValue(VectorComponent::Y, i, j);
 			CHECK_THAT(edgeY, Matchers::WithinRel(CONSTANT));
 		}
 	}

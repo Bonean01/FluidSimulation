@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-enum BoundaryType : uint8_t {
+enum class BoundaryType : uint8_t {
 	None,
 	NoSlip,
 	FreeSlip,

@@ -7,7 +7,7 @@ void PressureSolver::solveJacobi(ScalarField2D& result, StaggeredVectorField2D& 
 	for (unsigned int k = 0; k < iterationCount; k++) {
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width; i++) {
-				if (cellData.getValue(i, j).boundaryType == BoundaryType::VelocityOutlet) continue;
+				if (cellData.getValue(i, j).hasPrescribedPressure) continue;
 				float newCellValue = solveCell(i, j, m_auxScalarField, velocityField, cellData, density, timeStep);
 				result.setValue(i, j, newCellValue);
 			}
@@ -19,6 +19,8 @@ void PressureSolver::solveJacobi(ScalarField2D& result, StaggeredVectorField2D& 
 
 
 float PressureSolver::solveCell(int i, int j, ScalarField2D& pressureField, StaggeredVectorField2D& velocityField, const Grid2D<CellData>& cellData, float density, float timeStep) {
+	using enum VectorComponent;
+	
 	bool isSolid = cellData.getValue(i, j).cellType == CellType::Solid;
 
 	bool rightFluid = cellData.getValue(i + 1, j).cellType == CellType::Fluid;
