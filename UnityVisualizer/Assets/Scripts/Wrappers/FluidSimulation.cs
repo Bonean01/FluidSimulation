@@ -26,7 +26,7 @@ public class FluidSimulation : IDisposable {
     [DllImport("FluidSolver")] private extern static Vec2f GetVelocity(IntPtr handle, int i, int j);
     [DllImport("FluidSolver")] private extern static void AddVelocity(IntPtr handle, int i, int j, Vec2f deltaVel);
     [DllImport("FluidSolver")] private extern static void AddSmoke(IntPtr handle, int i, int j, float deltaSmoke);
-    [DllImport("FluidSolver")] private extern static void SetCellData(IntPtr handle, int i, int j, CellData cellData, BoundaryData boundaryData);
+    [DllImport("FluidSolver")] private extern static void SetCell(IntPtr handle, int i, int j, CellProperties cellProperties);
 
 
     public FluidSimulation(int width, int height, float cellWidth, float density = 1, float kinematicViscosity = 0, uint iterationCount = 60) {
@@ -80,5 +80,5 @@ public class FluidSimulation : IDisposable {
     public void AddVelocity(int i, int j, Vec2f deltaVel) => AddVelocity(m_handle, i, j, deltaVel);
     public void AddSmoke(int i, int j, float deltaSmoke) => AddSmoke(m_handle, i, j, deltaSmoke);
 
-    public void SetCell(int i, int j, CellData cellData, BoundaryData boundaryData) => SetCellData(m_handle, i, j, cellData, boundaryData);
+    public void SetCell(int i, int j, CellProperties cellProperties) => SetCell(m_handle, i, j, cellProperties);
 }

@@ -24,18 +24,19 @@ public class FluidSimulationAdapter : MonoBehaviour {
 
 
     private void SetCellData() {
-        (CellData cd, BoundaryData bd) movingWall = (new(CellType.Solid), new(BoundaryType.NoSlip, new(10.0f, 0.0f)));
-        (CellData cd, BoundaryData bd) inlet = (new(CellType.Fluid), new(BoundaryType.VelocityInlet, new(30.0f, 0.0f)));
-        (CellData cd, BoundaryData bd) outlet = (new(CellType.Fluid), new(BoundaryType.VelocityOutlet));
-        (CellData cd, BoundaryData bd) staticWall = (new(CellType.Solid), new(BoundaryType.NoSlip, new(0.0f, 0.0f)));
+        CellProperties movingWall = new(new(CellType.Solid), new(BoundaryType.NoSlip, new(10.0f, 0.0f)));
+        CellProperties staticWall = new(new(CellType.Solid), new(BoundaryType.NoSlip, new(0.0f, 0.0f)));
+        CellProperties inlet = new(new(CellType.Fluid), new(BoundaryType.VelocityInlet, new(30.0f, 0.0f)));
+        CellProperties outlet = new(new(CellType.Fluid), new(BoundaryType.VelocityOutlet));
+
         for (int i = 0; i < m_width; i++) {
-            m_simulation.SetCell(i, 0, staticWall.cd, staticWall.bd);
-            m_simulation.SetCell(i, m_height - 1, staticWall.cd, staticWall.bd);
+            m_simulation.SetCell(i, 0, staticWall);
+            m_simulation.SetCell(i, m_height - 1, staticWall);
         }
         
         for (int j = 2; j < m_height - 2; j++) {
-            m_simulation.SetCell(0, j, inlet.cd, inlet.bd);
-            m_simulation.SetCell(m_width - 1, j, outlet.cd, outlet.bd);
+            m_simulation.SetCell(0, j, inlet);
+            m_simulation.SetCell(m_width - 1, j, outlet);
         }
 
 
@@ -44,7 +45,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
             for (int j = 0; j < m_height; j++) {
                 Vector2Int pos = new(i, j);
                 if ((origin - pos).magnitude < 5) {
-                    m_simulation.SetCell(i, j, staticWall.cd, staticWall.bd);
+                    m_simulation.SetCell(i, j, staticWall);
                 }
             }
         }
@@ -52,16 +53,8 @@ public class FluidSimulationAdapter : MonoBehaviour {
 
 
     public void StepSimulation(float dt) {
-        //ApplyVerticalVelocityStream(50.0f);
-        //ApplyVelocityImpulse(new(5, 5), new(0.0f, 10.0f), 10);
-        //for (int j = 33 / 2 - 5; j <= 33 / 2 + 5; j++) {
-        //    m_simulation.AddSmoke(1, j, 0.01f);
-        //}
-        
         m_simulation.Step(dt);
         OnStateUpdated?.Invoke();
-        Vec2f vel = m_simulation.GetVelocity(m_width - 1, m_height - 1);
-        print(vel.x + ", " + vel.y);
     }
 
 
@@ -107,14 +100,6 @@ public class FluidSimulationAdapter : MonoBehaviour {
             }
         }
         OnStateUpdated?.Invoke();
-    }
-
-
-    public void ApplyVerticalVelocityStream(float value) {
-        for (int j = 0; j < m_height; j++) {
-            m_simulation.SetVelocity(1, j, new(value, 0.0f));
-            m_simulation.SetVelocity(m_width - 1, j, new(value, 0.0f));
-        }
     }
 
 
