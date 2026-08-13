@@ -1,8 +1,6 @@
 #include "FluidSimulation.h"
 
 #include "math/operators/Staggered.h"
-#include "math/solvers/PressureSolver.h"
-
 #include "domain/BoundaryUtils.h"
 
 

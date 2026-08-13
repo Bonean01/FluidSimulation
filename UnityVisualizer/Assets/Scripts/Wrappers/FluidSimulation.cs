@@ -80,5 +80,5 @@ public class FluidSimulation : IDisposable {
     public void AddVelocity(int i, int j, Vec2f deltaVel) => AddVelocity(m_handle, i, j, deltaVel);
     public void AddSmoke(int i, int j, float deltaSmoke) => AddSmoke(m_handle, i, j, deltaSmoke);
 
-    public void SetCellData(int i, int j, CellData cellData, BoundaryData boundaryData) => SetCellData(m_handle, i, j, cellData, boundaryData);
+    public void SetCell(int i, int j, CellData cellData, BoundaryData boundaryData) => SetCellData(m_handle, i, j, cellData, boundaryData);
 }

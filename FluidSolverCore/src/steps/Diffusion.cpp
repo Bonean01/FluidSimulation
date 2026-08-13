@@ -6,6 +6,8 @@
 void Diffusion::execute(StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData, float kinematicViscosity, float timeStep, unsigned int iterationCount) {
 	using enum VectorComponent;
 
+	if (kinematicViscosity == 0) return;
+
 	float dx = velocityField.cellWidth();
 	float alpha = kinematicViscosity * timeStep / dx;
 	float beta = 1 + 4 * alpha;
