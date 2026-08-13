@@ -24,10 +24,20 @@ class BoundaryType(IntEnum):
 class CellData(Structure):
     _fields_ = [
         ("cell_type", c_uint8),
+        ("has_prescribed_pressure", c_bool),
+        ("prescribed_pressure", c_float)
+    ]
+
+class BoundaryData(Structure):
+    _fields_ = [
         ("boundary_type", c_uint8),
         ("has_prescribed_velocity", c_bool),
         ("prescribed_velocity", Vec2f)
     ]
+
+# For users of the library instead of having both cell and boundary data separately, we could have a separate struct
+# CellProperties that just held all of the data in the same place, and then the simulation would take care of separating
+# it and storing it in the appropriate locations.
 
 
 class FluidSimulation:
@@ -72,7 +82,7 @@ class FluidSimulation:
         self.libc.SetVelocity(self.handle, i, j, velocity)
 
 
-    def SetCellData(self, i: c_int, j: c_int, cell_data: CellData) -> None:
-        self.libc.SetCellData.argtypes = [c_void_p, c_int, c_int, CellData]
+    def SetCell(self, i: c_int, j: c_int, cell_data: CellData, boundaryData: BoundaryData) -> None:
+        self.libc.SetCellData.argtypes = [c_void_p, c_int, c_int, CellData, BoundaryData]
         self.libc.SetCellData.restype = c_void_p
-        self.libc.SetCellData(self.handle, i, j, cell_data)
+        self.libc.SetCellData(self.handle, i, j, cell_data, boundaryData)

@@ -67,16 +67,18 @@ width: c_int = side_length
 height: c_int = side_length
 simulation: FluidSimulation = FluidSimulation(width, height, cell_width, density, kinematic_viscosity, iteration_count)
 
-lid_data: CellData = CellData(CellType.SOLID, BoundaryType.NO_SLIP, Vec2f(lid_speed, 0.0))
-wall_data: CellData = CellData(CellType.SOLID, BoundaryType.NO_SLIP, Vec2f(0.0, 0.0))
+lid_cell_data: CellData = CellData(CellType.SOLID, False, 0.0)
+lid_boundary_data: BoundaryData = BoundaryData(BoundaryType.NO_SLIP, True, Vec2f(lid_speed, 0.0))
+wall_cell_data: CellData = CellData(CellType.SOLID, False, 0.0)
+wall_boundary_data: BoundaryData = BoundaryData(BoundaryType.NO_SLIP, True, Vec2f(0.0, 0.0))
 
 for i in range(width):
-    simulation.SetCellData(i, height - 1, lid_data)
-    simulation.SetCellData(i, 0, wall_data)
+    simulation.SetCell(i, height - 1, lid_cell_data, lid_boundary_data)
+    simulation.SetCell(i, 0, wall_cell_data, wall_boundary_data)
 
 for j in range(height - 1):
-    simulation.SetCellData(0, j, wall_data)
-    simulation.SetCellData(width - 1, j, wall_data)
+    simulation.SetCell(0, j, wall_cell_data, wall_boundary_data)
+    simulation.SetCell(width - 1, j, wall_cell_data, wall_boundary_data)
 
 
 print("Running simulation...")
@@ -85,10 +87,6 @@ for k in range(simulation_iteration_count):
 
 
 print("Drawing results...")
-X = np.arange(0.0, 1.0, 0.05)
-Y = np.arange(0.0, 1.0, 0.05)
-U, V = np.meshgrid(X, Y)
-
 fig, ax = plt.subplots()
 
 for i in range(width):
