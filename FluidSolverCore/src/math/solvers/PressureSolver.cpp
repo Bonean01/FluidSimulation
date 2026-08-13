@@ -7,7 +7,6 @@ void PressureSolver::solveJacobi(ScalarField2D& result, StaggeredVectorField2D& 
 	for (unsigned int k = 0; k < iterationCount; k++) {
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width; i++) {
-				if (cellData.getValue(i, j).hasPrescribedPressure) continue;
 				float newCellValue = solveCell(i, j, m_auxScalarField, velocityField, cellData, density, timeStep);
 				result.setValue(i, j, newCellValue);
 			}

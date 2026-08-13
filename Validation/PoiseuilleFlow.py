@@ -18,22 +18,19 @@ simulation_iteration_count = 100
 print("Setting up...")
 simulation: FluidSimulation = FluidSimulation(grid_width, grid_height, cell_width, density, kinematic_viscosity, iteration_count)
 
-wall_cell_data: CellData = CellData(CellType.SOLID, False, 0.0)
-inlet_cell_data: CellData = CellData(CellType.FLUID, False, 0.0)
-outlet_cell_data: CellData = CellData(CellType.FLUID, False, 0.0)
 
-wall_boundary_data: BoundaryData = BoundaryData(BoundaryType.NO_SLIP, True, Vec2f(0.0, 0.0))
-inlet_boundary_data: BoundaryData = BoundaryData(BoundaryType.VELOCITY_INLET, True, Vec2f(inlet_speed, 0.0))
-outlet_boundary_data: BoundaryData = BoundaryData(BoundaryType.VELOCITY_OUTLET, False, Vec2f())
+wall_cell: CellProperties = CellProperties(CellData(CellType.SOLID), BoundaryData(BoundaryType.NO_SLIP, Vec2f(0.0, 0.0)))
+inlet_cell: CellProperties = CellProperties(CellData(CellType.FLUID), BoundaryData(BoundaryType.VELOCITY_INLET, Vec2f(inlet_speed, 0.0)))
+outlet_cell: CellProperties = CellProperties(CellData(CellType.FLUID), BoundaryData(BoundaryType.VELOCITY_OUTLET))
 
 
 for i in range(grid_width):
-    simulation.SetCell(i, 0, wall_cell_data, wall_boundary_data)
-    simulation.SetCell(i, grid_height - 1, wall_cell_data, wall_boundary_data)
+    simulation.SetCell(i, 0, wall_cell)
+    simulation.SetCell(i, grid_height - 1, wall_cell)
 
 for j in range(2, grid_height - 2):
-    simulation.SetCell(0, j, inlet_cell_data, inlet_boundary_data)
-    simulation.SetCell(grid_width - 1, j, outlet_cell_data, outlet_boundary_data)
+    simulation.SetCell(0, j, inlet_cell)
+    simulation.SetCell(grid_width - 1, j, outlet_cell)
 
 
 print("Running simulation...")

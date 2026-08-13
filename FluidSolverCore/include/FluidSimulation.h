@@ -14,6 +14,7 @@
 
 #include "domain/CellData.h"
 #include "domain/BoundaryData.h"
+#include "domain/CellProperties.h"
 
 
 class FluidSimulation {
@@ -35,7 +36,8 @@ public:
 		m_projection(),
 
 		m_pressureSolver(gridWidth, gridHeight, m_cellWidth),
-		m_iterationCount(iterationCount) { }
+		m_iterationCount(iterationCount) {
+	}
 
 	void step(float timeStep);
 
@@ -54,8 +56,10 @@ public:
 	void addVelocity(int i, int j, Vec2f deltaVel) { setVelocity(i, j, getVelocity(i, j) + deltaVel); }
 
 	void addSmoke(int i, int j, float deltaSmoke) { m_smokeField.setValue(i, j, m_smokeField.getValue(i, j) + deltaSmoke); }
-	
+
 	void setCell(int i, int j, CellData, BoundaryData);
+	void setCell(int i, int j, CellProperties cellProperties) { setCell(i, j, cellProperties.cellData, cellProperties.boundaryData); }
+
 
 private:
 	float m_density, m_kinematicViscosity, m_cellWidth;

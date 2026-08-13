@@ -59,7 +59,7 @@ void TestUtils::initializeSolidBoundaries(Grid2D<uint8_t>& solidCellMap) {
 void TestUtils::initializeSolidBoundaries(Grid2D<CellData>& cellData) {
 	int width = cellData.width();
 	int height = cellData.height();
-	CellData solidCell{ CellType::Solid, 0.0f };
+	CellData solidCell{ CellType::Solid };
 
 	for (int i = 0; i < width; i++) {
 		cellData.setValue(i, 0, solidCell);

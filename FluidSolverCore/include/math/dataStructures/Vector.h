@@ -1,9 +1,10 @@
 #pragma once
 
 #include <stdexcept>
+#include <cstdint>
 
 
-enum class VectorComponent {
+enum class VectorComponent : uint8_t {
 	X,
 	Y
 };

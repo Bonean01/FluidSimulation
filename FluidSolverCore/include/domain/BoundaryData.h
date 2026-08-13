@@ -5,15 +5,14 @@
 
 struct BoundaryData {
     BoundaryType boundaryType = BoundaryType::None;
-    bool hasPrescribedVelocity = false;
     Vec2f prescribedVelocity = 0.0f;
 
     BoundaryData() {}
 
     BoundaryData(BoundaryType boundaryType) :
-        boundaryType(boundaryType) { hasPrescribedVelocity = false; }
+        boundaryType(boundaryType) {}
 
     BoundaryData(BoundaryType boundaryType, Vec2f prescribedVelocity) :
         boundaryType(boundaryType),
-        prescribedVelocity(prescribedVelocity) { hasPrescribedVelocity = true; }
+        prescribedVelocity(prescribedVelocity) {}
 };

@@ -18,7 +18,6 @@ namespace BoundaryUtils {
         
         for (int j = 0; j < height; j++) {
             for (int i = 0; i < width; i++) {
-                if (not boundaryData.getEdgeValue(C, i, j).hasPrescribedVelocity) continue;
                 const BoundaryData& currentData = boundaryData.getEdgeValue(C, i, j);
                 applyVelocityBCsToEdge(C, i, j, velocityField, currentData);
             }
@@ -43,4 +42,17 @@ namespace BoundaryUtils {
 				break;
 		}
 	}
+
+
+    bool hasPrescribedVelocity(const BoundaryData& boundaryData) {
+        switch (boundaryData.boundaryType) {
+            using enum BoundaryType;
+            case NoSlip:
+            case FreeSlip:
+            case VelocityInlet:
+                return true;
+                break;
+        }
+        return false;
+    }
 }

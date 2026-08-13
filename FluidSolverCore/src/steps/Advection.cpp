@@ -38,7 +38,8 @@ void Advection::advectComponent(const VectorComponent& C, StaggeredVectorField2D
 	int height = velocityField.getValuesHeight(C);
 	for (int j = 0; j < height; j++) {
 		for (int i = 0; i < width; i++) {
-			if (boundaryData.getEdgeValue(C, i, j).hasPrescribedVelocity) continue;
+			const BoundaryData& currentBoundary = boundaryData.getEdgeValue(C, i, j);
+			if (BoundaryUtils::hasPrescribedVelocity(currentBoundary)) continue;
 
 			Vec2f position = velocityField.getEdgePosition(C, i, j);
 			Vec2f currentVel = velocityField.sampleBilinear(position);
