@@ -28,31 +28,22 @@ namespace BoundaryUtils {
 	void applyVelocityBCsToEdge(const VectorComponent& C, int i, int j, StaggeredVectorField2D& velocityField, const BoundaryData& boundaryData) {
 		using enum VectorComponent;
 
-		switch (boundaryData.boundaryType) {
-			using enum BoundaryType;
+		switch (boundaryData.velocityBoundaryCondition) {
+			using enum BoundaryCondition;
 
-			case VelocityInlet:
-			case NoSlip:
-					velocityField.setEdgeValue(C, i, j, boundaryData.prescribedVelocity.get(C));
+            case Dirichlet:
+				velocityField.setEdgeValue(C, i, j, boundaryData.prescribedVelocity.get(C));
 				break;
 
-			case VelocityOutlet:
-				// Since StaggeredGrid2D clamps values outside the domain, a continuity boundary (∂u / ∂n = 0) 
-				// gets applied if there's nothing overwriting it (only at the edges)
+			case HomogeneousNeumann:
+				// Since StaggeredGrid2D clamps values outside the domain, a homogeneous neumann boundary 
+                // condition (∂u / ∂n = 0) gets applied if there's nothing overwriting it (only at the edges of the domain)
 				break;
 		}
 	}
 
 
     bool hasPrescribedVelocity(const BoundaryData& boundaryData) {
-        switch (boundaryData.boundaryType) {
-            using enum BoundaryType;
-            case NoSlip:
-            case FreeSlip:
-            case VelocityInlet:
-                return true;
-                break;
-        }
-        return false;
+        return boundaryData.velocityBoundaryCondition == BoundaryCondition::Dirichlet;
     }
 }

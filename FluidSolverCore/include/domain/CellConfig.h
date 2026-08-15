@@ -3,7 +3,7 @@
 #include "CellData.h"
 #include "BoundaryData.h"
 
-struct CellProperties {
+struct CellConfig {
 	CellData cellData;
 	BoundaryData boundaryData;
 };

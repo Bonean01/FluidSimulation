@@ -67,8 +67,8 @@ width: c_int = side_length
 height: c_int = side_length
 simulation: FluidSimulation = FluidSimulation(width, height, cell_width, density, kinematic_viscosity, iteration_count)
 
-moving_wall: CellProperties = CellProperties(CellData(CellType.SOLID), BoundaryData(BoundaryType.NO_SLIP, Vec2f(lid_speed, 0.0)))
-static_wall: CellProperties = CellProperties(CellData(CellType.SOLID), BoundaryData(BoundaryType.NO_SLIP, Vec2f(0.0, 0.0)))
+moving_wall: CellConfig = CellConfig(CellData(CellType.SOLID), BoundaryData(BoundaryType.DIRICHLET, Vec2f(lid_speed, 0.0)))
+static_wall: CellConfig = CellConfig(CellData(CellType.SOLID), BoundaryData(BoundaryType.DIRICHLET, Vec2f(0.0, 0.0)))
 
 for i in range(width):
     simulation.SetCell(i, height - 1, moving_wall)

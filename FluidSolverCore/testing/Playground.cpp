@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
 	FluidSimulation simulation{ 5, 5, 1.0f, 1.0f, 0.0f, 30 };
 
 	simulation.setVelocity(0, 0, {10.0f, 10.0f});
-	simulation.setCell(0, 0, { CellType::Solid }, { BoundaryType::NoSlip, {0.0f, 0.0f} });
+	simulation.setCell(0, 0, { CellType::Solid }, { BoundaryCondition::Dirichlet, {0.0f, 0.0f} });
 
 	Vec2f velAtEdge = simulation.getVelocity(0, 0);
 	std::cout << velAtEdge.x << ", " << velAtEdge.y << std::endl;

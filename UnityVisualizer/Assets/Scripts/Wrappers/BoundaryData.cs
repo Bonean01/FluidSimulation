@@ -2,10 +2,8 @@ using System.Runtime.InteropServices;
 
 public enum BoundaryType : byte {
     None,
-    NoSlip,
-    FreeSlip,
-    VelocityInlet,
-    VelocityOutlet
+    Dirichlet,
+    HomogeneousNeumann
 }
 
 

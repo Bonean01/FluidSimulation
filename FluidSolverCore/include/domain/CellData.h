@@ -1,14 +1,12 @@
 #pragma once
 
 #include "CellType.h"
-#include "BoundaryType.h"
+#include "BoundaryCondition.h"
 #include "math/dataStructures/Vector.h"
 
 struct CellData {
 	CellType cellType = CellType::Fluid;
-
-	CellData() {}
 	
-	CellData(CellType cellType) :
+	CellData(CellType cellType = CellType::Fluid) :
 		cellType(cellType) {}
 };

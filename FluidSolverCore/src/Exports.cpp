@@ -63,6 +63,6 @@ extern "C" INTERFACE_EXPORT void AddSmoke(FluidSimulation* handle, int i, int j,
 }
 
 
-extern "C" INTERFACE_EXPORT void SetCell(FluidSimulation* handle, int i, int j, CellProperties cellProperties) {
-	handle->setCell(i, j, cellProperties);
+extern "C" INTERFACE_EXPORT void SetCell(FluidSimulation* handle, int i, int j, CellConfig config) {
+	handle->setCell(i, j, config);
 }

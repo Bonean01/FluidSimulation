@@ -14,7 +14,7 @@
 
 #include "domain/CellData.h"
 #include "domain/BoundaryData.h"
-#include "domain/CellProperties.h"
+#include "domain/CellConfig.h"
 
 
 class FluidSimulation {
@@ -58,7 +58,7 @@ public:
 	void addSmoke(int i, int j, float deltaSmoke) { m_smokeField.setValue(i, j, m_smokeField.getValue(i, j) + deltaSmoke); }
 
 	void setCell(int i, int j, CellData, BoundaryData);
-	void setCell(int i, int j, CellProperties cellProperties) { setCell(i, j, cellProperties.cellData, cellProperties.boundaryData); }
+	void setCell(int i, int j, CellConfig config) { setCell(i, j, config.cellData, config.boundaryData); }
 
 
 private:

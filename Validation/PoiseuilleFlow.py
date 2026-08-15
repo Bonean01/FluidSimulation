@@ -19,9 +19,9 @@ print("Setting up...")
 simulation: FluidSimulation = FluidSimulation(grid_width, grid_height, cell_width, density, kinematic_viscosity, iteration_count)
 
 
-wall_cell: CellProperties = CellProperties(CellData(CellType.SOLID), BoundaryData(BoundaryType.NO_SLIP, Vec2f(0.0, 0.0)))
-inlet_cell: CellProperties = CellProperties(CellData(CellType.FLUID), BoundaryData(BoundaryType.VELOCITY_INLET, Vec2f(inlet_speed, 0.0)))
-outlet_cell: CellProperties = CellProperties(CellData(CellType.FLUID), BoundaryData(BoundaryType.VELOCITY_OUTLET))
+wall_cell: CellConfig = CellConfig(CellData(CellType.SOLID), BoundaryData(BoundaryType.DIRICHLET, Vec2f(0.0, 0.0)))
+inlet_cell: CellConfig = CellConfig(CellData(CellType.FLUID), BoundaryData(BoundaryType.DIRICHLET, Vec2f(inlet_speed, 0.0)))
+outlet_cell: CellConfig = CellConfig(CellData(CellType.FLUID), BoundaryData(BoundaryType.HOMOGENEOUS_NEUMANN))
 
 
 for i in range(grid_width):

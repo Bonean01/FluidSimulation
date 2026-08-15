@@ -16,10 +16,8 @@ class CellType(IntEnum):
 
 class BoundaryType(IntEnum):
     NONE = 0
-    NO_SLIP = 1
-    FREE_SLIP = 2
-    VELOCITY_INLET = 3
-    VELOCITY_OUTLET = 4
+    DIRICHLET = 1
+    HOMOGENEOUS_NEUMANN = 2
 
 class CellData(Structure):
     _fields_ = [
@@ -32,7 +30,7 @@ class BoundaryData(Structure):
         ("prescribed_velocity", Vec2f)
     ]
 
-class CellProperties(Structure):
+class CellConfig(Structure):
     _fields_ = [
         ("cell_data", CellData),
         ("boundary_data", BoundaryData)
