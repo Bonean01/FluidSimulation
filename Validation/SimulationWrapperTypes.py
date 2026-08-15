@@ -38,48 +38,48 @@ class CellConfig(Structure):
 
 
 class FluidSimulation:
-    libc: CDLL
-    handle: c_void_p
+    _libc: CDLL
+    _handle: c_void_p
 
     def __init__(self, width: c_int, height: c_int, cell_width: c_float, density: c_float, kinematic_viscosity: c_float, iteration_count: c_uint32):
         path = "../FluidSolverCore/out/build/debug/"
         if os.path.exists(path + "FluidSolver.dll"):
-            self.libc = cdll.LoadLibrary(path + "FluidSolver.dll")
+            self._libc = cdll.LoadLibrary(path + "FluidSolver.dll")
         elif os.path.exists(path + "libFluidSolver.so"):
-            self.libc = cdll.LoadLibrary(path + "libFluidSolver.so")
+            self._libc = cdll.LoadLibrary(path + "libFluidSolver.so")
         else:
             raise FileNotFoundError(f"Could not find FluidSolver.dll nor libFluidSolver.so at: {path}")
 
-        self.libc.CreateSimulation.argtypes = [c_int, c_int, c_float, c_float, c_float, c_uint32]
-        self.libc.CreateSimulation.restype = c_void_p
-        self.handle = self.libc.CreateSimulation(width, height, cell_width, density, kinematic_viscosity, iteration_count)
+        self._libc.CreateSimulation.argtypes = [c_int, c_int, c_float, c_float, c_float, c_uint32]
+        self._libc.CreateSimulation.restype = c_void_p
+        self._handle = self._libc.CreateSimulation(width, height, cell_width, density, kinematic_viscosity, iteration_count)
 
 
     def __del__(self):
-        self.libc.DestroySimulation.argtypes = [c_void_p]
-        self.libc.DestroySimulation.restype = c_void_p
-        self.libc.DestroySimulation(self.handle)
+        self._libc.DestroySimulation.argtypes = [c_void_p]
+        self._libc.DestroySimulation.restype = c_void_p
+        self._libc.DestroySimulation(self._handle)
 
 
-    def Step(self, time_step: c_float) -> None:
-        self.libc.Step.argtypes = [c_void_p, c_float]
-        self.libc.Step.restype = c_void_p
-        self.libc.Step(self.handle, time_step)
+    def step(self, time_step: c_float) -> None:
+        self._libc.Step.argtypes = [c_void_p, c_float]
+        self._libc.Step.restype = c_void_p
+        self._libc.Step(self._handle, time_step)
 
 
-    def GetVelocity(self, i: c_int, j: c_int) -> Vec2f:
-        self.libc.GetVelocity.argtypes = [c_void_p, c_int, c_int]
-        self.libc.GetVelocity.restype = Vec2f
-        return self.libc.GetVelocity(self.handle, i, j)
+    def get_velocity(self, i: c_int, j: c_int) -> Vec2f:
+        self._libc.GetVelocity.argtypes = [c_void_p, c_int, c_int]
+        self._libc.GetVelocity.restype = Vec2f
+        return self._libc.GetVelocity(self._handle, i, j)
 
 
-    def SetVelocity(self, i: c_int, j: c_int, velocity: Vec2f) -> None:
-        self.libc.SetVelocity.argypes = [c_void_p, c_int, c_int, Vec2f]
-        self.libc.SetVelocity.restype = c_void_p
-        self.libc.SetVelocity(self.handle, i, j, velocity)
+    def set_velocity(self, i: c_int, j: c_int, velocity: Vec2f) -> None:
+        self._libc.SetVelocity.argypes = [c_void_p, c_int, c_int, Vec2f]
+        self._libc.SetVelocity.restype = c_void_p
+        self._libc.SetVelocity(self._handle, i, j, velocity)
 
 
-    def SetCell(self, i: c_int, j: c_int, cell_properties: CellProperties) -> None:
-        self.libc.SetCell.argtypes = [c_void_p, c_int, c_int, CellProperties]
-        self.libc.SetCell.restype = c_void_p
-        self.libc.SetCell(self.handle, i, j, cell_properties)
+    def set_cell(self, i: c_int, j: c_int, cell_config: CellConfig) -> None:
+        self._libc.SetCell.argtypes = [c_void_p, c_int, c_int, CellConfig]
+        self._libc.SetCell.restype = c_void_p
+        self._libc.SetCell(self._handle, i, j, cell_config)
