@@ -14,7 +14,7 @@ class CellType(IntEnum):
     FLUID = 0
     SOLID = 1
 
-class BoundaryType(IntEnum):
+class BoundaryCondition(IntEnum):
     NONE = 0
     DIRICHLET = 1
     HOMOGENEOUS_NEUMANN = 2

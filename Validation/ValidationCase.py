@@ -1,5 +1,4 @@
 import argparse
-import os
 
 from abc import ABC, abstractmethod
 from SimulationWrapperTypes import *
@@ -14,6 +13,7 @@ class ValidationCase(ABC):
 
     def __init__(self, case_description: str):
         self._case_description = case_description
+
 
     @abstractmethod
     def _set_up_arguments(self, default_grid_width: int, default_grid_height: int, default_density: float, default_kinematic_viscosity: float, default_time_step: float, default_iterations: int) -> None:
@@ -90,9 +90,14 @@ class ValidationCase(ABC):
         simulation_iteration_count: int = self._args.iterations
 
         print("Running simulation...")
-        for _ in range(simulation_iteration_count):
+        progress = 0
+
+        for k in range(simulation_iteration_count):
             self._simulation.step(time_step)
 
+            progress = k / simulation_iteration_count * 100
+            print(f"\rProgress: {progress:.2f}%", end="", flush=True)
+        print("\rProgress: 100.0%")
 
     @abstractmethod
     def _analize_results(self) -> None:

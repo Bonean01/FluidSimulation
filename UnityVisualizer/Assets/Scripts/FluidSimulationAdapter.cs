@@ -24,10 +24,10 @@ public class FluidSimulationAdapter : MonoBehaviour {
 
 
     private void SetCellData() {
-        CellConfig movingWall = new(new(CellType.Solid), new(BoundaryType.Dirichlet, new(10.0f, 0.0f)));
-        CellConfig staticWall = new(new(CellType.Solid), new(BoundaryType.Dirichlet, new(0.0f, 0.0f)));
-        CellConfig inlet = new(new(CellType.Fluid), new(BoundaryType.Dirichlet, new(30.0f, 0.0f)));
-        CellConfig outflow = new(new(CellType.Fluid), new(BoundaryType.HomogeneousNeumann));
+        CellConfig movingWall = new(new(CellType.Solid), new(BoundaryCondition.Dirichlet, new(10.0f, 0.0f)));
+        CellConfig staticWall = new(new(CellType.Solid), new(BoundaryCondition.Dirichlet, new(0.0f, 0.0f)));
+        CellConfig inlet = new(new(CellType.Fluid), new(BoundaryCondition.Dirichlet, new(30.0f, 0.0f)));
+        CellConfig outflow = new(new(CellType.Fluid), new(BoundaryCondition.HomogeneousNeumann));
 
         for (int i = 0; i < m_width; i++) {
             m_simulation.SetCell(i, 0, staticWall);
@@ -40,15 +40,15 @@ public class FluidSimulationAdapter : MonoBehaviour {
         }
 
 
-        Vector2Int origin = new(m_width / 2 + 5, m_height / 2);
-        for (int i = 0; i < m_width; i++) {
-            for (int j = 0; j < m_height; j++) {
-                Vector2Int pos = new(i, j);
-                if ((origin - pos).magnitude < 5) {
-                    m_simulation.SetCell(i, j, staticWall);
-                }
-            }
-        }
+        //Vector2Int origin = new(m_width / 2 + 5, m_height / 2);
+        //for (int i = 0; i < m_width; i++) {
+        //    for (int j = 0; j < m_height; j++) {
+        //        Vector2Int pos = new(i, j);
+        //        if ((origin - pos).magnitude < 5) {
+        //            m_simulation.SetCell(i, j, staticWall);
+        //        }
+        //    }
+        //}
     }
 
 

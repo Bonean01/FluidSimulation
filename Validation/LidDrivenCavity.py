@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 
 from SimulationWrapperTypes import *
 from ValidationCase import ValidationCase
@@ -11,7 +12,7 @@ class LidDrivenCavity(ValidationCase):
             default_grid_height=33,
             default_density=1.0,
             default_kinematic_viscosity=1e-05,
-            default_time_step=1.0 / 120.0,
+            default_time_step=1.0 / 60.0,
             default_iterations=1000
         )
 
@@ -28,8 +29,8 @@ class LidDrivenCavity(ValidationCase):
 
         lid_speed: float = self._args.lid_speed
 
-        moving_wall = CellConfig(CellData(CellType.SOLID), BoundaryData(BoundaryType.DIRICHLET, Vec2f(lid_speed, 0.0)))
-        static_wall = CellConfig(CellData(CellType.SOLID), BoundaryData(BoundaryType.DIRICHLET, Vec2f(0.0, 0.0)))
+        moving_wall = CellConfig(CellData(CellType.SOLID), BoundaryData(BoundaryCondition.DIRICHLET, prescribed_velocity=Vec2f(lid_speed, 0.0)))
+        static_wall = CellConfig(CellData(CellType.SOLID), BoundaryData(BoundaryCondition.DIRICHLET, prescribed_velocity=Vec2f(0.0, 0.0)))
 
         width = self._simulation.get_grid_width()
         height = self._simulation.get_grid_height()
@@ -52,12 +53,39 @@ class LidDrivenCavity(ValidationCase):
         width = self._simulation.get_grid_width()
         height = self._simulation.get_grid_height()
 
+        speed_grid = np.zeros((width, height))
+        u_grid = np.zeros((width, height))
+        v_grid = np.zeros((width, height))
+
         for i in range(width):
             for j in range(height):
                 vel: Vec2f = self._simulation.get_velocity(i, j)
-                ax.quiver(1.0 / width * i, 1.0 / height * j, vel.x, vel.y)
+
+                u_grid[i, j] = vel.x
+                v_grid[i, j] = vel.y
+                speed_grid[i, j] = np.sqrt(vel.x**2 + vel.y**2)
+
+        X = np.arange(width) / width
+        Y = np.arange(height) / height
+
+        X, Y = np.meshgrid(X, Y, indexing="ij")
+
+        ax.imshow(
+            speed_grid.T,
+            origin="lower",
+            interpolation="none",
+            extent=[0, 1, 0, 1],
+        )
+
+        ax.quiver(
+            X,
+            Y,
+            u_grid,
+            v_grid,
+        )
 
         plt.show()
+
 
 
 if __name__ == "__main__":

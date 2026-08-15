@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 
+
 public enum CellType : byte {
     Fluid,
     Solid
