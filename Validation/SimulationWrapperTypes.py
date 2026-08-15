@@ -40,6 +40,8 @@ class CellConfig(Structure):
 class FluidSimulation:
     _libc: CDLL
     _handle: c_void_p
+    _grid_width: int
+    _grid_height: int
 
     def __init__(self, width: c_int, height: c_int, cell_width: c_float, density: c_float, kinematic_viscosity: c_float, iteration_count: c_uint32):
         path = "../FluidSolverCore/out/build/debug/"
@@ -53,6 +55,9 @@ class FluidSimulation:
         self._libc.CreateSimulation.argtypes = [c_int, c_int, c_float, c_float, c_float, c_uint32]
         self._libc.CreateSimulation.restype = c_void_p
         self._handle = self._libc.CreateSimulation(width, height, cell_width, density, kinematic_viscosity, iteration_count)
+
+        self._grid_width = width
+        self._grid_height = height
 
 
     def __del__(self):
@@ -83,3 +88,12 @@ class FluidSimulation:
         self._libc.SetCell.argtypes = [c_void_p, c_int, c_int, CellConfig]
         self._libc.SetCell.restype = c_void_p
         self._libc.SetCell(self._handle, i, j, cell_config)
+
+
+    def get_grid_width(self) -> int:
+        return self._grid_width
+
+
+    def get_grid_height(self) -> int:
+        return self._grid_height
+    

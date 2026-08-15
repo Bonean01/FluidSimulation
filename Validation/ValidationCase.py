@@ -16,50 +16,50 @@ class ValidationCase(ABC):
         self._case_description = case_description
 
     @abstractmethod
-    def _set_up_arguments(self) -> None:
+    def _set_up_arguments(self, default_grid_width: int, default_grid_height: int, default_density: float, default_kinematic_viscosity: float, default_time_step: float, default_iterations: int) -> None:
         self._parser = argparse.ArgumentParser(
-            prog=os.path.splitext(os.path.basename(__file__))[0],
+            prog=type(self).__name__,
             description=self._case_description
         )
 
         self._parser.add_argument(
             "--grid-width",
             type=int,
-            default=33,
+            default=default_grid_width,
             help="Number of cells along the x axis"
         )
 
         self._parser.add_argument(
             "--grid-height",
             type=int,
-            default=33,
+            default=default_grid_height,
             help="Number of cells along the y axis"
         )
 
         self._parser.add_argument(
             "--density",
             type=float,
-            default=1.0,
+            default=default_density,
             help="Density of the fluid")
     
         self._parser.add_argument(
             "--kinematic-viscosity",
             type=float,
-            default=1e-05,
+            default=default_kinematic_viscosity,
             help="Kinematic viscosity of the fluid"
         )
     
         self._parser.add_argument(
             "--time-step",
             type=float,
-            default=1.0 / 120.0,
+            default=default_time_step,
             help="Elapsed time between simulation steps"
         )
     
         self._parser.add_argument(
             "--iterations",
             type=int,
-            default=1000,
+            default=default_iterations,
             help="Number of steps the simulation will take before analize the results"
         )
 
@@ -69,9 +69,9 @@ class ValidationCase(ABC):
         if self._parser is None:
             return
         
-        print("Setting up...")
         self._args = self._parser.parse_args()
 
+        print("Setting up...")
         width: c_int = self._args.grid_width
         height: c_int = self._args.grid_height
         cell_width: c_float = 1.0 / width
