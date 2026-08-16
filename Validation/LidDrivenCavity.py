@@ -11,9 +11,9 @@ class LidDrivenCavity(ValidationCase):
             default_grid_width=33,
             default_grid_height=33,
             default_density=1.0,
-            default_kinematic_viscosity=1e-03,
-            default_time_step=1.0 / 1000.0,
-            default_iterations=1000
+            default_kinematic_viscosity=1e-05,
+            default_time_step=1.0 / 2000.0,
+            default_iterations=2000
         )
 
         self._parser.add_argument(
@@ -77,12 +77,7 @@ class LidDrivenCavity(ValidationCase):
             extent=[0, 1, 0, 1],
         )
 
-        ax.quiver(
-            X,
-            Y,
-            u_grid,
-            v_grid,
-        )
+        ax.streamplot(X.T, Y.T, u_grid.T, v_grid.T, color=(0.0, 0.0, 0.0, 0.4))
 
         plt.show()
 

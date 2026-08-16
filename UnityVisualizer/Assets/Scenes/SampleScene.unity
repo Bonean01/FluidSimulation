@@ -773,7 +773,7 @@ MonoBehaviour:
     m_ColorSpace: 0
     m_NumColorKeys: 7
     m_NumAlphaKeys: 2
-  maxSpeed: 13
+  maxSpeed: 16
 --- !u!114 &1486929792
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -790,8 +790,8 @@ MonoBehaviour:
   height: 33
   cellWidth: 0.121212125
   density: 1
-  kinematicViscosity: 1e-12
-  solverIterationCount: 17
+  kinematicViscosity: 0.00001
+  solverIterationCount: 30
 --- !u!114 &1486929793
 MonoBehaviour:
   m_ObjectHideFlags: 0
