@@ -55,7 +55,8 @@ public class FluidPainter : MonoBehaviour {
 
         Vector2 mousePosGrid = m_simulationAdapter.WorldToGridPoint(mousePosWorld);
         if (Input.GetMouseButton(0)) {
-            Vec2f effectiveVel = new(mouseVel.x * brushStrength, mouseVel.y * brushStrength);
+            float dx = m_simulationAdapter.CellWidth;
+            Vec2f effectiveVel = brushStrength * dx * new Vec2f(mouseVel.x, mouseVel.y);
             m_simulationAdapter.ApplyVelocityImpulse(mousePosGrid, effectiveVel, m_brushSizeGrid);
         }
         if (Input.GetMouseButton(1)) {

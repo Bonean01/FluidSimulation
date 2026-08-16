@@ -12,8 +12,8 @@ class PoiseuilleFlow(ValidationCase):
             default_grid_height=33,
             default_density=1.0,
             default_kinematic_viscosity=1e-05,
-            default_time_step=1.0 / 60.0,
-            default_iterations=500
+            default_time_step=1.0 / 2000.0,
+            default_iterations=2000
         )
 
         self._parser.add_argument(
@@ -55,16 +55,12 @@ class PoiseuilleFlow(ValidationCase):
         height = self._simulation.get_grid_height()
 
         speed_grid = np.zeros((width, height))
-        u_grid = np.zeros((width, height))
-        v_grid = np.zeros((width, height))
 
         for i in range(width):
             for j in range(height):
                 vel = self._simulation.get_velocity(i, j)
-
-                u_grid[i, j] = vel.x
-                v_grid[i, j] = vel.y
                 speed_grid[i, j] = np.sqrt(vel.x**2 + vel.y**2)
+
 
         X = 2 * np.arange(width) / width
         Y = np.arange(height) / height

@@ -11,8 +11,8 @@ class LidDrivenCavity(ValidationCase):
             default_grid_width=33,
             default_grid_height=33,
             default_density=1.0,
-            default_kinematic_viscosity=1e-05,
-            default_time_step=1.0 / 60.0,
+            default_kinematic_viscosity=1e-03,
+            default_time_step=1.0 / 1000.0,
             default_iterations=1000
         )
 
@@ -59,7 +59,7 @@ class LidDrivenCavity(ValidationCase):
 
         for i in range(width):
             for j in range(height):
-                vel: Vec2f = self._simulation.get_velocity(i, j)
+                vel = self._simulation.get_velocity(i, j)
 
                 u_grid[i, j] = vel.x
                 v_grid[i, j] = vel.y

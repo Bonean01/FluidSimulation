@@ -95,9 +95,9 @@ class ValidationCase(ABC):
         for k in range(simulation_iteration_count):
             self._simulation.step(time_step)
 
-            progress = k / simulation_iteration_count * 100
+            progress = (k + 1) / simulation_iteration_count * 100
             print(f"\rProgress: {progress:.2f}%", end="", flush=True)
-        print("\rProgress: 100.0%")
+        print()
 
     @abstractmethod
     def _analize_results(self) -> None:
