@@ -85,13 +85,18 @@ class ValidationCase(ABC):
     def _run_simulation(self) -> None:
         if self._simulation is None:
             return
-        
+
+        print("\nRunning " + type(self).__name__ + " with parameters: ")
+        print("=====================================================")
+        print("cell-width: " + str(self._simulation.get_cell_width()))
+        for name, value in vars(self._args).items():
+            print(f"{name}: {value}")
+        print("=====================================================")
+
         time_step: c_float = self._args.time_step
         simulation_iteration_count: int = self._args.iterations
 
-        print("Running simulation...")
         progress = 0
-
         for k in range(simulation_iteration_count):
             self._simulation.step(time_step)
 

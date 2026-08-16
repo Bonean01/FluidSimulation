@@ -42,6 +42,7 @@ class FluidSimulation:
     _handle: c_void_p
     _grid_width: int
     _grid_height: int
+    _cell_width: float
 
     def __init__(self, width: c_int, height: c_int, cell_width: c_float, density: c_float, kinematic_viscosity: c_float, iteration_count: c_uint32):
         path = "../FluidSolverCore/out/build/debug/"
@@ -58,6 +59,7 @@ class FluidSimulation:
 
         self._grid_width = width
         self._grid_height = height
+        self._cell_width = cell_width
 
 
     def __del__(self):
@@ -97,3 +99,6 @@ class FluidSimulation:
     def get_grid_height(self) -> int:
         return self._grid_height
     
+
+    def get_cell_width(self) -> float:
+        return self._cell_width
