@@ -22,11 +22,11 @@ public class FluidSimulationAdapter : MonoBehaviour {
         m_height = height;
         m_cellWidth = cellWidth;
         m_simulation = new(m_width, m_height, m_cellWidth, density, kinematicViscosity, solverIterationCount);
-        SetCellData();
+        SetCells();
     }
 
 
-    private void SetCellData() {
+    private void SetCells() {
         CellConfig movingWall = new(new(CellType.Solid), new(BoundaryCondition.Dirichlet, new(10.0f, 0.0f)));
         CellConfig staticWall = new(new(CellType.Solid), new(BoundaryCondition.Dirichlet, new(0.0f, 0.0f)));
         CellConfig inlet = new(new(CellType.Fluid), new(BoundaryCondition.Dirichlet, new(10.0f, 0.0f)));

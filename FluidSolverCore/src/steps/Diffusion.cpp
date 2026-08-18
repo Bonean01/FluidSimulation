@@ -1,6 +1,7 @@
 #include "steps/Diffusion.h"
 
 #include "math/operators/Staggered.h"
+#include <omp.h>
 
 
 void Diffusion::execute(StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData, float kinematicViscosity, float timeStep, unsigned int iterationCount) {
@@ -28,6 +29,7 @@ void Diffusion::diffuseComponent(const VectorComponent& C, StaggeredVectorField2
 	int width = velocityField.getValuesWidth(C);
 	int height = velocityField.getValuesHeight(C);
 
+	#pragma omp parallel for
 	for (int j = 0; j < height; j++) {
 		for (int i = 0; i < width; i++) {
 			const BoundaryData& currentBoundary = boundaryData.getEdgeValue(C, i, j);

@@ -70,7 +70,7 @@ class LidDrivenCavity(ValidationCase):
 
         X, Y = np.meshgrid(X, Y, indexing="ij")
 
-        ax.imshow(
+        im = ax.imshow(
             speed_grid.T,
             origin="lower",
             interpolation="none",
@@ -78,6 +78,8 @@ class LidDrivenCavity(ValidationCase):
         )
 
         ax.streamplot(X.T, Y.T, u_grid.T, v_grid.T, color=(0.0, 0.0, 0.0, 0.4))
+
+        plt.colorbar(im, label="Speed")
 
         plt.show()
 

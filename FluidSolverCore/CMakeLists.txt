@@ -19,7 +19,7 @@ set (SOURCE_FILES
 	"include/FluidSimulation.h"
 
 	"include/domain/CellType.h"
-	"include/domain/BoundaryType.h"
+	"include/domain/BoundaryCondition.h"
 	"include/domain/CellData.h"
 	"include/domain/BoundaryUtils.h"
 	"include/domain/BoundaryData.h"
@@ -84,6 +84,14 @@ target_include_directories (FluidSolver
 target_include_directories (FluidSolverStatic
 	PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+
+# Link the library with OpenMP
+find_package(OpenMP REQUIRED)
+target_link_libraries(FluidSolver PUBLIC OpenMP::OpenMP_CXX)
+
+find_package(OpenMP REQUIRED)
+target_link_libraries(FluidSolverStatic PUBLIC OpenMP::OpenMP_CXX)
 
 
 # Compile the testing code

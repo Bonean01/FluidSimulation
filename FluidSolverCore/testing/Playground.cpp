@@ -52,19 +52,30 @@ static void printDivergenceField(FluidSimulation simulation) {
 }
 
 
+#include <chrono>
+#include <omp.h>
+
 int main(int argc, char* argv[]) {
-	using enum VectorComponent;
+	int width = 333;
+	int height = 333;
+	float cellWidth = 1.0f / width;
+	float density = 1.0f;
+	float kinematicViscosity = 0.001f;
+	float timestep = 1.0f / 120.0f;
 
-	FluidSimulation simulation{ 5, 5, 1.0f, 1.0f, 0.0f, 30 };
+	FluidSimulation simulation{ width, height, cellWidth, density, kinematicViscosity };
 
-	simulation.setVelocity(0, 0, {10.0f, 10.0f});
-	simulation.setCell(0, 0, { CellType::Solid }, { BoundaryCondition::Dirichlet, {0.0f, 0.0f} });
+	CellConfig movingWall{ {CellType::Solid}, {BoundaryCondition::Dirichlet, {1.0f, 0.0f}} };
+	CellConfig staticWall{ {CellType::Solid}, {BoundaryCondition::Dirichlet, {0.0f, 0.0f}} };
 
-	Vec2f velAtEdge = simulation.getVelocity(0, 0);
-	std::cout << velAtEdge.x << ", " << velAtEdge.y << std::endl;
-	simulation.step(1.0f / 120.0f);
-	velAtEdge = simulation.getVelocity(0, 0);
-	std::cout << velAtEdge.x << ", " << velAtEdge.y << std::endl;
-	std::cout << sizeof(CellData) << std::endl;
-	std::cout << sizeof(BoundaryData) << std::endl;
+
+
+	Advection advection{ width, height, cellWidth };
+
+	auto start = std::chrono::steady_clock::now();
+	simulation.step(timestep);
+	auto end = std::chrono::steady_clock::now();
+
+	auto elapsed = std::chrono::duration<double, std::milli>(end - start);
+	std::cout << "Elapsed: " << elapsed << std::endl;
 }

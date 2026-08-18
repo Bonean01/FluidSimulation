@@ -1,5 +1,5 @@
 #include "steps/Advection.h"
-
+#include <omp.h>
 
 void Advection::execute(StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData, float timeStep) {
 	using enum VectorComponent;
@@ -34,9 +34,12 @@ void Advection::execute(ScalarField2D& field, const StaggeredVectorField2D& velo
 }
 
 
+#include <iostream>
 void Advection::advectComponent(const VectorComponent& C, StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData, float timeStep) {
 	int width = velocityField.getValuesWidth(C);
 	int height = velocityField.getValuesHeight(C);
+
+	#pragma omp parallel for
 	for (int j = 0; j < height; j++) {
 		for (int i = 0; i < width; i++) {
 			const BoundaryData& currentBoundary = boundaryData.getEdgeValue(C, i, j);

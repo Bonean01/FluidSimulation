@@ -3,8 +3,11 @@
 #include "math/operators/Staggered.h"
 #include "domain/BoundaryUtils.h"
 
+#include <omp.h>
 
 void FluidSimulation::step(float timeStep) {
+	omp_set_num_threads(4);
+
 	BoundaryUtils::applyVelocityBoundaryConditions(m_velocityField, m_boundaryData);
 
 	m_advection.execute(m_velocityField, m_boundaryData, timeStep);

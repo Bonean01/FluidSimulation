@@ -1,4 +1,5 @@
 #include "steps/Projection.h"
+#include <omp.h>
 
 
 void Projection::execute(StaggeredVectorField2D& velocityField, const ScalarField2D& pressureField, const StaggeredGrid2D<BoundaryData>& boundaryData, float density, float timeStep) {
@@ -12,7 +13,8 @@ void Projection::execute(StaggeredVectorField2D& velocityField, const ScalarFiel
 void Projection::projectComponent(const VectorComponent& C, StaggeredVectorField2D& velocityField, const ScalarField2D& pressureField, const StaggeredGrid2D<BoundaryData>& boundaryData, float density, float timeStep) {
 		int width = velocityField.getValuesWidth(C);
 		int height = velocityField.getValuesHeight(C);
-
+		
+		#pragma omp parallel for
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width; i++) {
 				const BoundaryData& currentBoundary = boundaryData.getEdgeValue(C, i, j);

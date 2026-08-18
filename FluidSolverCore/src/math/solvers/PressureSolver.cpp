@@ -1,10 +1,13 @@
 #include "math/solvers/PressureSolver.h"
+#include <omp.h>
 
 
 void PressureSolver::solveJacobi(ScalarField2D& result, StaggeredVectorField2D& velocityField, const Grid2D<CellData>& cellData, float density, float timeStep, unsigned int iterationCount) {
 	int width = result.width();
 	int height = result.height();
 	for (unsigned int k = 0; k < iterationCount; k++) {
+		omp_set_num_threads(8);
+		#pragma omp parallel for
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width; i++) {
 				float newCellValue = solveCell(i, j, m_auxScalarField, velocityField, cellData, density, timeStep);
