@@ -5,7 +5,7 @@
 
 #include "utils/profiling/ScopeProfiler.h"
 
-#include <omp.h>
+
 void FluidSimulation::step(float timeStep) {
 	{
 		ScopeProfiler p{ "Velocity BCs" };

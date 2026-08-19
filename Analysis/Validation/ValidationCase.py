@@ -1,7 +1,7 @@
 import argparse
 
 from abc import ABC, abstractmethod
-from SimulationWrapperTypes import *
+from ..SimulationWrapperTypes import *
 
 
 class ValidationCase(ABC):

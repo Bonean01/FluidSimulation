@@ -67,18 +67,18 @@ int main(int argc, char* argv[]) {
 	CellConfig movingWall{ {CellType::Solid}, {BoundaryCondition::Dirichlet, {1.0f, 0.0f}} };
 	CellConfig staticWall{ {CellType::Solid}, {BoundaryCondition::Dirichlet, {0.0f, 0.0f}} };
 
-
-	simulation.step(timestep);
+	for (int k = 0; k < 10; k++)
+		simulation.step(timestep);
 
 
 	Profiler& profiler = Profiler::getInstance();
-	auto IDs = profiler.getIDs();
 
 	Duration total{};
-	for (auto& id : IDs) {
+	for (auto& id : profiler.getIDs()) {
 		Duration duration = profiler.getAverageDuration(id);
 		total += duration;
 		std::cout << id << ": " << duration << std::endl;
 	}
+	std::cout << "==============================" << std::endl;
 	std::cout << "Total: " << total << std::endl;
 }

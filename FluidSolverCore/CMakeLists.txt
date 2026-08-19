@@ -19,9 +19,9 @@ set (SOURCE_FILES
 	"include/FluidSimulation.h"
 
 	"include/domain/CellType.h"
-	"include/domain/BoundaryCondition.h"
 	"include/domain/CellData.h"
 	"include/domain/BoundaryUtils.h"
+	"include/domain/BoundaryCondition.h"
 	"include/domain/BoundaryData.h"
 
 	"include/steps/Advection.h"

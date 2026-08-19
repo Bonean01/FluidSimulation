@@ -2,7 +2,7 @@ import os
 
 from ctypes import *
 from enum import IntEnum
-
+from pathlib import Path
 
 class Vec2f(Structure):
     _fields_ = [
@@ -45,13 +45,13 @@ class FluidSimulation:
     _cell_width: float
 
     def __init__(self, width: c_int, height: c_int, cell_width: c_float, density: c_float, kinematic_viscosity: c_float, iteration_count: c_uint32):
-        path = "../FluidSolverCore/out/build/debug/"
+        path = "./FluidSolverCore/out/build/debug/"
         if os.path.exists(path + "FluidSolver.dll"):
             self._libc = cdll.LoadLibrary(path + "FluidSolver.dll")
         elif os.path.exists(path + "libFluidSolver.so"):
             self._libc = cdll.LoadLibrary(path + "libFluidSolver.so")
         else:
-            raise FileNotFoundError(f"Could not find FluidSolver.dll nor libFluidSolver.so at: {path}")
+            raise FileNotFoundError(f"Could not find FluidSolver.dll nor libFluidSolver.so at: {(Path.cwd() / path).resolve()}")
 
         self._libc.CreateSimulation.argtypes = [c_int, c_int, c_float, c_float, c_float, c_uint32]
         self._libc.CreateSimulation.restype = c_void_p
@@ -90,6 +90,12 @@ class FluidSimulation:
         self._libc.SetCell.argtypes = [c_void_p, c_int, c_int, CellConfig]
         self._libc.SetCell.restype = c_void_p
         self._libc.SetCell(self._handle, i, j, cell_config)
+
+
+    def set_num_threads(self, n: c_int) -> None:
+        self._libc.SetNumThreads.argtypes = [c_int]
+        self._libc.SetNumThreads.restype = c_void_p
+        self._libc.SetNumThreads(n)
 
 
     def get_grid_width(self) -> int:

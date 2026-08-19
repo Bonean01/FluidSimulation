@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from SimulationWrapperTypes import *
-from ValidationCase import ValidationCase
+from ..SimulationWrapperTypes import *
+from .ValidationCase import ValidationCase
 
 
 class PoiseuilleFlow(ValidationCase):

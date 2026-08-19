@@ -1,4 +1,6 @@
 #include "FluidSimulation.h"
+#include "utils/profiling/Profiler.h"
+#include <omp.h>
 
 
 #if defined(__CYGWIN__)
@@ -65,4 +67,9 @@ extern "C" INTERFACE_EXPORT void AddSmoke(FluidSimulation* handle, int i, int j,
 
 extern "C" INTERFACE_EXPORT void SetCell(FluidSimulation* handle, int i, int j, CellConfig config) {
 	handle->setCell(i, j, config);
+}
+
+
+extern "C" INTERFACE_EXPORT void SetNumThreads(int n) {
+	omp_set_num_threads(n);
 }
