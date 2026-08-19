@@ -3,32 +3,32 @@
 #include "math/operators/Staggered.h"
 #include "domain/BoundaryUtils.h"
 
-#include "utils/profiling/ProfileScope.h"
+#include "utils/profiling/ScopeProfiler.h"
 
-
+#include <omp.h>
 void FluidSimulation::step(float timeStep) {
 	{
-		ProfileScope p{ "Velocity BCs" };
+		ScopeProfiler p{ "Velocity BCs" };
 		BoundaryUtils::applyVelocityBoundaryConditions(m_velocityField, m_boundaryData);
 	}
 	{
-		ProfileScope p{ "Self-Advection" };
+		ScopeProfiler p{ "Self-Advection" };
 		m_advection.execute(m_velocityField, m_boundaryData, timeStep);
 	}
 	{
-		ProfileScope p{ "Diffusion" };
+		ScopeProfiler p{ "Diffusion" };
 		m_diffusion.execute(m_velocityField, m_boundaryData, m_kinematicViscosity, timeStep, m_iterationCount);
 	}
 	{
-		ProfileScope p{ "Pressure solve" };
+		ScopeProfiler p{ "Pressure solve" };
 		m_pressureSolver.solveJacobi(m_pressureField, m_velocityField, m_cellData, m_density, timeStep, m_iterationCount);
 	}
 	{
-		ProfileScope p{ "Projection" };
+		ScopeProfiler p{ "Projection" };
 		m_projection.execute(m_velocityField, m_pressureField, m_boundaryData, m_density, timeStep);
 	}
 	{
-		ProfileScope p{ "Smoke field advection" };
+		ScopeProfiler p{ "Smoke field advection" };
 		m_advection.execute(m_smokeField, m_velocityField, m_cellData, timeStep);
 	}
 }

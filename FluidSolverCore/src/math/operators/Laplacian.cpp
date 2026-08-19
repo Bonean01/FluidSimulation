@@ -1,6 +1,8 @@
 #include "math/operators/FiniteDifference.h"
 #include "math/operators/Staggered.h"
 
+#include <omp.h>
+
 
 namespace FiniteDifference {
 	float Central::laplacian(int i, int j, const ScalarField2D& scalarField) {
@@ -34,6 +36,7 @@ namespace Staggered {
 		int height = vectorField.getValuesHeight(C);
 		float dx = vectorField.cellWidth();
 		
+		#pragma omp parallel for
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width; i++) {
 				float center = vectorField.getEdgeValue(C, i, j);

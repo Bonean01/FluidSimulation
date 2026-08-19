@@ -52,8 +52,7 @@ static void printDivergenceField(FluidSimulation simulation) {
 }
 
 
-#include <chrono>
-#include <omp.h>
+#include "utils/profiling/Profiler.h"
 
 int main(int argc, char* argv[]) {
 	int width = 333;
@@ -69,13 +68,17 @@ int main(int argc, char* argv[]) {
 	CellConfig staticWall{ {CellType::Solid}, {BoundaryCondition::Dirichlet, {0.0f, 0.0f}} };
 
 
-
-	Advection advection{ width, height, cellWidth };
-
-	auto start = std::chrono::steady_clock::now();
 	simulation.step(timestep);
-	auto end = std::chrono::steady_clock::now();
 
-	auto elapsed = std::chrono::duration<double, std::milli>(end - start);
-	std::cout << "Elapsed: " << elapsed << std::endl;
+
+	Profiler& profiler = Profiler::getInstance();
+	auto IDs = profiler.getIDs();
+
+	Duration total{};
+	for (auto& id : IDs) {
+		Duration duration = profiler.getAverageDuration(id);
+		total += duration;
+		std::cout << id << ": " << duration << std::endl;
+	}
+	std::cout << "Total: " << total << std::endl;
 }

@@ -42,6 +42,8 @@ set (SOURCE_FILES
 	"include/math/solvers/PressureSolver.h"
 
 	"include/utils/profiling/Profiler.h"
+	"include/utils/profiling/ScopeProfiler.h"
+	"include/utils/profiling/ProfilingData.h"
 
 
 	"src/Exports.cpp"

@@ -790,7 +790,7 @@ MonoBehaviour:
   height: 33
   cellWidth: 0.121212125
   density: 1
-  kinematicViscosity: 0.00001
+  kinematicViscosity: 0.0000001
   solverIterationCount: 30
 --- !u!114 &1486929793
 MonoBehaviour:

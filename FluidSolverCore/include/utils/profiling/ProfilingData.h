@@ -4,6 +4,6 @@
 
 typedef std::chrono::duration<double, std::milli> Duration;
 struct ProfilingData {
-	int calls;
-	Duration totalDuration;
+	int calls = 0;
+	Duration totalDuration{};
 };

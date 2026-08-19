@@ -21,6 +21,7 @@ void Advection::execute(ScalarField2D& field, const StaggeredVectorField2D& velo
 	float dx = field.cellWidth();
 	if (m_auxScalarField.width() != width || m_auxScalarField.height() != height) return;
 
+	#pragma omp parallel for
 	for (int j = 0; j < height; j++) {
 		for (int i = 0; i < width; i++) {
 			if (cellData.getValue(i, j).cellType == CellType::Solid) { m_auxScalarField.setValue(i, j, 0.0f); continue; }
@@ -34,7 +35,6 @@ void Advection::execute(ScalarField2D& field, const StaggeredVectorField2D& velo
 }
 
 
-#include <iostream>
 void Advection::advectComponent(const VectorComponent& C, StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData, float timeStep) {
 	int width = velocityField.getValuesWidth(C);
 	int height = velocityField.getValuesHeight(C);

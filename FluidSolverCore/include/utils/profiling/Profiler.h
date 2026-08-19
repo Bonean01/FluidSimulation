@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 #include <string>
+#include <vector>
 
 #include "ProfilingData.h"
 
@@ -13,31 +14,27 @@ public:
 	void operator =(const Profiler&) = delete;
 
 	Duration getAverageDuration(const std::string& id) const {
-		const ProfilingData& data = profilingDataMap.at(id);
+		const ProfilingData& data = m_profilingDataMap.at(id);
 		return data.totalDuration / data.calls;
 	}
 
+	std::vector<std::string> getIDs() const {
+		std::vector<std::string> res{};
+		for (auto& entry : m_profilingDataMap) {
+			res.push_back(entry.first);
+		}
+		return res;
+	}
+
 	static Profiler& getInstance() {
-		static Profiler* instance;
-		return *instance;
+		static Profiler instance;
+		return instance;
 	}
 
 
 private:
 	Profiler() {}
-	std::unordered_map<std::string, ProfilingData> profilingDataMap;
+	std::unordered_map<std::string, ProfilingData> m_profilingDataMap;
 
-	friend class ProfileScope;
+	friend class ScopeProfiler;
 };
-
-
-
-
-
-
-
-
-
-
-
-

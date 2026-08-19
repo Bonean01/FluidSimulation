@@ -3,20 +3,21 @@
 #include "Profiler.h"
 #include "ProfilingData.h"
 
+#include <iostream>
+
 typedef std::chrono::steady_clock::time_point Instant;
-class ProfileScope {
+class ScopeProfiler {
 public:
-	ProfileScope(const std::string& id) : m_id(id) {
+	ScopeProfiler(const std::string& id) : m_id(id) {
 		m_start = std::chrono::steady_clock::now();
 	}
 
-	~ProfileScope() {
+	~ScopeProfiler() {
 		Instant end = std::chrono::steady_clock::now();
 		Duration elapsed = std::chrono::duration<double, std::milli>(end - m_start);
 
 		Profiler& profiler = Profiler::getInstance();
-		ProfilingData& data = profiler.profilingDataMap[m_id];
-
+		ProfilingData& data = profiler.m_profilingDataMap[m_id];
 		data.calls++;
 		data.totalDuration += elapsed;
 	}
