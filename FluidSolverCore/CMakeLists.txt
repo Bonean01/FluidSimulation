@@ -41,6 +41,9 @@ set (SOURCE_FILES
 
 	"include/math/solvers/PressureSolver.h"
 
+	"include/utils/profiling/Profiler.h"
+
+
 	"src/Exports.cpp"
 	"src/FluidSimulation.cpp"
 

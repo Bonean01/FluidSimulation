@@ -3,22 +3,34 @@
 #include "math/operators/Staggered.h"
 #include "domain/BoundaryUtils.h"
 
-#include <omp.h>
+#include "utils/profiling/ProfileScope.h"
+
 
 void FluidSimulation::step(float timeStep) {
-	omp_set_num_threads(4);
-
-	BoundaryUtils::applyVelocityBoundaryConditions(m_velocityField, m_boundaryData);
-
-	m_advection.execute(m_velocityField, m_boundaryData, timeStep);
-
-	m_diffusion.execute(m_velocityField, m_boundaryData, m_kinematicViscosity, timeStep, m_iterationCount);
-	
-	m_pressureSolver.solveJacobi(m_pressureField, m_velocityField, m_cellData, m_density, timeStep, m_iterationCount);
-	m_projection.execute(m_velocityField, m_pressureField, m_boundaryData, m_density, timeStep);
-	Staggered::divergence(m_divergenceField, m_velocityField);
-	
-	m_advection.execute(m_smokeField, m_velocityField, m_cellData, timeStep);
+	{
+		ProfileScope p{ "Velocity BCs" };
+		BoundaryUtils::applyVelocityBoundaryConditions(m_velocityField, m_boundaryData);
+	}
+	{
+		ProfileScope p{ "Self-Advection" };
+		m_advection.execute(m_velocityField, m_boundaryData, timeStep);
+	}
+	{
+		ProfileScope p{ "Diffusion" };
+		m_diffusion.execute(m_velocityField, m_boundaryData, m_kinematicViscosity, timeStep, m_iterationCount);
+	}
+	{
+		ProfileScope p{ "Pressure solve" };
+		m_pressureSolver.solveJacobi(m_pressureField, m_velocityField, m_cellData, m_density, timeStep, m_iterationCount);
+	}
+	{
+		ProfileScope p{ "Projection" };
+		m_projection.execute(m_velocityField, m_pressureField, m_boundaryData, m_density, timeStep);
+	}
+	{
+		ProfileScope p{ "Smoke field advection" };
+		m_advection.execute(m_smokeField, m_velocityField, m_cellData, timeStep);
+	}
 }
 
 
