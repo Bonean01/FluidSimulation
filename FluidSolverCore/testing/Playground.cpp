@@ -75,7 +75,7 @@ int main(int argc, char* argv[]) {
 
 	Duration total{};
 	for (auto& id : profiler.getIDs()) {
-		Duration duration = profiler.getAverageDuration(id);
+		Duration duration = profiler.getTaskAverageDuration(id);
 		total += duration;
 		std::cout << id << ": " << duration << std::endl;
 	}

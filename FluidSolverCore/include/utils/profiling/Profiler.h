@@ -13,7 +13,7 @@ public:
 	Profiler(const Profiler& other) = delete;
 	void operator =(const Profiler&) = delete;
 
-	Duration getAverageDuration(const std::string& id) const {
+	Duration getTaskAverageDuration(const std::string& id) const {
 		const ProfilingData& data = m_profilingDataMap.at(id);
 		return data.totalDuration / data.calls;
 	}
