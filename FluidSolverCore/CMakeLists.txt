@@ -90,10 +90,7 @@ pybind11_add_module(FluidSolverPython
     "src/bindings/PyBind.cpp"
 )
 
-target_link_libraries(FluidSolverPython
-    PRIVATE
-        FluidSolverStatic
-)
+target_link_libraries(FluidSolverPython PRIVATE FluidSolver)
 
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

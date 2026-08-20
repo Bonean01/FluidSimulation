@@ -9,7 +9,7 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(FluidSolver, m) {
+PYBIND11_MODULE(FluidSolverPython, m) {
 	m.doc() = "FluidSolver python bindings";
 
 	py::native_enum<CellType>(m, "CellType", "enum.Enum")
@@ -30,6 +30,18 @@ PYBIND11_MODULE(FluidSolver, m) {
 		.value("HOMOGENEOUS_NEUMANN", BoundaryCondition::HomogeneousNeumann)
 		.export_values()
 		.finalize();
+
+	
+	py::class_<Vec2f>(m, "Vec2f")
+		.def(py::init<float, float>(),
+			py::arg("x") = 0.0f,
+			py::arg("y") = 0.0f);
+
+
+	py::class_<BoundaryData>(m, "BoundaryData")
+		.def(py::init<BoundaryCondition, Vec2f>(),
+			py::arg("boundary_condition") = BoundaryCondition::None,
+			py::arg("prescribed_velocity") = Vec2f{});
 
 
 	py::class_<CellConfig>(m, "CellConfig")
@@ -62,7 +74,6 @@ PYBIND11_MODULE(FluidSolver, m) {
 			py::arg("id"))
 		.def("get_IDs", &Profiler::getIDs)
 		.def("get_instance", &Profiler::getInstance);
-
 
 	m.def("set_num_threads", &omp_set_num_threads,
 		py::arg("n"));
