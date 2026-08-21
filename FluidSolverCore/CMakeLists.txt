@@ -53,7 +53,8 @@ set (SOURCE_FILES
 
 	"include/utils/profiling/Profiler.h"
 	"include/utils/profiling/ScopeProfiler.h"
-	"include/utils/profiling/ProfilingData.h"
+	"include/utils/profiling/TaskData.h"
+	"include/utils/profiling/ProfilerResults.h"
 
 
 	"src/bindings/Exports.cpp"

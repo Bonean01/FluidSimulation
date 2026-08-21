@@ -4,7 +4,8 @@
 #include <string>
 #include <vector>
 
-#include "ProfilingData.h"
+#include "TaskData.h"
+#include "ProfilerResults.h"
 
 class ProfileScope;
 
@@ -14,7 +15,7 @@ public:
 	void operator =(const Profiler&) = delete;
 
 	Duration getTaskAverageDuration(const std::string& id) const {
-		const ProfilingData& data = m_profilingDataMap.at(id);
+		const TaskData& data = m_profilingDataMap.at(id);
 		return data.totalDuration / data.calls;
 	}
 
@@ -27,6 +28,19 @@ public:
 		return res;
 	}
 
+
+	ProfilerResults getResults() const {
+		std::vector<TaskResults> taskResults{};
+		Duration total{};
+		for (auto& id : getIDs()) {
+			Duration averageDuration = getTaskAverageDuration(id);
+			TaskData taskData = m_profilingDataMap.at(id);
+			total += taskData.totalDuration;
+			taskResults.emplace_back(id, taskData, averageDuration);
+		}
+		return {taskResults, total};
+	}
+
 	static Profiler& getInstance() {
 		static Profiler instance;
 		return instance;
@@ -35,7 +49,7 @@ public:
 
 private:
 	Profiler() {}
-	std::unordered_map<std::string, ProfilingData> m_profilingDataMap;
+	std::unordered_map<std::string, TaskData> m_profilingDataMap;
 
 	friend class ScopeProfiler;
 };

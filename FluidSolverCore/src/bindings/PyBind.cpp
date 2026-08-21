@@ -1,6 +1,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/native_enum.h>
 #include <pybind11/stl.h>
+#include <pybind11/chrono.h>
 
 #include <omp.h>
 
@@ -76,10 +77,25 @@ PYBIND11_MODULE(FluidSolverPython, m) {
 			py::arg("cell_config"));
 
 
+	py::class_<TaskData>(m, "TaskData")
+		.def_readonly("calls", &TaskData::calls)
+		.def_readonly("total_duration", &TaskData::totalDuration);
+
+	py::class_<TaskResults>(m, "TaskResults")
+		.def_readonly("id", &TaskResults::id)
+		.def_readonly("task_data", &TaskResults::taskData)
+		.def_readonly("average_duration", &TaskResults::averageDuration);
+	
+	py::class_<ProfilerResults>(m, "ProfilerResults")
+		.def_readonly("task_results", &ProfilerResults::taskResults)
+		.def_readonly("total_duration", &ProfilerResults::totalDuration);
+
+	
 	py::class_<Profiler>(m, "Profiler")
 		.def("get_task_average_duration", &Profiler::getTaskAverageDuration,
 			py::arg("id"))
 		.def("get_IDs", &Profiler::getIDs)
+		.def("get_results", &Profiler::getResults)
 		.def_static("get_instance", &Profiler::getInstance, py::return_value_policy::reference);
 
 	m.def("set_num_threads", &omp_set_num_threads,
