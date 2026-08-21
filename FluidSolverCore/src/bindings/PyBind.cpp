@@ -1,5 +1,6 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/native_enum.h>
+#include <pybind11/stl.h>
 
 #include <omp.h>
 
@@ -35,7 +36,10 @@ PYBIND11_MODULE(FluidSolverPython, m) {
 	py::class_<Vec2f>(m, "Vec2f")
 		.def(py::init<float, float>(),
 			py::arg("x") = 0.0f,
-			py::arg("y") = 0.0f);
+			py::arg("y") = 0.0f)
+		.def_readwrite("x", &Vec2f::x)
+		.def_readwrite("y", &Vec2f::y);
+		
 
 
 	py::class_<BoundaryData>(m, "BoundaryData")
@@ -60,9 +64,12 @@ PYBIND11_MODULE(FluidSolverPython, m) {
 			py::arg("iteration_count"))
 		.def("step", &FluidSimulation::step,
 			py::arg("time_step"))
+		.def("get_grid_width", &FluidSimulation::getGridWidth)
+		.def("get_grid_height", &FluidSimulation::getGridHeight)
+		.def("get_cell_width", &FluidSimulation::getCellWidth)
 		.def("get_density", &FluidSimulation::getDensity)
 		.def("get_kinematic_viscosity", &FluidSimulation::getKinematicViscosity)
-		.def("get_cell_width", &FluidSimulation::getCellWidth)
+		.def("get_velocity", &FluidSimulation::getVelocity)
 		.def("set_cell", py::overload_cast<int, int, CellConfig>(&FluidSimulation::setCell),
 			py::arg("i"),
 			py::arg("j"),
@@ -73,7 +80,7 @@ PYBIND11_MODULE(FluidSolverPython, m) {
 		.def("get_task_average_duration", &Profiler::getTaskAverageDuration,
 			py::arg("id"))
 		.def("get_IDs", &Profiler::getIDs)
-		.def("get_instance", &Profiler::getInstance);
+		.def_static("get_instance", &Profiler::getInstance, py::return_value_policy::reference);
 
 	m.def("set_num_threads", &omp_set_num_threads,
 		py::arg("n"));

@@ -82,15 +82,17 @@ set (SOURCE_FILES
 # Create a library from the project.
 add_library (FluidSolver SHARED ${SOURCE_FILES})
 
+
 # Create a static library for testing.
 add_library (FluidSolverStatic STATIC ${SOURCE_FILES})
+set_target_properties(FluidSolverStatic PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
 
 # Create the python bindings module
 pybind11_add_module(FluidSolverPython
     "src/bindings/PyBind.cpp"
 )
-
-target_link_libraries(FluidSolverPython PRIVATE FluidSolver)
+target_link_libraries(FluidSolverPython PRIVATE FluidSolverStatic)
 
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

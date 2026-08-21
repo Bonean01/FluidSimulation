@@ -22,6 +22,8 @@ kinematic_viscosity = 1e-04
 solver_iterations = 30
 simulation_iterations = 100
 
+time_step = 1.0 / 120.0
+
 simulation = FluidSimulation(width, height, cell_width, density, kinematic_viscosity, solver_iterations)
 wall_config = CellConfig(CellData(CellType.SOLID), BoundaryData(BoundaryCondition.DIRICHLET, Vec2f(0.0, 0.0)))
 
@@ -33,5 +35,6 @@ for j in range(height):
     simulation.set_cell(0, j, wall_config)
     simulation.set_cell(width - 1, j, wall_config)
 
+simulation.step(time_step)
 
 print(Profiler.get_instance().get_IDs())

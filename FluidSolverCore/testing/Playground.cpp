@@ -64,11 +64,18 @@ int main(int argc, char* argv[]) {
 
 	FluidSimulation simulation{ width, height, cellWidth, density, kinematicViscosity };
 
-	CellConfig movingWall{ {CellType::Solid}, {BoundaryCondition::Dirichlet, {1.0f, 0.0f}} };
 	CellConfig staticWall{ {CellType::Solid}, {BoundaryCondition::Dirichlet, {0.0f, 0.0f}} };
+	
+	for (int i = 0; i < width; i++) {
+		simulation.setCell(i, 0, staticWall);
+		simulation.setCell(i, height - 1, staticWall);
+	}
+	for (int j = 0; j < height; j++) {
+		simulation.setCell(0, j, staticWall);
+		simulation.setCell(width - 1, j, staticWall);
+	}
 
-	for (int k = 0; k < 10; k++)
-		simulation.step(timestep);
+	simulation.step(timestep);
 
 
 	Profiler& profiler = Profiler::getInstance();

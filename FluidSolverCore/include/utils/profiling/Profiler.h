@@ -18,8 +18,9 @@ public:
 		return data.totalDuration / data.calls;
 	}
 
-	std::vector<std::string> getIDs() const {
-		std::vector<std::string> res{};
+	typedef std::vector<std::string> ids;
+	ids getIDs() const {
+		ids res{};
 		for (auto& entry : m_profilingDataMap) {
 			res.push_back(entry.first);
 		}
