@@ -1,7 +1,10 @@
 import argparse
+import sys
+
+sys.path.append("FluidSolverCore/out/build/debug")
+from FluidSolverPython import *
 
 from abc import ABC, abstractmethod
-from ..SimulationWrapperTypes import *
 
 
 class ValidationCase(ABC):
@@ -72,14 +75,14 @@ class ValidationCase(ABC):
         self._args = self._parser.parse_args()
 
         print("Setting up...")
-        width: c_int = self._args.grid_width
-        height: c_int = self._args.grid_height
-        cell_width: c_float = 1.0 / width
-        density: c_float = self._args.density
-        kinematic_viscosity: c_float = self._args.kinematic_viscosity
-        linear_solver_iteration_count: c_int = 30
+        width = self._args.grid_width
+        height = self._args.grid_height
+        cell_width = 1.0 / width
+        density = self._args.density
+        kinematic_viscosity = self._args.kinematic_viscosity
+        solver_iteration_count = 30
     
-        self._simulation = FluidSimulation(width, height, cell_width, density, kinematic_viscosity, linear_solver_iteration_count)
+        self._simulation = FluidSimulation(width, height, cell_width, density, kinematic_viscosity, solver_iteration_count)
 
 
     def _run_simulation(self) -> None:
@@ -93,8 +96,8 @@ class ValidationCase(ABC):
             print(f"{name}: {value}")
         print("=====================================================")
 
-        time_step: c_float = self._args.time_step
-        simulation_iteration_count: int = self._args.iterations
+        time_step = self._args.time_step
+        simulation_iteration_count = self._args.iterations
 
         progress = 0
         for k in range(simulation_iteration_count):

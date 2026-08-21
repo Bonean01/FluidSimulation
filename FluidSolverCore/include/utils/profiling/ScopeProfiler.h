@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Profiler.h"
-#include "ProfilingData.h"
+#include "TaskData.h"
 
 #include <iostream>
 
@@ -17,7 +17,7 @@ public:
 		Duration elapsed = std::chrono::duration<double, std::milli>(end - m_start);
 
 		Profiler& profiler = Profiler::getInstance();
-		ProfilingData& data = profiler.m_profilingDataMap[m_id];
+		TaskData& data = profiler.m_profilingDataMap[m_id];
 		data.calls++;
 		data.totalDuration += elapsed;
 	}

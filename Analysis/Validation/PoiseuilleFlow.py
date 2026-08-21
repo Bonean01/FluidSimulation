@@ -1,7 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import sys
 
-from ..SimulationWrapperTypes import *
+sys.path.append("FluidSolverCore/out/build/debug")
+from FluidSolverPython import *
+
 from .ValidationCase import ValidationCase
 
 
@@ -27,7 +30,7 @@ class PoiseuilleFlow(ValidationCase):
     def _initialize(self) -> None:
         super()._initialize()
 
-        inlet_speed: float = self._args.inlet_speed
+        inlet_speed = self._args.inlet_speed
 
         static_wall = CellConfig(CellData(CellType.SOLID), BoundaryData(BoundaryCondition.DIRICHLET, prescribed_velocity=Vec2f(0.0, 0.0)))
         inlet = CellConfig(CellData(CellType.FLUID), BoundaryData(BoundaryCondition.DIRICHLET, prescribed_velocity=Vec2f(inlet_speed, 0.0)))

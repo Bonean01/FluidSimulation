@@ -14,6 +14,16 @@ endif()
 project ("FluidSimulation")
 
 
+# Fetch pybind11 from its git repo
+include(FetchContent)
+FetchContent_Declare(
+	pybind11
+	GIT_REPOSITORY https://github.com/pybind/pybind11.git
+	GIT_TAG v3.1.0
+)
+FetchContent_MakeAvailable(pybind11)
+
+
 # Define a variable that contains the source files
 set (SOURCE_FILES
 	"include/FluidSimulation.h"
@@ -43,10 +53,12 @@ set (SOURCE_FILES
 
 	"include/utils/profiling/Profiler.h"
 	"include/utils/profiling/ScopeProfiler.h"
-	"include/utils/profiling/ProfilingData.h"
+	"include/utils/profiling/TaskData.h"
+	"include/utils/profiling/ProfilerResults.h"
 
 
-	"src/Exports.cpp"
+	"src/bindings/Exports.cpp"
+	
 	"src/FluidSimulation.cpp"
 
 	"src/domain/BoundaryUtils.cpp"
@@ -71,13 +83,23 @@ set (SOURCE_FILES
 # Create a library from the project.
 add_library (FluidSolver SHARED ${SOURCE_FILES})
 
+
 # Create a static library for testing.
 add_library (FluidSolverStatic STATIC ${SOURCE_FILES})
+set_target_properties(FluidSolverStatic PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
-	
+
+# Create the python bindings module
+pybind11_add_module(FluidSolverPython
+    "src/bindings/PyBind.cpp"
+)
+target_link_libraries(FluidSolverPython PRIVATE FluidSolverStatic)
+
+
 if (CMAKE_VERSION VERSION_GREATER 3.12)
 	set_property(TARGET FluidSolver PROPERTY CXX_STANDARD 20)
 	set_property(TARGET FluidSolverStatic PROPERTY CXX_STANDARD 20)
+	set_property(TARGET FluidSolverPython PROPERTY CXX_STANDARD 20)
 endif()
 
 
@@ -93,10 +115,10 @@ target_include_directories (FluidSolverStatic
 
 # Link the library with OpenMP
 find_package(OpenMP REQUIRED)
-target_link_libraries(FluidSolver PUBLIC OpenMP::OpenMP_CXX)
+target_link_libraries(FluidSolver PRIVATE OpenMP::OpenMP_CXX)
 
 find_package(OpenMP REQUIRED)
-target_link_libraries(FluidSolverStatic PUBLIC OpenMP::OpenMP_CXX)
+target_link_libraries(FluidSolverStatic PRIVATE OpenMP::OpenMP_CXX)
 
 
 # Compile the testing code

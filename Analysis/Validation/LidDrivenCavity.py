@@ -1,7 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import sys
 
-from ..SimulationWrapperTypes import *
+sys.path.append("FluidSolverCore/out/build/debug")
+from FluidSolverPython import *
+
 from .ValidationCase import ValidationCase
 
 
@@ -27,7 +30,7 @@ class LidDrivenCavity(ValidationCase):
     def _initialize(self) -> None:
         super()._initialize()
 
-        lid_speed: float = self._args.lid_speed
+        lid_speed = self._args.lid_speed
 
         moving_wall = CellConfig(CellData(CellType.SOLID), BoundaryData(BoundaryCondition.DIRICHLET, prescribed_velocity=Vec2f(lid_speed, 0.0)))
         static_wall = CellConfig(CellData(CellType.SOLID), BoundaryData(BoundaryCondition.DIRICHLET, prescribed_velocity=Vec2f(0.0, 0.0)))
