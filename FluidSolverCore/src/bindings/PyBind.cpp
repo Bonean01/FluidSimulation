@@ -96,6 +96,7 @@ PYBIND11_MODULE(FluidSolverPython, m) {
 			py::arg("id"))
 		.def("get_IDs", &Profiler::getIDs)
 		.def("get_results", &Profiler::getResults)
+		.def("reset", &Profiler::reset)
 		.def_static("get_instance", &Profiler::getInstance, py::return_value_policy::reference);
 
 	m.def("set_num_threads", &omp_set_num_threads,

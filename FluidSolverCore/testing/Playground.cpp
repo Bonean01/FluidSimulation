@@ -53,10 +53,15 @@ static void printDivergenceField(FluidSimulation simulation) {
 
 
 #include "utils/profiling/Profiler.h"
+#include "utils/profiling/ScopeProfiler.h"
 
+#include <omp.h>
 int main(int argc, char* argv[]) {
-	int width = 333;
-	int height = 333;
+	omp_set_num_threads(20);
+
+
+	int width = 250;
+	int height = 250;
 	float cellWidth = 1.0f / width;
 	float density = 1.0f;
 	float kinematicViscosity = 0.001f;
@@ -75,17 +80,17 @@ int main(int argc, char* argv[]) {
 		simulation.setCell(width - 1, j, staticWall);
 	}
 
-	simulation.step(timestep);
+
+	for (int k = 0; k < 3; k++) {
+		ScopeProfiler p{ ("Step " + std::to_string(k)) };
+		simulation.step(timestep);
+	}
 
 
 	Profiler& profiler = Profiler::getInstance();
 
-	Duration total{};
 	for (auto& id : profiler.getIDs()) {
 		Duration duration = profiler.getTaskAverageDuration(id);
-		total += duration;
 		std::cout << id << ": " << duration << std::endl;
 	}
-	std::cout << "==============================" << std::endl;
-	std::cout << "Total: " << total << std::endl;
 }

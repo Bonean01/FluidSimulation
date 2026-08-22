@@ -1,9 +1,13 @@
 #include "domain/BoundaryUtils.h"
+
 #include <omp.h>
+
+#include "utils/profiling/ScopeProfiler.h"
 
 
 namespace BoundaryUtils {
     void applyVelocityBoundaryConditions(StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData) {
+        ScopeProfiler p{ "Velocity BCs" };
         using enum VectorComponent;
 
         applyVelocityBCsToComponent(X, velocityField, boundaryData);

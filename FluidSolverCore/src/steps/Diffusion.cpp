@@ -1,10 +1,13 @@
 #include "steps/Diffusion.h"
 
-#include "math/operators/Staggered.h"
 #include <omp.h>
+
+#include "math/operators/Staggered.h"
+#include "utils/profiling/ScopeProfiler.h"
 
 
 void Diffusion::execute(StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData, float kinematicViscosity, float timeStep, unsigned int iterationCount) {
+	ScopeProfiler p{ "Diffusion" };
 	using enum VectorComponent;
 
 	if (kinematicViscosity == 0) return;

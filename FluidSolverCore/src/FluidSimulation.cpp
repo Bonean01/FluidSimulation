@@ -7,30 +7,18 @@
 
 
 void FluidSimulation::step(float timeStep) {
-	{
-		ScopeProfiler p{ "Velocity BCs" };
-		BoundaryUtils::applyVelocityBoundaryConditions(m_velocityField, m_boundaryData);
-	}
-	{
-		ScopeProfiler p{ "Self-Advection" };
-		m_advection.execute(m_velocityField, m_boundaryData, timeStep);
-	}
-	{
-		ScopeProfiler p{ "Diffusion" };
-		m_diffusion.execute(m_velocityField, m_boundaryData, m_kinematicViscosity, timeStep, m_iterationCount);
-	}
-	{
-		ScopeProfiler p{ "Pressure solve" };
-		m_pressureSolver.solveJacobi(m_pressureField, m_velocityField, m_cellData, m_density, timeStep, m_iterationCount);
-	}
-	{
-		ScopeProfiler p{ "Projection" };
-		m_projection.execute(m_velocityField, m_pressureField, m_boundaryData, m_density, timeStep);
-	}
-	{
-		ScopeProfiler p{ "Smoke field advection" };
-		m_advection.execute(m_smokeField, m_velocityField, m_cellData, timeStep);
-	}
+	ScopeProfiler p{ "============= COMPLETE SIMULATION STEP =============" };
+
+	BoundaryUtils::applyVelocityBoundaryConditions(m_velocityField, m_boundaryData);
+
+	m_advection.execute(m_velocityField, m_boundaryData, timeStep);
+
+	m_diffusion.execute(m_velocityField, m_boundaryData, m_kinematicViscosity, timeStep, m_iterationCount);
+
+	m_pressureSolver.solveJacobi(m_pressureField, m_velocityField, m_cellData, m_density, timeStep, m_iterationCount);
+	m_projection.execute(m_velocityField, m_pressureField, m_boundaryData, m_density, timeStep);
+
+	m_advection.execute(m_smokeField, m_velocityField, m_cellData, timeStep);
 }
 
 

@@ -1,7 +1,11 @@
 #include "steps/Advection.h"
+
 #include <omp.h>
 
+#include "utils/profiling/ScopeProfiler.h"
+
 void Advection::execute(StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData, float timeStep) {
+	ScopeProfiler p{ "Self Advection" };
 	using enum VectorComponent;
 
 	int width = velocityField.width();
@@ -16,6 +20,8 @@ void Advection::execute(StaggeredVectorField2D& velocityField, const StaggeredGr
 
 
 void Advection::execute(ScalarField2D& field, const StaggeredVectorField2D& velocityField, const Grid2D<CellData>& cellData, float timeStep) {
+	ScopeProfiler p{ "Scalar Field Advection" };
+
 	int width = field.width();
 	int height = field.height();
 	float dx = field.cellWidth();

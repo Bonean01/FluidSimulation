@@ -41,6 +41,10 @@ public:
 		return {taskResults, total};
 	}
 
+
+	void reset() { m_profilingDataMap.clear(); }
+
+
 	static Profiler& getInstance() {
 		static Profiler instance;
 		return instance;

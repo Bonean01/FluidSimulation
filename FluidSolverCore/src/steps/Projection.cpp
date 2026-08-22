@@ -1,8 +1,12 @@
 #include "steps/Projection.h"
+
 #include <omp.h>
+
+#include "utils/profiling/ScopeProfiler.h"
 
 
 void Projection::execute(StaggeredVectorField2D& velocityField, const ScalarField2D& pressureField, const StaggeredGrid2D<BoundaryData>& boundaryData, float density, float timeStep) {
+	ScopeProfiler p{ "Projection" };
 	using enum VectorComponent;
 
 	projectComponent(X, velocityField, pressureField, boundaryData, density, timeStep);
