@@ -47,8 +47,8 @@ class LidDrivenCavity(ValidationCase):
             self._simulation.set_cell(width - 1, j, static_wall)
 
 
-    def _analize_results(self) -> None:
-        super()._analize_results()
+    def _plot_results(self) -> None:
+        super()._plot_results()
 
         print("Drawing results...")
         _, ax = plt.subplots()

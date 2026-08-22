@@ -48,8 +48,8 @@ class PoiseuilleFlow(ValidationCase):
             self._simulation.set_cell(width - 1, j, outlet)
 
 
-    def _analize_results(self) -> None:
-        super()._analize_results()
+    def _plot_results(self) -> None:
+        super()._plot_results()
 
         print("Drawing results...")
         _, ax = plt.subplots()

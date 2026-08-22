@@ -17,7 +17,7 @@ public:
 		Duration elapsed = std::chrono::duration<double, std::milli>(end - m_start);
 
 		Profiler& profiler = Profiler::getInstance();
-		TaskData& data = profiler.m_profilingDataMap[m_id];
+		TaskData& data = profiler.m_taskDataByID[m_id];
 		data.calls++;
 		data.totalDuration += elapsed;
 	}

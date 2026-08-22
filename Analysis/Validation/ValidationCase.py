@@ -12,10 +12,14 @@ class ValidationCase(ABC):
     _case_description: str
     _parser = None
     _args = None
+    _print_parameters = True
+    _plot_results = True
 
 
-    def __init__(self, case_description: str):
+    def __init__(self, case_description: str = "", print_parameters: bool = True, plot_results: bool = True):
         self._case_description = case_description
+        self._print_parameters = print_parameters
+        self._plot_results = plot_results
 
 
     @abstractmethod
@@ -85,16 +89,21 @@ class ValidationCase(ABC):
         self._simulation = FluidSimulation(width, height, cell_width, density, kinematic_viscosity, solver_iteration_count)
 
 
-    def _run_simulation(self) -> None:
+    def _print_parameters(self) -> None:
         if self._simulation is None:
             return
-
+        
         print("\nRunning " + type(self).__name__ + " with parameters: ")
         print("=====================================================")
         print("cell-width: " + str(self._simulation.get_cell_width()))
         for name, value in vars(self._args).items():
             print(f"{name}: {value}")
         print("=====================================================")
+
+
+    def _run_simulation(self) -> None:
+        if self._simulation is None:
+            return
 
         time_step = self._args.time_step
         simulation_iteration_count = self._args.iterations
@@ -107,8 +116,9 @@ class ValidationCase(ABC):
             print(f"\rProgress: {progress:.2f}%", end="", flush=True)
         print()
 
+
     @abstractmethod
-    def _analize_results(self) -> None:
+    def _plot_results(self) -> None:
         if self._simulation is None:
             return
 
@@ -116,5 +126,11 @@ class ValidationCase(ABC):
     def run(self) -> None:
         self._set_up_arguments()
         self._initialize()
+
+        if self._print_parameters:
+            self._print_parameters()
+
         self._run_simulation()
-        self._analize_results()
+        
+        if self._plot_results:
+            self._plot_results()

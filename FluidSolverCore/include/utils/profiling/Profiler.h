@@ -15,14 +15,14 @@ public:
 	void operator =(const Profiler&) = delete;
 
 	Duration getTaskAverageDuration(const std::string& id) const {
-		const TaskData& data = m_profilingDataMap.at(id);
+		const TaskData& data = m_taskDataByID.at(id);
 		return data.totalDuration / data.calls;
 	}
 
 	typedef std::vector<std::string> ids;
 	ids getIDs() const {
 		ids res{};
-		for (auto& entry : m_profilingDataMap) {
+		for (auto& entry : m_taskDataByID) {
 			res.push_back(entry.first);
 		}
 		return res;
@@ -34,7 +34,7 @@ public:
 		Duration total{};
 		for (auto& id : getIDs()) {
 			Duration averageDuration = getTaskAverageDuration(id);
-			TaskData taskData = m_profilingDataMap.at(id);
+			TaskData taskData = m_taskDataByID.at(id);
 			total += taskData.totalDuration;
 			taskResults.emplace_back(id, taskData, averageDuration);
 		}
@@ -42,7 +42,7 @@ public:
 	}
 
 
-	void reset() { m_profilingDataMap.clear(); }
+	void clearData() { m_taskDataByID.clear(); }
 
 
 	static Profiler& getInstance() {
@@ -53,7 +53,7 @@ public:
 
 private:
 	Profiler() {}
-	std::unordered_map<std::string, TaskData> m_profilingDataMap;
+	std::unordered_map<std::string, TaskData> m_taskDataByID;
 
 	friend class ScopeProfiler;
 };

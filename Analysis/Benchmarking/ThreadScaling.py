@@ -1,56 +1,69 @@
 import os
+import argparse
 
 import sys
 sys.path.append("FluidSolverCore/out/build/debug")
 from FluidSolverPython import *
 
+from Analysis.Validation.ValidationCase import ValidationCase
+from Analysis.Validation.LidDrivenCavity import LidDrivenCavity
+from Analysis.Validation.PoiseuilleFlow import PoiseuilleFlow
+
+from typing import List
+
+
+parser = argparse.ArgumentParser(
+    "Thread Scaling",
+    "Runs a validation case with an increasing number of threads and measures the time taken per iteration"
+)
+
+parser.add_argument(
+    "--case",
+    type=str,
+    default=None,
+    help="Validation case with which to perform the benchmark",
+    required=True
+)
+
+args = parser.parse_args()
+
+case: ValidationCase
+case_name = args.case
+match case_name:
+    case "lid-driven-cavity":
+        case = LidDrivenCavity(print_parameters=False, plot_results=False)
+    case "poiseuille-flow":
+        case = PoiseuilleFlow(print_parameters=False, plot_results=False)
+    case _:
+        raise ValueError(f"The provided case: {case_name} was not recognized")
+
+
+
+def get_thread_count_list(max_threads: int, increment: int = 1) -> List[int]:
+    res = []
+
+    for count in range(1, max_threads, increment):
+        res.append(count)
+
+    res.append(max_threads)
+
+    return res
+
 
 max_threads = os.cpu_count()
-
-thread_count_list = []
-
-n = 1
-while n < max_threads:
-    thread_count_list.append(n)
-    n *= 2
-thread_count_list.append(max_threads)
-
-width = 250
-height = 250
-cell_width = 1.0 / width
-density = 1
-kinematic_viscosity = 1e-03
-solver_iterations = 30
-simulation_iterations = 100
-
-time_step = 1.0 / 120.0
+thread_count_list = get_thread_count_list(max_threads, increment=5)
 
 
-for thread_count in range(1, max_threads + 1):
-    #print(f"\nRunning the simulation with {thread_count} threads...")
-    #print("========================================================")
-
-    simulation = FluidSimulation(width, height, cell_width, density, kinematic_viscosity, solver_iterations)
-    wall_config = CellConfig(CellData(CellType.SOLID), BoundaryData(BoundaryCondition.DIRICHLET, Vec2f(0.0, 0.0)))
-
-    for i in range(width):
-        simulation.set_cell(i, 0, wall_config)
-        simulation.set_cell(i, height - 1, wall_config)
-
-    for j in range(height):
-        simulation.set_cell(0, j, wall_config)
-        simulation.set_cell(width - 1, j, wall_config)
-
+for thread_count in thread_count_list:
     set_num_threads(thread_count)
-    for _ in range(simulation_iterations):
-        simulation.step(time_step)
+    print(f"\nRunning the case with {thread_count} threads...")
+    print("==================================================")
+    case.run()
 
-    #profiler_results = Profiler.get_instance().get_results()
-    #task_results = profiler_results.task_results
 
-    #for task in task_results:
-    #    duration_millis = task.average_duration.total_seconds() * 1000
-    #    print(f"{task.id}: {duration_millis:.2f}ms")
-    duration_millis = Profiler.get_instance().get_task_average_duration("============= COMPLETE SIMULATION STEP =============").total_seconds() * 1000
-    print(f"({thread_count}, {duration_millis:.2f})")
-    Profiler.get_instance().reset()
+    id = "============= COMPLETE SIMULATION STEP ============="
+    step_avg_duration = Profiler.get_instance().get_task_average_duration(id)
+
+    print(f"{id}: {step_avg_duration:.2f}ms")
+
+    Profiler.get_instance().clear_data()
