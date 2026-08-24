@@ -12,8 +12,6 @@ class ValidationCase(ABC):
     _case_description: str
     _parser = None
     _args = None
-    _print_parameters = True
-    _plot_results = True
 
 
     def __init__(self, case_description: str = "", print_parameters: bool = True, plot_results: bool = True):
@@ -126,11 +124,6 @@ class ValidationCase(ABC):
     def run(self) -> None:
         self._set_up_arguments()
         self._initialize()
-
-        if self._print_parameters:
-            self._print_parameters()
-
+        self._print_parameters()
         self._run_simulation()
-        
-        if self._plot_results:
-            self._plot_results()
+        self._plot_results()

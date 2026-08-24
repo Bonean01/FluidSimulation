@@ -31,9 +31,9 @@ case: ValidationCase
 case_name = args.case
 match case_name:
     case "lid-driven-cavity":
-        case = LidDrivenCavity(print_parameters=False, plot_results=False)
+        case = LidDrivenCavity()
     case "poiseuille-flow":
-        case = PoiseuilleFlow(print_parameters=False, plot_results=False)
+        case = PoiseuilleFlow()
     case _:
         raise ValueError(f"The provided case: {case_name} was not recognized")
 
