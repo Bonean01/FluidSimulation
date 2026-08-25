@@ -2,128 +2,104 @@ import argparse
 import sys
 
 sys.path.append("FluidSolverCore/out/build/debug")
-from FluidSolverPython import *
+import FluidSolverPython as fs
 
-from abc import ABC, abstractmethod
+from abc import ABC
+from typing import Callable
+
+from .CaseConfig import CaseConfig
 
 
 class ValidationCase(ABC):
-    _simulation: FluidSimulation
-    _case_description: str
-    _parser = None
-    _args = None
+    _simulation: fs.FluidSimulation
+    _config: CaseConfig
 
 
-    def __init__(self, case_description: str = "", print_parameters: bool = True, plot_results: bool = True):
-        self._case_description = case_description
-        self._print_parameters = print_parameters
-        self._plot_results = plot_results
+    def __init__(self, config: CaseConfig):
+        self._config = config
 
 
-    @abstractmethod
-    def _set_up_arguments(self, default_grid_width: int, default_grid_height: int, default_density: float, default_kinematic_viscosity: float, default_time_step: float, default_iterations: int) -> None:
-        self._parser = argparse.ArgumentParser(
-            prog=type(self).__name__,
-            description=self._case_description
-        )
+    def _initialize(self) -> None:
+        cell_width = 1.0 / self._config.grid_width
+        self._simulation = fs.FluidSimulation(self._config.grid_width, self._config.grid_height, cell_width, self._config.density, self._config.kinematic_viscosity, self._config.solver_iteration_count)
 
-        self._parser.add_argument(
+
+    def _run_simulation(self, progress_callback: Callable[[float], None] = None) -> None:
+        progress = 0
+        for k in range(self._config.simulation_iteration_count):
+            self._simulation.step(self._config.time_step)
+            progress = (k + 1) / self._config.simulation_iteration_count * 100
+            progress_callback(progress)
+
+
+    @classmethod
+    def set_up_arguments(cls, parser: argparse.ArgumentParser, config: CaseConfig):
+        parser.add_argument(
             "--grid-width",
             type=int,
-            default=default_grid_width,
+            default=config.grid_width,
             help="Number of cells along the x axis"
         )
 
-        self._parser.add_argument(
+        parser.add_argument(
             "--grid-height",
             type=int,
-            default=default_grid_height,
+            default=config.grid_height,
             help="Number of cells along the y axis"
         )
 
-        self._parser.add_argument(
+        parser.add_argument(
             "--density",
             type=float,
-            default=default_density,
+            default=config.density,
             help="Density of the fluid")
     
-        self._parser.add_argument(
+        parser.add_argument(
             "--kinematic-viscosity",
             type=float,
-            default=default_kinematic_viscosity,
+            default=config.kinematic_viscosity,
             help="Kinematic viscosity of the fluid"
         )
     
-        self._parser.add_argument(
+        parser.add_argument(
             "--time-step",
             type=float,
-            default=default_time_step,
+            default=config.time_step,
             help="Elapsed time between simulation steps"
         )
-    
-        self._parser.add_argument(
-            "--iterations",
+
+        parser.add_argument(
+            "--solver-iteration-count",
             type=int,
-            default=default_iterations,
+            default=config.solver_iteration_count,
+            help="Number of iterations the linear solvers will perform"
+        )
+    
+        parser.add_argument(
+            "--simulation-iteration-count",
+            type=int,
+            default=config.simulation_iteration_count,
             help="Number of steps the simulation will take before analize the results"
         )
 
 
-    @abstractmethod
-    def _initialize(self) -> None:
-        if self._parser is None:
-            return
-        
-        self._args = self._parser.parse_args()
-
-        print("Setting up...")
-        width = self._args.grid_width
-        height = self._args.grid_height
-        cell_width = 1.0 / width
-        density = self._args.density
-        kinematic_viscosity = self._args.kinematic_viscosity
-        solver_iteration_count = 30
-    
-        self._simulation = FluidSimulation(width, height, cell_width, density, kinematic_viscosity, solver_iteration_count)
+    def print_parameters(self, args) -> None:
+            print("\nRunning " + type(self).__name__ + " with parameters: ")
+            print("=====================================================")
+            for name, value in vars(args).items():
+                print(f"{name}: {value}")
+            print("=====================================================")
 
 
-    def _print_parameters(self) -> None:
-        if self._simulation is None:
-            return
-        
-        print("\nRunning " + type(self).__name__ + " with parameters: ")
-        print("=====================================================")
-        print("cell-width: " + str(self._simulation.get_cell_width()))
-        for name, value in vars(self._args).items():
-            print(f"{name}: {value}")
-        print("=====================================================")
+    def print_progress(self, progress: float) -> None:
+        print(f"\rProgress: {progress:.2f}%", end="", flush=True)
 
 
-    def _run_simulation(self) -> None:
-        if self._simulation is None:
-            return
-
-        time_step = self._args.time_step
-        simulation_iteration_count = self._args.iterations
-
-        progress = 0
-        for k in range(simulation_iteration_count):
-            self._simulation.step(time_step)
-
-            progress = (k + 1) / simulation_iteration_count * 100
-            print(f"\rProgress: {progress:.2f}%", end="", flush=True)
-        print()
-
-
-    @abstractmethod
-    def _plot_results(self) -> None:
+    def plot_results(self) -> None:
         if self._simulation is None:
             return
 
 
-    def run(self) -> None:
-        self._set_up_arguments()
+    def run(self, progress_callback: Callable[[float], None] = None) -> None:
         self._initialize()
-        self._print_parameters()
-        self._run_simulation()
-        self._plot_results()
+        self._run_simulation(progress_callback)
