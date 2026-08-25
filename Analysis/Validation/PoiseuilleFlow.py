@@ -24,7 +24,7 @@ class PoiseuilleFlowConfig(CaseConfig):
 
 
 class PoiseuilleFlow(ValidationCase):
-    def __init__(self, config: PoiseuilleFlowConfig):
+    def __init__(self, config: PoiseuilleFlowConfig = PoiseuilleFlowConfig()):
         self._config = config
 
 
@@ -102,18 +102,17 @@ class PoiseuilleFlow(ValidationCase):
         PoiseuilleFlow.set_up_arguments(parser)
         args = parser.parse_args()
 
-        case = PoiseuilleFlow(
-            PoiseuilleFlowConfig(
-                args.grid_width,
-                args.grid_height,
-                args.density,
-                args.kinematic_viscosity,
-                args.time_step,
-                args.solver_iteration_count,
-                args.simulation_iteration_count,
-                args.inlet_speed
-            )
+        config = PoiseuilleFlowConfig(
+            args.grid_width,
+            args.grid_height,
+            args.density,
+            args.kinematic_viscosity,
+            args.time_step,
+            args.solver_iteration_count,
+            args.simulation_iteration_count,
+            args.inlet_speed
         )
+        case = PoiseuilleFlow(config)
 
         case.print_parameters(args)
         case.run(progress_callback=case.print_progress)

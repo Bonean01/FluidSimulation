@@ -24,7 +24,7 @@ class LidDrivenCavityConfig(CaseConfig):
 
 
 class LidDrivenCavity(ValidationCase):
-    def __init__(self, config: LidDrivenCavityConfig):
+    def __init__(self, config: LidDrivenCavityConfig = LidDrivenCavityConfig()):
         self._config = config
 
 
@@ -111,18 +111,17 @@ class LidDrivenCavity(ValidationCase):
         LidDrivenCavity.set_up_arguments(parser)
         args = parser.parse_args()
 
-        case = LidDrivenCavity(
-            LidDrivenCavityConfig(
-                args.grid_width,
-                args.grid_height,
-                args.density,
-                args.kinematic_viscosity,
-                args.time_step,
-                args.solver_iteration_count,
-                args.simulation_iteration_count,
-                args.lid_speed
-            )
+        config = LidDrivenCavityConfig(
+            args.grid_width,
+            args.grid_height,
+            args.density,
+            args.kinematic_viscosity,
+            args.time_step,
+            args.solver_iteration_count,
+            args.simulation_iteration_count,
+            args.lid_speed
         )
+        case = LidDrivenCavity(config)
 
         case.print_parameters(args)
         case.run(progress_callback=case.print_progress)

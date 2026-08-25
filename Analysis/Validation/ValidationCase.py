@@ -28,57 +28,59 @@ class ValidationCase(ABC):
         progress = 0
         for k in range(self._config.simulation_iteration_count):
             self._simulation.step(self._config.time_step)
+            
             progress = (k + 1) / self._config.simulation_iteration_count * 100
-            progress_callback(progress)
+            if progress_callback is not None:
+                progress_callback(progress)
 
 
     @classmethod
-    def set_up_arguments(cls, parser: argparse.ArgumentParser, config: CaseConfig):
+    def set_up_arguments(cls, parser: argparse.ArgumentParser, default_config: CaseConfig):
         parser.add_argument(
             "--grid-width",
             type=int,
-            default=config.grid_width,
+            default=default_config.grid_width,
             help="Number of cells along the x axis"
         )
 
         parser.add_argument(
             "--grid-height",
             type=int,
-            default=config.grid_height,
+            default=default_config.grid_height,
             help="Number of cells along the y axis"
         )
 
         parser.add_argument(
             "--density",
             type=float,
-            default=config.density,
+            default=default_config.density,
             help="Density of the fluid")
     
         parser.add_argument(
             "--kinematic-viscosity",
             type=float,
-            default=config.kinematic_viscosity,
+            default=default_config.kinematic_viscosity,
             help="Kinematic viscosity of the fluid"
         )
     
         parser.add_argument(
             "--time-step",
             type=float,
-            default=config.time_step,
+            default=default_config.time_step,
             help="Elapsed time between simulation steps"
         )
 
         parser.add_argument(
             "--solver-iteration-count",
             type=int,
-            default=config.solver_iteration_count,
+            default=default_config.solver_iteration_count,
             help="Number of iterations the linear solvers will perform"
         )
     
         parser.add_argument(
             "--simulation-iteration-count",
             type=int,
-            default=config.simulation_iteration_count,
+            default=default_config.simulation_iteration_count,
             help="Number of steps the simulation will take before analize the results"
         )
 

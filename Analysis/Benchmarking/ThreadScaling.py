@@ -3,7 +3,7 @@ import argparse
 
 import sys
 sys.path.append("FluidSolverCore/out/build/debug")
-from FluidSolverPython import *
+import FluidSolverPython as fs
 
 from Analysis.Validation.ValidationCase import ValidationCase
 from Analysis.Validation.LidDrivenCavity import LidDrivenCavity
@@ -40,14 +40,7 @@ match case_name:
 
 
 def get_thread_count_list(max_threads: int, increment: int = 1) -> List[int]:
-    res = []
-
-    for count in range(1, max_threads, increment):
-        res.append(count)
-
-    res.append(max_threads)
-
-    return res
+    return [i for i in range(1, max_threads - 1, increment)] + [max_threads]
 
 
 max_threads = os.cpu_count()
@@ -55,15 +48,14 @@ thread_count_list = get_thread_count_list(max_threads, increment=5)
 
 
 for thread_count in thread_count_list:
-    set_num_threads(thread_count)
+    fs.set_num_threads(thread_count)
     print(f"\nRunning the case with {thread_count} threads...")
-    print("==================================================")
-    case.run()
+    case.run(case.print_progress)
 
 
     id = "============= COMPLETE SIMULATION STEP ============="
-    step_avg_duration = Profiler.get_instance().get_task_average_duration(id)
+    step_avg_duration = fs.Profiler.get_instance().get_task_average_duration(id).total_seconds() * 1000
 
-    print(f"{id}: {step_avg_duration:.2f}ms")
+    print(f"\tComplete step: {step_avg_duration:.2f}ms")
 
-    Profiler.get_instance().clear_data()
+    fs.Profiler.get_instance().clear_data()
