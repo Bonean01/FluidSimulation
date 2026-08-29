@@ -23,9 +23,16 @@ class LidDrivenCavityConfig(CaseConfig):
 
 
 
+
 class LidDrivenCavity(ValidationCase):
     def __init__(self, config: LidDrivenCavityConfig = LidDrivenCavityConfig()):
         self._config = config
+
+
+    @override
+    @staticmethod
+    def get_default_config() -> CaseConfig:
+        return LidDrivenCavityConfig()
 
 
     @override

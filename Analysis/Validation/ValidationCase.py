@@ -4,7 +4,7 @@ import sys
 sys.path.append("FluidSolverCore/out/build/debug")
 import FluidSolverPython as fs
 
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import Callable
 
 from .CaseConfig import CaseConfig
@@ -12,11 +12,19 @@ from .CaseConfig import CaseConfig
 
 class ValidationCase(ABC):
     _simulation: fs.FluidSimulation
+    # It would maybe be nice separating simulation config (width, height, cell_width, etc.)
+    # from execution config (thread count) and parameter sweeps (what parameters to sweep and how)
     _config: CaseConfig
 
 
     def __init__(self, config: CaseConfig):
         self._config = config
+
+
+    @staticmethod
+    @abstractmethod
+    def get_default_config() -> CaseConfig:
+        pass
 
 
     def _initialize(self) -> None:

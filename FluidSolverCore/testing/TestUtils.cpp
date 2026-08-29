@@ -41,21 +41,6 @@ void TestUtils::initializeConstantVelocities(StaggeredVectorField2D& velocityFie
 }
 
 
-void TestUtils::initializeSolidBoundaries(Grid2D<uint8_t>& solidCellMap) {
-	int width = solidCellMap.width();
-	int height = solidCellMap.height();
-
-	for (int i = 0; i < width; i++) {
-		solidCellMap.setValue(i, 0, true);
-		solidCellMap.setValue(i, height - 1, true);
-	}
-	for (int j = 0; j < height; j++) {
-		solidCellMap.setValue(0, j, true);
-		solidCellMap.setValue(width - 1, j, true);
-	}
-}
-
-
 void TestUtils::initializeSolidBoundaries(Grid2D<CellData>& cellData) {
 	int width = cellData.width();
 	int height = cellData.height();

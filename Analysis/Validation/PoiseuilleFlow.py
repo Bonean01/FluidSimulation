@@ -29,6 +29,12 @@ class PoiseuilleFlow(ValidationCase):
 
 
     @override
+    @staticmethod
+    def get_default_config() -> CaseConfig:
+        return PoiseuilleFlowConfig()
+
+
+    @override
     def _initialize(self):
         super()._initialize()
 

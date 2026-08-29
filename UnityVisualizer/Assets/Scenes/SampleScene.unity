@@ -476,7 +476,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.1538804, g: 0.233451, b: 0.3584906, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -788,9 +788,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FluidSimulationAdapter
   width: 66
   height: 33
-  cellWidth: 0.121212125
+  cellWidth: 0.24242425
   density: 1
-  kinematicViscosity: 0.000000001
+  kinematicViscosity: 0.0000001
   solverIterationCount: 30
 --- !u!114 &1486929793
 MonoBehaviour:
@@ -804,7 +804,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 482acafe0d8620945944c789eb241a99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FluidSimulationPlayer
-  fixedFrameRate: 50
+  fixedFrameRate: 1000
   startPaused: 0
 --- !u!114 &1486929794
 MonoBehaviour:
