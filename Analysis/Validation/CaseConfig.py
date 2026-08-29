@@ -6,6 +6,7 @@ class CaseConfig:
     time_step: float
     solver_iteration_count: int
     simulation_iteration_count: int
+    thread_count: int
 
 
     def __init__(self, grid_width, grid_height, density, kinematic_viscosity, time_step, solver_iteration_count, simulation_iteration_count):
@@ -16,3 +17,4 @@ class CaseConfig:
         self.time_step = time_step
         self.solver_iteration_count = solver_iteration_count
         self.simulation_iteration_count = simulation_iteration_count
+        

@@ -6,7 +6,6 @@ sys.path.append("FluidSolverCore/out/build/debug")
 import FluidSolverPython as fs
 
 from Analysis.ParameterSeries import ParameterSeries
-from Analysis.Validation.CaseConfig import CaseConfig
 from Analysis.Validation.ValidationCase import ValidationCase
 from Analysis.Validation.LidDrivenCavity import LidDrivenCavity
 from Analysis.Validation.PoiseuilleFlow import PoiseuilleFlow
@@ -15,8 +14,8 @@ from typing import List
 
 
 parser = argparse.ArgumentParser(
-    "Grid Scaling",
-    "Runs a validation case with an increasing grid size and measures the time taken per iteration"
+    "Thread Scaling",
+    "Runs a validation case with an increasing number of threads and measures the time taken per iteration"
 )
 
 parser.add_argument(
@@ -29,17 +28,7 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-config = CaseConfig(
-    grid_width=None,
-    grid_height=None,
-    density=1.0,
-    kinematic_viscosity=1e-03,
-    time_step=1.0/2000.0,
-    solver_iteration_count=30,
-    simulation_iteration_count=1000
-)
-
-case_class: ValidationCase
+case: ValidationCase
 case_name = args.case
 match case_name:
     case "lid-driven-cavity":
@@ -50,15 +39,15 @@ match case_name:
         raise ValueError(f"The provided case: {case_name} was not recognized")
 
 
-config = case_class.get_default_config()
-for grid_size in ParameterSeries.arithmetic(10, 40, 20):
-    print(f"\nRunning the case with grid size: {grid_size}x{grid_size}...")
+max_threads = os.cpu_count()
 
-    config.grid_width = grid_size
-    config.grid_height = grid_size
+for thread_count in ParameterSeries.geometric(min=1, max=max_threads, range=2):
+    fs.set_num_threads(thread_count)
+    print(f"\nRunning the case with {thread_count} threads...")
+    config = case.get_default_config()
     case = case_class(config)
-    
     case.run(case.print_progress)
+
 
     id = "============= COMPLETE SIMULATION STEP ============="
     step_avg_duration = fs.Profiler.get_instance().get_task_average_duration(id).total_seconds() * 1000
