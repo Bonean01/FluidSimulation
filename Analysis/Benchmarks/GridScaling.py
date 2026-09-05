@@ -1,68 +1,43 @@
-import os
 import argparse
 
 import sys
 sys.path.append("FluidSolverCore/out/build/debug")
-import FluidSolverPython as fs
 
 from Analysis.ParameterSeries import ParameterSeries
-from Analysis.Validation.CaseConfig import CaseConfig
-from Analysis.Validation.ValidationCase import ValidationCase
-from Analysis.Validation.LidDrivenCavity import LidDrivenCavity
-from Analysis.Validation.PoiseuilleFlow import PoiseuilleFlow
 
-from typing import List
+from .Benchmark import Benchmark
+from typing import override
 
 
-parser = argparse.ArgumentParser(
-    "Grid Scaling",
-    "Runs a validation case with an increasing grid size and measures the time taken per iteration"
-)
+class GridScaling(Benchmark):
+    @override
+    def run(self) -> None:
+        for grid_size in ParameterSeries.arithmetic(min=10, max=40, increment=20):
+            print(f"\nRunning the case with grid size: {grid_size}x{grid_size}...")
 
-parser.add_argument(
-    "--case",
-    type=str,
-    default=None,
-    help="Validation case with which to perform the benchmark",
-    required=True
-)
+            config = self.case_class.get_default_config()
+            config.grid_width = grid_size
+            config.grid_height = grid_size
 
-args = parser.parse_args()
+            self.case = self.case_class(config)
+            self.case.run(self.case.print_progress)
 
-config = CaseConfig(
-    grid_width=None,
-    grid_height=None,
-    density=1.0,
-    kinematic_viscosity=1e-03,
-    time_step=1.0/2000.0,
-    solver_iteration_count=30,
-    simulation_iteration_count=1000
-)
-
-case_class: ValidationCase
-case_name = args.case
-match case_name:
-    case "lid-driven-cavity":
-        case_class = LidDrivenCavity
-    case "poiseuille-flow":
-        case_class = PoiseuilleFlow
-    case _:
-        raise ValueError(f"The provided case: {case_name} was not recognized")
+            step_avg_duration_ms = Benchmark.reset_profiler()
+            print(f"\tComplete step: {step_avg_duration_ms:.2f}ms")
 
 
-config = case_class.get_default_config()
-for grid_size in ParameterSeries.arithmetic(min=10, max=40, increment=20):
-    print(f"\nRunning the case with grid size: {grid_size}x{grid_size}...")
+    def run_cli() -> None:
+        parser = argparse.ArgumentParser(
+            "Grid Scaling",
+            "Runs a validation case with an increasing grid size and measures the time taken per iteration"
+        )
 
-    config.grid_width = grid_size
-    config.grid_height = grid_size
-    case = case_class(config)
-    
-    case.run(case.print_progress)
+        GridScaling.set_up_arguments(parser)
+        args = parser.parse_args()
 
-    id = "============= COMPLETE SIMULATION STEP ============="
-    step_avg_duration = fs.Profiler.get_instance().get_task_average_duration(id).total_seconds() * 1000
+        grid_scaling = GridScaling(args.case)
+        grid_scaling.run()
 
-    print(f"\tComplete step: {step_avg_duration:.2f}ms")
 
-    fs.Profiler.get_instance().clear_data()
+if __name__ == "__main__":
+    GridScaling.run_cli()

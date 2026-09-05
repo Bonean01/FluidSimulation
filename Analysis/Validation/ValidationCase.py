@@ -10,6 +10,7 @@ from typing import Callable
 from .CaseConfig import CaseConfig
 
 
+
 class ValidationCase(ABC):
     _simulation: fs.FluidSimulation
     # It would maybe be nice separating simulation config (width, height, cell_width, etc.)
@@ -117,14 +118,15 @@ class ValidationCase(ABC):
 
 
 
-
-
     # Potentially move this to a case registry class of sorts
-    from .LidDrivenCavity import LidDrivenCavity
-    from .PoiseuilleFlow imoprt PoiseuilleFlow
-
     @staticmethod
-    def detect_validation_case_from_name(self, name: str) -> ValidationCase:
+    def detect_validation_case_from_name(name: str):
+        """
+        Returns the ValidationCase child class type given its name in a kebab-case string
+        """
+        from .LidDrivenCavity import LidDrivenCavity
+        from .PoiseuilleFlow import PoiseuilleFlow
+        
         case_class: ValidationCase
         match name:
             case "lid-driven-cavity":

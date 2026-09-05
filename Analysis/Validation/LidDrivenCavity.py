@@ -32,7 +32,6 @@ class LidDrivenCavity(ValidationCase):
     @override
     @staticmethod
     def get_default_config() -> CaseConfig:
-        super().get_default_config()
         return LidDrivenCavityConfig()
 
 

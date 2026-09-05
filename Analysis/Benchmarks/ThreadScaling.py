@@ -6,52 +6,41 @@ sys.path.append("FluidSolverCore/out/build/debug")
 import FluidSolverPython as fs
 
 from Analysis.ParameterSeries import ParameterSeries
-from Analysis.Validation.ValidationCase import ValidationCase
-from Analysis.Validation.LidDrivenCavity import LidDrivenCavity
-from Analysis.Validation.PoiseuilleFlow import PoiseuilleFlow
 
-from typing import List
+from .Benchmark import Benchmark
+from typing import override
 
 
-parser = argparse.ArgumentParser(
-    "Thread Scaling",
-    "Runs a validation case with an increasing number of threads and measures the time taken per iteration"
-)
+class ThreadScaling(Benchmark):
+    @override
+    def run(self) -> None:
+        super().run()
+        max_threads = os.cpu_count()
+        config = self.case_class.get_default_config()
+        
+        for thread_count in ParameterSeries.geometric(min=1, max=max_threads, range=2):
+            fs.set_num_threads(thread_count)
+            print(f"\nRunning the case with {thread_count} threads...")
+            
+            self.case = self.case_class(config)
+            self.case.run(self.case.print_progress)
 
-parser.add_argument(
-    "--case",
-    type=str,
-    default=None,
-    help="Validation case with which to perform the benchmark",
-    required=True
-)
-
-args = parser.parse_args()
-
-case: ValidationCase
-case_name = args.case
-match case_name:
-    case "lid-driven-cavity":
-        case_class = LidDrivenCavity
-    case "poiseuille-flow":
-        case_class = PoiseuilleFlow
-    case _:
-        raise ValueError(f"The provided case: {case_name} was not recognized")
+            step_avg_duration_ms = Benchmark.reset_profiler()
+            print(f"\tComplete step: {step_avg_duration_ms:.2f}ms")
 
 
-max_threads = os.cpu_count()
+    def run_cli() -> None:
+        parser = argparse.ArgumentParser(
+            "Thread Scaling",
+            "Runs a validation case with an increasing number of threads and measures the time taken per iteration"
+        )
 
-for thread_count in ParameterSeries.geometric(min=1, max=max_threads, range=2):
-    fs.set_num_threads(thread_count)
-    print(f"\nRunning the case with {thread_count} threads...")
-    config = case.get_default_config()
-    case = case_class(config)
-    case.run(case.print_progress)
+        ThreadScaling.set_up_arguments(parser)
+        args = parser.parse_args()
+
+        thread_scaling = ThreadScaling(args.case)
+        thread_scaling.run()
 
 
-    id = "============= COMPLETE SIMULATION STEP ============="
-    step_avg_duration = fs.Profiler.get_instance().get_task_average_duration(id).total_seconds() * 1000
-
-    print(f"\tComplete step: {step_avg_duration:.2f}ms")
-
-    fs.Profiler.get_instance().clear_data()
+if __name__ == "__main__":
+    ThreadScaling.run_cli()

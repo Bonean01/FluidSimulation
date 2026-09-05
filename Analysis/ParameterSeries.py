@@ -7,9 +7,12 @@ class ParameterSeries:
         """
         Args:
             min: Minimum value (inclusive)
-            max: Maximum value (inclusive)
+            max: Maximum value (always included)
             increment: Distance between values 
         """
+        if increment < 1:
+            return
+    
         return [i for i in range(min, max, increment)] + [max]
 
 
@@ -18,15 +21,17 @@ class ParameterSeries:
         """
         Args:
             min: Minimum value (inclusive)
-            max: Maximum value (inclusive)
+            max: Maximum value (always included)
             range: Number by which to multiply from one number to the next
         """
+        if range < 2:
+            return
+        
         res = []
-        n = 0
+        n = 1
         while n < max:
-            res.append(i)
+            res.append(n)
             n *= range
-        res.append(n)
+        res.append(max)
         return res
-
     
