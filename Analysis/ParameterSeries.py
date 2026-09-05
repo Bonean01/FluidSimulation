@@ -28,10 +28,9 @@ class ParameterSeries:
             return
         
         res = []
-        n = 1
+        n = min
         while n < max:
             res.append(n)
             n *= range
         res.append(max)
         return res
-    

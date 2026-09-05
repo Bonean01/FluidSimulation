@@ -7,26 +7,22 @@ import FluidSolverPython as fs
 
 from Analysis.ParameterSeries import ParameterSeries
 
+from Analysis.Validation.CaseConfig import CaseConfig
+from Analysis.Validation.ValidationCase import ValidationCase
 from .Benchmark import Benchmark
 from typing import override
 
 
 class ThreadScaling(Benchmark):
-    @override
-    def run(self) -> None:
-        super().run()
-        max_threads = os.cpu_count()
-        config = self.case_class.get_default_config()
-        
-        for thread_count in ParameterSeries.geometric(min=1, max=max_threads, range=2):
-            fs.set_num_threads(thread_count)
-            print(f"\nRunning the case with {thread_count} threads...")
-            
-            self.case = self.case_class(config)
-            self.case.run(self.case.print_progress)
+    @staticmethod
+    def print_thread_count(thread_count: int) -> None:
+        print(f"\nRunning the case with {thread_count} threads...")
 
-            step_avg_duration_ms = Benchmark.reset_profiler()
-            print(f"\tComplete step: {step_avg_duration_ms:.2f}ms")
+
+    @override
+    def _get_iteration_config(self, thread_count) -> CaseConfig:
+        fs.set_num_threads(thread_count)
+        return self._case_class.get_default_config()
 
 
     def run_cli() -> None:
@@ -39,7 +35,12 @@ class ThreadScaling(Benchmark):
         args = parser.parse_args()
 
         thread_scaling = ThreadScaling(args.case)
-        thread_scaling.run()
+        thread_scaling.run(
+            parameter_list=ParameterSeries.geometric(min=1, max=os.cpu_count(), range=2),
+            current_parameter_callback=ThreadScaling.print_thread_count,
+            step_duration_callback=Benchmark.print_step_duration,
+            case_progress_callback=ValidationCase.print_progress
+        )
 
 
 if __name__ == "__main__":

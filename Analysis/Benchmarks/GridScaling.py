@@ -5,25 +5,25 @@ sys.path.append("FluidSolverCore/out/build/debug")
 
 from Analysis.ParameterSeries import ParameterSeries
 
+from Analysis.Validation.CaseConfig import CaseConfig
+from Analysis.Validation.ValidationCase import ValidationCase
 from .Benchmark import Benchmark
 from typing import override
 
 
 class GridScaling(Benchmark):
+    @staticmethod
+    def print_grid_size(grid_size: int) -> None:
+        print(f"\nRunning the case with grid size: {grid_size}x{grid_size}...")
+
+
     @override
-    def run(self) -> None:
-        for grid_size in ParameterSeries.arithmetic(min=10, max=40, increment=20):
-            print(f"\nRunning the case with grid size: {grid_size}x{grid_size}...")
+    def _get_iteration_config(self, grid_size) -> CaseConfig:
+        config = self._case_class.get_default_config()
+        config.grid_width = grid_size
+        config.grid_height = grid_size
 
-            config = self.case_class.get_default_config()
-            config.grid_width = grid_size
-            config.grid_height = grid_size
-
-            self.case = self.case_class(config)
-            self.case.run(self.case.print_progress)
-
-            step_avg_duration_ms = Benchmark.reset_profiler()
-            print(f"\tComplete step: {step_avg_duration_ms:.2f}ms")
+        return config
 
 
     def run_cli() -> None:
@@ -36,7 +36,12 @@ class GridScaling(Benchmark):
         args = parser.parse_args()
 
         grid_scaling = GridScaling(args.case)
-        grid_scaling.run()
+        grid_scaling.run(
+                    parameter_list=ParameterSeries.arithmetic(min=10, max=40, increment=20),
+                    current_parameter_callback=GridScaling.print_grid_size,
+                    step_duration_callback=Benchmark.print_step_duration,
+                    case_progress_callback=ValidationCase.print_progress
+                )
 
 
 if __name__ == "__main__":

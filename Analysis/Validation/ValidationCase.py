@@ -102,7 +102,8 @@ class ValidationCase(ABC):
             print("=====================================================")
 
 
-    def print_progress(self, progress: float) -> None:
+    @staticmethod
+    def print_progress(progress: float) -> None:
         print(f"\rProgress: {progress:.2f}%", end="", flush=True)
 
 
@@ -126,7 +127,6 @@ class ValidationCase(ABC):
         """
         from .LidDrivenCavity import LidDrivenCavity
         from .PoiseuilleFlow import PoiseuilleFlow
-        
         case_class: ValidationCase
         match name:
             case "lid-driven-cavity":

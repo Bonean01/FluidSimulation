@@ -121,7 +121,7 @@ class PoiseuilleFlow(ValidationCase):
         case = PoiseuilleFlow(config)
 
         case.print_parameters(args)
-        case.run(progress_callback=case.print_progress)
+        case.run(progress_callback=ValidationCase.print_progress)
         print()
         case.plot_results()
 
