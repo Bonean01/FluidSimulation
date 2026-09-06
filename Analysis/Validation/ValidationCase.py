@@ -115,25 +115,3 @@ class ValidationCase(ABC):
     def run(self, progress_callback: Callable[[float], None] = None) -> None:
         self._initialize()
         self._run_simulation(progress_callback)
-
-
-
-
-    # Potentially move this to a case registry class of sorts
-    @staticmethod
-    def detect_validation_case_from_name(name: str):
-        """
-        Returns the ValidationCase child class type given its name in a kebab-case string
-        """
-        from .LidDrivenCavity import LidDrivenCavity
-        from .PoiseuilleFlow import PoiseuilleFlow
-        case_class: ValidationCase
-        match name:
-            case "lid-driven-cavity":
-                case_class = LidDrivenCavity
-            case "poiseuille-flow":
-                case_class = PoiseuilleFlow
-            case _:
-                raise ValueError(f"The provided case: {case_name} was not recognized")
-            
-        return case_class

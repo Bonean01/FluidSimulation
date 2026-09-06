@@ -5,7 +5,7 @@ import sys
 sys.path.append("FluidSolverCore/out/build/debug")
 import FluidSolverPython as fs
 
-from Analysis.ParameterSeries import ParameterSeries
+from Analysis.Utils.ParameterSeries import ParameterSeries
 
 from Analysis.Validation.CaseConfig import CaseConfig
 from Analysis.Validation.ValidationCase import ValidationCase
@@ -14,15 +14,15 @@ from typing import override
 
 
 class ThreadScaling(Benchmark):
-    @staticmethod
-    def print_thread_count(thread_count: int) -> None:
-        print(f"\nRunning the case with {thread_count} threads...")
-
-
     @override
     def _get_iteration_config(self, thread_count) -> CaseConfig:
         fs.set_num_threads(thread_count)
         return self._case_class.get_default_config()
+
+
+    @staticmethod
+    def print_thread_count(thread_count: int) -> None:
+        print(f"\nRunning the case with {thread_count} threads...")
 
 
     def run_cli() -> None:

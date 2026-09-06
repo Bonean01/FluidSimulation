@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 from typing import Callable, Any, List
 from Analysis.Validation.CaseConfig import CaseConfig
 from Analysis.Validation.ValidationCase import ValidationCase
-from Analysis.ParameterSeries import ParameterSeries
+from Analysis.Utils.CaseRegistry import CaseRegistry
 
 
 class Benchmark(ABC):
@@ -17,7 +17,7 @@ class Benchmark(ABC):
 
 
     def __init__(self, validation_case_name):
-        self._case_class = ValidationCase.detect_validation_case_from_name(validation_case_name)
+        self._case_class = CaseRegistry.detect_validation_case_from_name(validation_case_name)
 
 
     @classmethod

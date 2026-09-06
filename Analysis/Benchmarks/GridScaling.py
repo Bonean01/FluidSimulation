@@ -3,7 +3,7 @@ import argparse
 import sys
 sys.path.append("FluidSolverCore/out/build/debug")
 
-from Analysis.ParameterSeries import ParameterSeries
+from Analysis.Utils.ParameterSeries import ParameterSeries
 
 from Analysis.Validation.CaseConfig import CaseConfig
 from Analysis.Validation.ValidationCase import ValidationCase
@@ -12,11 +12,6 @@ from typing import override
 
 
 class GridScaling(Benchmark):
-    @staticmethod
-    def print_grid_size(grid_size: int) -> None:
-        print(f"\nRunning the case with grid size: {grid_size}x{grid_size}...")
-
-
     @override
     def _get_iteration_config(self, grid_size) -> CaseConfig:
         config = self._case_class.get_default_config()
@@ -24,6 +19,11 @@ class GridScaling(Benchmark):
         config.grid_height = grid_size
 
         return config
+
+
+    @staticmethod
+    def print_grid_size(grid_size: int) -> None:
+        print(f"\nRunning the case with grid size: {grid_size}x{grid_size}...")
 
 
     def run_cli() -> None:
