@@ -27,6 +27,7 @@ FetchContent_MakeAvailable(pybind11)
 # Define a variable that contains the source files
 set (SOURCE_FILES
 	"include/FluidSimulation.h"
+	"include/FluidSimulationConfig.h"
 
 	"include/domain/CellType.h"
 	"include/domain/CellData.h"
