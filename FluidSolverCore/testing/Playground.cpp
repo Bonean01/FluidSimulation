@@ -60,29 +60,31 @@ int main(int argc, char* argv[]) {
 	omp_set_num_threads(20);
 
 
-	int width = 250;
-	int height = 250;
+	int width = 33;
+	int height = 33;
 	float cellWidth = 1.0f / width;
 	float density = 1.0f;
-	float kinematicViscosity = 0.001f;
+	float kinematicViscosity = 0.00001f;
 	float timestep = 1.0f / 120.0f;
 
 	FluidSimulation simulation{ width, height, cellWidth, density, kinematicViscosity };
 
+	CellConfig inlet{ {CellType::Fluid}, {BoundaryCondition::Dirichlet, {1.0f, 0.0f}} };
+	CellConfig outflow{ {CellType::Fluid}, {BoundaryCondition::HomogeneousNeumann} };
 	CellConfig staticWall{ {CellType::Solid}, {BoundaryCondition::Dirichlet, {0.0f, 0.0f}} };
 	
+	for (int j = 0; j < height; j++) {
+		simulation.setCell(0, j, inlet);
+		simulation.setCell(width - 1, j, outflow);
+	}
+
 	for (int i = 0; i < width; i++) {
 		simulation.setCell(i, 0, staticWall);
 		simulation.setCell(i, height - 1, staticWall);
 	}
-	for (int j = 0; j < height; j++) {
-		simulation.setCell(0, j, staticWall);
-		simulation.setCell(width - 1, j, staticWall);
-	}
 
 
-	for (int k = 0; k < 3; k++) {
-		ScopeProfiler p{ ("Step " + std::to_string(k)) };
+	for (int k = 0; k < 100; k++) {
 		simulation.step(timestep);
 	}
 
@@ -93,4 +95,5 @@ int main(int argc, char* argv[]) {
 		Duration duration = profiler.getTaskAverageDuration(id);
 		std::cout << id << ": " << duration << std::endl;
 	}
+	printSimulationState(simulation);
 }
