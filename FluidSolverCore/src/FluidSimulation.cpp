@@ -9,6 +9,10 @@
 void FluidSimulation::step(float timeStep) {
 	ScopeProfiler p{ "============= COMPLETE SIMULATION STEP =============" };
 
+	// TODO: advect marker particles and set the domain's cells acordingly
+	// (extrapolate velocity, move markers, move them out of solids, set cells that contain them as fluid, otherwise as air)
+	m_advection.execute(m_smokeField, m_velocityField, m_cellData, timeStep);
+
 	BoundaryUtils::applyVelocityBoundaryConditions(m_velocityField, m_boundaryData);
 
 	m_advection.execute(m_velocityField, m_boundaryData, timeStep);
@@ -17,8 +21,6 @@ void FluidSimulation::step(float timeStep) {
 
 	m_pressureSolver.solveJacobi(m_pressureField, m_velocityField, m_cellData, m_density, timeStep, m_iterationCount);
 	m_projection.execute(m_velocityField, m_pressureField, m_boundaryData, m_density, timeStep);
-
-	m_advection.execute(m_smokeField, m_velocityField, m_cellData, timeStep);
 }
 
 

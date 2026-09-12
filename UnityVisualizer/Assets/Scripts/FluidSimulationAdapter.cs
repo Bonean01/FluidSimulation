@@ -29,18 +29,19 @@ public class FluidSimulationAdapter : MonoBehaviour {
     private void SetCells() {
         CellConfig movingWall = new(new(CellType.Solid), new(BoundaryCondition.Dirichlet, new(10.0f, 0.0f)));
         CellConfig staticWall = new(new(CellType.Solid), new(BoundaryCondition.Dirichlet, new(0.0f, 0.0f)));
-        CellConfig inlet = new(new(CellType.Fluid), new(BoundaryCondition.Dirichlet, new(30.0f, 0.0f)));
+        CellConfig inlet = new(new(CellType.Fluid), new(BoundaryCondition.Dirichlet, new(12.5f, 0.0f)));
         CellConfig outflow = new(new(CellType.Fluid), new(BoundaryCondition.HomogeneousNeumann));
+
+        for (int j = 0; j < m_height; j++) {
+            m_simulation.SetCell(0, j, ref inlet);
+            m_simulation.SetCell(m_width - 1, j, ref outflow);
+        }
 
         for (int i = 0; i < m_width; i++) {
             m_simulation.SetCell(i, 0, ref staticWall);
             m_simulation.SetCell(i, m_height - 1, ref staticWall);
         }
 
-        for (int j = 2; j < m_height - 2; j++) {
-            m_simulation.SetCell(0, j, ref inlet);
-            m_simulation.SetCell(m_width - 1, j, ref outflow);
-        }
 
 
         Vector2Int origin = new(m_width / 2 + 5, m_height / 2);
