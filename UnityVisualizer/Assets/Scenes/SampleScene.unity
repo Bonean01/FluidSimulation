@@ -773,7 +773,7 @@ MonoBehaviour:
     m_ColorSpace: 0
     m_NumColorKeys: 7
     m_NumAlphaKeys: 2
-  maxSpeed: 35
+  maxSpeed: 10
 --- !u!114 &1486929792
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -788,10 +788,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FluidSimulationAdapter
   width: 66
   height: 33
-  cellWidth: 0.24242425
+  cellWidth: 0.121212125
   density: 1
-  kinematicViscosity: 0.000000001
-  solverIterationCount: 30
+  kinematicViscosity: 0.0000001
+  solverIterationCount: 60
 --- !u!114 &1486929793
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -804,7 +804,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 482acafe0d8620945944c789eb241a99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FluidSimulationPlayer
-  fixedFrameRate: 120
+  fixedFrameRate: 60
   startPaused: 0
 --- !u!114 &1486929794
 MonoBehaviour:

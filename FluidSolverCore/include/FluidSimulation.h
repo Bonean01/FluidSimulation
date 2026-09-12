@@ -17,6 +17,7 @@
 #include "domain/CellData.h"
 #include "domain/BoundaryData.h"
 #include "domain/CellConfig.h"
+#include "domain/MarkerParticle.h"
 
 #include "FluidSimulationConfig.h"
 
@@ -45,6 +46,7 @@ public:
 		m_smokeField(m_gridWidth, m_gridHeight, m_cellWidth),
 		m_cellData(m_gridWidth, m_gridHeight),
 		m_boundaryData(m_gridWidth, m_gridHeight),
+		m_markerParticles(4 * m_gridWidth * m_gridHeight),
 
 		m_advection(m_gridWidth, m_gridHeight, m_cellWidth),
 		m_diffusion(m_gridWidth, m_gridHeight, m_cellWidth),
@@ -86,6 +88,7 @@ private:
 	ScalarField2D m_pressureField, m_divergenceField, m_smokeField;
 	Grid2D<CellData> m_cellData;
 	StaggeredGrid2D<BoundaryData> m_boundaryData;
+	std::vector<MarkerParticle> m_markerParticles;
 
 	Advection m_advection;
 	Projection m_projection;

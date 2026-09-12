@@ -33,7 +33,7 @@ float PressureSolver::solveCell(int i, int j, ScalarField2D& pressureField, Stag
 	bool leftFluid = cellData.getValue(i - 1, j).cellType == CellType::Fluid;
 	bool topFluid = cellData.getValue(i, j + 1).cellType == CellType::Fluid;
 	bool bottomFluid = cellData.getValue(i, j - 1).cellType == CellType::Fluid;
-	
+
 	int totalFluidCells = rightFluid + leftFluid + topFluid + bottomFluid;
 
 	if (isSolid || totalFluidCells == 0) return 0.0f;
@@ -42,6 +42,7 @@ float PressureSolver::solveCell(int i, int j, ScalarField2D& pressureField, Stag
 	float leftPres = pressureField.getValue(i - 1, j);
 	float topPres = pressureField.getValue(i, j + 1);
 	float bottomPres = pressureField.getValue(i, j - 1);
+	// TODO: If a cell is void, set its pressure to 0
 	
 	float rightVel = velocityField.getEdgeValue(X, i + 1, j);
 	float leftVel = velocityField.getEdgeValue(X, i, j);

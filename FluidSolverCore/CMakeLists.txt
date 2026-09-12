@@ -34,6 +34,7 @@ set (SOURCE_FILES
 	"include/domain/BoundaryUtils.h"
 	"include/domain/BoundaryCondition.h"
 	"include/domain/BoundaryData.h"
+	"include/domain/MarkerParticle.h"
 
 	"include/steps/Advection.h"
 	"include/steps/Diffusion.h"
