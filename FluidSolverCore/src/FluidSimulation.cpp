@@ -22,7 +22,7 @@ void FluidSimulation::step(float timeStep) {
 }
 
 
-void FluidSimulation::setCell(int i, int j, CellData cellData, BoundaryData boundaryData) {
+void FluidSimulation::setCell(int i, int j, const CellData& cellData, const BoundaryData& boundaryData) {
 	using enum VectorComponent;
 	m_cellData.setValue(i, j, cellData);
 	m_boundaryData.setEdgeValue(X, i, j, boundaryData);

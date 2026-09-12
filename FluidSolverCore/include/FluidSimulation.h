@@ -74,8 +74,8 @@ public:
 
 	void addSmoke(int i, int j, float deltaSmoke) { m_smokeField.setValue(i, j, m_smokeField.getValue(i, j) + deltaSmoke); }
 
-	void setCell(int i, int j, CellData, BoundaryData);
-	void setCell(int i, int j, CellConfig config) { setCell(i, j, config.cellData, config.boundaryData); }
+	void setCell(int i, int j, const CellData&, const BoundaryData&);
+	void setCell(int i, int j, const CellConfig& config) { setCell(i, j, config.cellData, config.boundaryData); }
 
 
 private:

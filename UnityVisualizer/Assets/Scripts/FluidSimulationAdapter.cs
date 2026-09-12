@@ -33,13 +33,13 @@ public class FluidSimulationAdapter : MonoBehaviour {
         CellConfig outflow = new(new(CellType.Fluid), new(BoundaryCondition.HomogeneousNeumann));
 
         for (int i = 0; i < m_width; i++) {
-            m_simulation.SetCell(i, 0, staticWall);
-            m_simulation.SetCell(i, m_height - 1, staticWall);
+            m_simulation.SetCell(i, 0, ref staticWall);
+            m_simulation.SetCell(i, m_height - 1, ref staticWall);
         }
 
         for (int j = 2; j < m_height - 2; j++) {
-            m_simulation.SetCell(0, j, inlet);
-            m_simulation.SetCell(m_width - 1, j, outflow);
+            m_simulation.SetCell(0, j, ref inlet);
+            m_simulation.SetCell(m_width - 1, j, ref outflow);
         }
 
 
@@ -48,7 +48,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
             for (int j = 0; j < m_height; j++) {
                 Vector2Int pos = new(i, j);
                 if ((origin - pos).magnitude < 5) {
-                    m_simulation.SetCell(i, j, staticWall);
+                    m_simulation.SetCell(i, j, ref staticWall);
                 }
             }
         }

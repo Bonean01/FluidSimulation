@@ -71,7 +71,7 @@ PYBIND11_MODULE(FluidSolverPython, m) {
 		.def("get_density", &FluidSimulation::getDensity)
 		.def("get_kinematic_viscosity", &FluidSimulation::getKinematicViscosity)
 		.def("get_velocity", &FluidSimulation::getVelocity)
-		.def("set_cell", py::overload_cast<int, int, CellConfig>(&FluidSimulation::setCell),
+		.def("set_cell", py::overload_cast<int, int, const CellConfig&>(&FluidSimulation::setCell),
 			py::arg("i"),
 			py::arg("j"),
 			py::arg("cell_config"));
