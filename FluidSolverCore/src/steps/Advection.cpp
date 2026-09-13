@@ -78,14 +78,10 @@ void Advection::execute(std::vector<MarkerParticle>& markerParticles, const Stag
 		Vec2f finalVel = velocityField.sampleBilinear(finalPos);
 		
 		Vec2f averageVel = (currentVel + finalVel) / 2;
-		particle.position += averageVel * timeStep;
-		
-		int cellPosX = std::floor(particle.position.x);
-		int cellPosY = std::floor(particle.position.y);
-		const CellData& currentCell = cellData.getValue(cellPosX, cellPosY);
-		if (currentCell.cellType == CellType::Solid) {
-			// Resolve the collision potentially ray marching from the origin and checking
-			// where the collision has had to take place?
-		}
+		Vec2f newPos = particle.position + averageVel * timeStep;
+
+		const CellData& finalCell = cellData.getValue(std::floor(newPos.x), std::floor(newPos.y));
+		if (finalCell.cellType != CellType::Solid)
+			particle.position = newPos;
 	}
 }
