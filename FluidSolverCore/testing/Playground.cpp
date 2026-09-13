@@ -84,7 +84,7 @@ int main(int argc, char* argv[]) {
 	}
 
 
-	for (int k = 0; k < 100; k++) {
+	for (int k = 0; k < 10; k++) {
 		simulation.step(timestep);
 	}
 
@@ -95,5 +95,4 @@ int main(int argc, char* argv[]) {
 		Duration duration = profiler.getTaskAverageDuration(id);
 		std::cout << id << ": " << duration << std::endl;
 	}
-	printSimulationState(simulation);
 }

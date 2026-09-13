@@ -65,7 +65,11 @@ void Advection::execute(ScalarField2D& field, const StaggeredVectorField2D& velo
 // Uses second order Runge-Kutta advection to advect marker particles based 
 // on the extrapolated velocity field, takes care of collisions with solids
 void Advection::execute(std::vector<MarkerParticle>& markerParticles, const StaggeredVectorField2D& velocityField, const Grid2D<CellData>& cellData, float timeStep) {
-	for (MarkerParticle& particle : markerParticles) {
+	ScopeProfiler p{ "Marker Particles Advection" };
+	
+	#pragma omp parallel for
+	for (size_t i = 0; i < markerParticles.size(); i++) {
+		MarkerParticle& particle = markerParticles.at(i);
 		Vec2f& currentPos = particle.position;
 		Vec2f currentVel = velocityField.sampleBilinear(currentPos);
 		

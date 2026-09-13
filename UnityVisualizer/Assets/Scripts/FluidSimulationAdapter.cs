@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 public class FluidSimulationAdapter : MonoBehaviour {
     [SerializeField] private int width, height;
@@ -27,14 +28,14 @@ public class FluidSimulationAdapter : MonoBehaviour {
 
 
     private void SetCells() {
-        CellConfig movingWall = new(new(CellType.Solid), new(BoundaryCondition.Dirichlet, new(10.0f, 0.0f)));
+        CellConfig movingWall = new(new(CellType.Solid), new(BoundaryCondition.Dirichlet, new(50.0f, 0.0f)));
         CellConfig staticWall = new(new(CellType.Solid), new(BoundaryCondition.Dirichlet, new(0.0f, 0.0f)));
         CellConfig inlet = new(new(CellType.Fluid), new(BoundaryCondition.Dirichlet, new(12.5f, 0.0f)));
         CellConfig outflow = new(new(CellType.Fluid), new(BoundaryCondition.HomogeneousNeumann));
 
         for (int j = 0; j < m_height; j++) {
-            m_simulation.SetCell(0, j, ref inlet);
-            m_simulation.SetCell(m_width - 1, j, ref outflow);
+            m_simulation.SetCell(0, j, ref staticWall);
+            m_simulation.SetCell(m_width - 1, j, ref staticWall);
         }
 
         for (int i = 0; i < m_width; i++) {
@@ -44,15 +45,15 @@ public class FluidSimulationAdapter : MonoBehaviour {
 
 
 
-        Vector2Int origin = new(m_width / 2 + 5, m_height / 2);
-        for (int i = 0; i < m_width; i++) {
-            for (int j = 0; j < m_height; j++) {
-                Vector2Int pos = new(i, j);
-                if ((origin - pos).magnitude < 5) {
-                    m_simulation.SetCell(i, j, ref staticWall);
-                }
-            }
-        }
+        //Vector2Int origin = new(m_width / 2 + 5, m_height / 2);
+        //for (int i = 0; i < m_width; i++) {
+        //    for (int j = 0; j < m_height; j++) {
+        //        Vector2Int pos = new(i, j);
+        //        if ((origin - pos).magnitude < 5) {
+        //            m_simulation.SetCell(i, j, ref staticWall);
+        //        }
+        //    }
+        //}
     }
 
 
@@ -189,5 +190,20 @@ public class FluidSimulationAdapter : MonoBehaviour {
 
     public float UpdateSmokeTexture(ref Texture2D smokeTexture) {
         return UpdateScalarFieldTexture(ref smokeTexture, m_simulation.SmokeValues()).total;
+    }
+
+
+
+    private void OnDrawGizmosSelected() {
+        if (m_simulation == null) return;
+        Vector2 origin = transform.position - transform.localScale / 2;
+        int i = 0;
+        foreach (MarkerParticle particle in m_simulation.MarkerParticles()) {
+            if (i++ % 8 != 0) continue;
+            if (i % 64 < 32) Gizmos.color = Color.green;
+            else Gizmos.color = Color.red;
+            Vector2 position = new(particle.position.x, particle.position.y);
+            Gizmos.DrawSphere(origin + position * m_cellWidth, 0.1f);
+        }
     }
 }

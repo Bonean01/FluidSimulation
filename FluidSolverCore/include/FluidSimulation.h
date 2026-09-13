@@ -65,6 +65,7 @@ public:
 	const ScalarField2D& getDivergenceField() const { return m_divergenceField; }
 	const ScalarField2D& getSmokeField() const { return m_smokeField; }
 	const Grid2D<CellData>& getCellData() const { return m_cellData; }
+	const std::vector<MarkerParticle>& getMarkerParticles() const { return m_markerParticles; }
 
 	const int getGridWidth() const { return m_gridWidth; }
 	const int getGridHeight() const { return m_gridHeight; }

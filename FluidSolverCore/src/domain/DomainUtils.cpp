@@ -67,7 +67,7 @@ namespace DomainUtils {
                     markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x - quarterCellWidth, cellCenter.y + quarterCellWidth)));
                     markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x + quarterCellWidth, cellCenter.y + quarterCellWidth)));
                     markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x - quarterCellWidth, cellCenter.y - quarterCellWidth)));
-                    markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x - quarterCellWidth, cellCenter.y - quarterCellWidth)));
+                    markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x + quarterCellWidth, cellCenter.y - quarterCellWidth)));
                 }
             }
         }
