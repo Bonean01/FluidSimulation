@@ -31,7 +31,7 @@ set (SOURCE_FILES
 
 	"include/domain/CellType.h"
 	"include/domain/CellData.h"
-	"include/domain/BoundaryUtils.h"
+	"include/domain/DomainUtils.h"
 	"include/domain/BoundaryCondition.h"
 	"include/domain/BoundaryData.h"
 	"include/domain/MarkerParticle.h"
@@ -63,7 +63,7 @@ set (SOURCE_FILES
 	
 	"src/FluidSimulation.cpp"
 
-	"src/domain/BoundaryUtils.cpp"
+	"src/domain/DomainUtils.cpp"
 
 	"src/steps/Advection.cpp"
 	"src/steps/Diffusion.cpp"

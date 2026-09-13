@@ -1,11 +1,11 @@
-#include "domain/BoundaryUtils.h"
+#include "domain/DomainUtils.h"
 
 #include <omp.h>
 
 #include "utils/profiling/ScopeProfiler.h"
 
 
-namespace BoundaryUtils {
+namespace DomainUtils {
     void applyVelocityBoundaryConditions(StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData) {
         ScopeProfiler p{ "Velocity BCs" };
         using enum VectorComponent;
@@ -49,7 +49,32 @@ namespace BoundaryUtils {
 	}
 
 
-    bool hasPrescribedVelocity(const BoundaryData& boundaryData) {
+    bool hasBoundaryPrescribedVelocity(const BoundaryData& boundaryData) {
         return boundaryData.velocityBoundaryCondition == BoundaryCondition::Dirichlet;
+    }
+
+
+    void updateSurfaceSDF(ScalarField2D& surfaceSDF, const std::vector<MarkerParticle>& markerParticles, unsigned int depth) {
+        // Set cells with makers to -1 and cells without them to +1
+
+        // Smooth the field with weighted averages to avoid stair-step artifacts
+
+        // Calculate where the linear interpolant becomes 0, and set the signed distance of nearby cells
+
+        // Append neighbouring cells to a priority queue keyed by known distance
+        // Repeat and update distance of neighbouring cells accordingly
+        // Stop at "depth" to allow for narrow band methods
+    }
+
+
+    void extrapolateVelocity(StaggeredVectorField2D& velocityField, const Grid2D<CellData>& cellData) {
+        // Force that taking the directional derivative of the extrapolated velocity in the direction of
+        // the gradient of the SDF returns 0 (all the points between a point and the closest known 
+        // velocity should contain the same extrapolated velocity)
+    }
+
+
+    void updateCellData(Grid2D<CellData>& cellData, const std::vector<MarkerParticle>& markerParticles) {
+        
     }
 }

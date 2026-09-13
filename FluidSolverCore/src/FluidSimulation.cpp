@@ -1,7 +1,7 @@
 #include "FluidSimulation.h"
 
 #include "math/operators/Staggered.h"
-#include "domain/BoundaryUtils.h"
+#include "domain/DomainUtils.h"
 
 #include "utils/profiling/ScopeProfiler.h"
 
@@ -9,16 +9,17 @@
 void FluidSimulation::step(float timeStep) {
 	ScopeProfiler p{ "============= COMPLETE SIMULATION STEP =============" };
 
-	// TODO: advect marker particles and set the domain's cells acordingly
-	// (extrapolate velocity, move markers, move them out of solids, set cells that contain them as fluid, otherwise as air)
+	DomainUtils::updateSurfaceSDF(m_surfaceSDF, m_markerParticles, 5);
+	DomainUtils::extrapolateVelocity(m_velocityField, m_cellData);
+	m_advection.execute(m_markerParticles, m_velocityField, m_cellData, timeStep);
+	DomainUtils::updateCellData(m_cellData, m_markerParticles);
+
 	m_advection.execute(m_smokeField, m_velocityField, m_cellData, timeStep);
 
-	BoundaryUtils::applyVelocityBoundaryConditions(m_velocityField, m_boundaryData);
+	DomainUtils::applyVelocityBoundaryConditions(m_velocityField, m_boundaryData);
 
 	m_advection.execute(m_velocityField, m_boundaryData, timeStep);
-
 	m_diffusion.execute(m_velocityField, m_boundaryData, m_kinematicViscosity, timeStep, m_iterationCount);
-
 	m_pressureSolver.solveJacobi(m_pressureField, m_velocityField, m_cellData, m_density, timeStep, m_iterationCount);
 	m_projection.execute(m_velocityField, m_pressureField, m_boundaryData, m_density, timeStep);
 }

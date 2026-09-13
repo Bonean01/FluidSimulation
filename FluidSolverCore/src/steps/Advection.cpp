@@ -3,6 +3,8 @@
 #include <omp.h>
 
 #include "utils/profiling/ScopeProfiler.h"
+#include "domain/DomainUtils.h"
+
 
 void Advection::execute(StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData, float timeStep) {
 	ScopeProfiler p{ "Self Advection" };
@@ -16,6 +18,25 @@ void Advection::execute(StaggeredVectorField2D& velocityField, const StaggeredGr
 	advectComponent(Y, velocityField, boundaryData, timeStep);
 
 	std::swap(velocityField, m_auxStaggeredVectorField);
+}
+
+
+void Advection::advectComponent(const VectorComponent& C, StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData, float timeStep) {
+	int width = velocityField.getValuesWidth(C);
+	int height = velocityField.getValuesHeight(C);
+	
+	#pragma omp parallel for
+	for (int j = 0; j < height; j++) {
+		for (int i = 0; i < width; i++) {
+			const BoundaryData& currentBoundary = boundaryData.getEdgeValue(C, i, j);
+			if (DomainUtils::hasBoundaryPrescribedVelocity(currentBoundary)) continue;
+
+			Vec2f position = velocityField.getEdgePosition(C, i, j);
+			Vec2f currentVel = velocityField.sampleBilinear(position);
+			Vec2f newValue = velocityField.sampleBilinear(position - currentVel * timeStep);
+			m_auxStaggeredVectorField.setEdgeValue(C, i, j, newValue.get(C));
+		}
+	}
 }
 
 
@@ -41,20 +62,6 @@ void Advection::execute(ScalarField2D& field, const StaggeredVectorField2D& velo
 }
 
 
-void Advection::advectComponent(const VectorComponent& C, StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData, float timeStep) {
-	int width = velocityField.getValuesWidth(C);
-	int height = velocityField.getValuesHeight(C);
-
-	#pragma omp parallel for
-	for (int j = 0; j < height; j++) {
-		for (int i = 0; i < width; i++) {
-			const BoundaryData& currentBoundary = boundaryData.getEdgeValue(C, i, j);
-			if (BoundaryUtils::hasPrescribedVelocity(currentBoundary)) continue;
-
-			Vec2f position = velocityField.getEdgePosition(C, i, j);
-			Vec2f currentVel = velocityField.sampleBilinear(position);
-			Vec2f newValue = velocityField.sampleBilinear(position - currentVel * timeStep);
-			m_auxStaggeredVectorField.setEdgeValue(C, i, j, newValue.get(C));
-		}
-	}
+void Advection::execute(std::vector<MarkerParticle>& markerParticles, const StaggeredVectorField2D& velocityField, const Grid2D<CellData>& cellData, float timeStep) {
+	
 }

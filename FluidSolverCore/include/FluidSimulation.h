@@ -44,6 +44,8 @@ public:
 		m_pressureField(m_gridWidth, m_gridHeight, m_cellWidth),
 		m_divergenceField(m_gridWidth, m_gridHeight, m_cellWidth),
 		m_smokeField(m_gridWidth, m_gridHeight, m_cellWidth),
+		m_surfaceSDF(m_gridWidth, m_gridHeight, m_cellWidth),
+		
 		m_cellData(m_gridWidth, m_gridHeight),
 		m_boundaryData(m_gridWidth, m_gridHeight),
 		m_markerParticles(4 * m_gridWidth * m_gridHeight),
@@ -53,8 +55,7 @@ public:
 		m_projection(),
 
 		m_pressureSolver(m_gridWidth, m_gridHeight, m_cellWidth),
-		m_iterationCount(iterationCount) {
-	}
+		m_iterationCount(iterationCount) { }
 
 	void step(float timeStep);
 
@@ -85,7 +86,7 @@ private:
 	float m_density, m_kinematicViscosity, m_cellWidth;
 
 	StaggeredVectorField2D m_velocityField;
-	ScalarField2D m_pressureField, m_divergenceField, m_smokeField;
+	ScalarField2D m_pressureField, m_divergenceField, m_smokeField, m_surfaceSDF;
 	Grid2D<CellData> m_cellData;
 	StaggeredGrid2D<BoundaryData> m_boundaryData;
 	std::vector<MarkerParticle> m_markerParticles;
