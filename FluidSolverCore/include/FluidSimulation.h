@@ -18,6 +18,7 @@
 #include "domain/BoundaryData.h"
 #include "domain/CellConfig.h"
 #include "domain/MarkerParticle.h"
+#include "domain/DomainUtils.h"
 
 #include "FluidSimulationConfig.h"
 
@@ -48,14 +49,14 @@ public:
 		
 		m_cellData(m_gridWidth, m_gridHeight),
 		m_boundaryData(m_gridWidth, m_gridHeight),
-		m_markerParticles(4 * m_gridWidth * m_gridHeight),
+		m_markerParticles(),
 
 		m_advection(m_gridWidth, m_gridHeight, m_cellWidth),
 		m_diffusion(m_gridWidth, m_gridHeight, m_cellWidth),
 		m_projection(),
 
 		m_pressureSolver(m_gridWidth, m_gridHeight, m_cellWidth),
-		m_iterationCount(iterationCount) { }
+		m_iterationCount(iterationCount) { DomainUtils::populateMarkerParticles(m_markerParticles, m_cellData); }
 
 	void step(float timeStep);
 

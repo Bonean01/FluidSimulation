@@ -54,6 +54,26 @@ namespace DomainUtils {
     }
 
 
+    // Creates 4 marker particles per fluid cell
+    void populateMarkerParticles(std::vector<MarkerParticle>& markerParticles, const Grid2D<CellData>& cellData) {
+        for (int j = 0; j < cellData.height(); j++) {
+            for (int i = 0; i < cellData.width(); i++) {
+                CellData current = cellData.getValue(i, j);
+                if (current.cellType == CellType::Fluid) {
+                    float cellWidth = cellData.cellWidth();
+                    Vec2f cellCenter = cellWidth * Vec2f(i + 0.5f, j + 0.5f);
+
+                    float quarterCellWidth = cellWidth / 4;
+                    markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x - quarterCellWidth, cellCenter.y + quarterCellWidth)));
+                    markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x + quarterCellWidth, cellCenter.y + quarterCellWidth)));
+                    markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x - quarterCellWidth, cellCenter.y - quarterCellWidth)));
+                    markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x - quarterCellWidth, cellCenter.y - quarterCellWidth)));
+                }
+            }
+        }
+    }
+
+
     void updateSurfaceSDF(ScalarField2D& surfaceSDF, const std::vector<MarkerParticle>& markerParticles, unsigned int depth) {
         // Set cells with makers to -1 and cells without them to +1
 
