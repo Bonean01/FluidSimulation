@@ -1,6 +1,7 @@
 #include "steps/Advection.h"
 
 #include <omp.h>
+#include <cmath>
 
 #include "utils/profiling/ScopeProfiler.h"
 #include "domain/DomainUtils.h"
@@ -78,5 +79,13 @@ void Advection::execute(std::vector<MarkerParticle>& markerParticles, const Stag
 		
 		Vec2f averageVel = (currentVel + finalVel) / 2;
 		particle.position += averageVel * timeStep;
+		
+		int cellPosX = std::floor(particle.position.x);
+		int cellPosY = std::floor(particle.position.y);
+		const CellData& currentCell = cellData.getValue(cellPosX, cellPosY);
+		if (currentCell.cellType == CellType::Solid) {
+			// Resolve the collision potentially ray marching from the origin and checking
+			// where the collision has had to take place?
+		}
 	}
 }

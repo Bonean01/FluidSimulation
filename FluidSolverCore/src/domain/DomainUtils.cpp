@@ -1,6 +1,7 @@
 #include "domain/DomainUtils.h"
 
 #include <omp.h>
+#include <cmath>
 
 #include "utils/profiling/ScopeProfiler.h"
 
@@ -95,6 +96,23 @@ namespace DomainUtils {
 
 
     void updateCellData(Grid2D<CellData>& cellData, const std::vector<MarkerParticle>& markerParticles) {
+        int width = cellData.width();
+        int height = cellData.height();
+
+        for (int j = 0; j < height; j++) {
+            for (int i = 0; i < width; i++) {
+                CellData& currentCell = cellData.at(i, j);
+                if (currentCell.cellType == CellType::Solid) continue;
+                else currentCell.cellType = CellType::Void;
+            }
+        }
         
+        for (size_t i; i < markerParticles.size(); i++) {
+            const MarkerParticle& particle = markerParticles.at(i);
+            int cellPosX = std::floor(particle.position.x);
+            int cellPosY = std::floor(particle.position.y);
+            CellData& currentCell = cellData.at(cellPosX, cellPosY);
+            currentCell.cellType = CellType::Fluid;
+        }
     }
 }

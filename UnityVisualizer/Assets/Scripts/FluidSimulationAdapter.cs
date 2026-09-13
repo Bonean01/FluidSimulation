@@ -44,7 +44,6 @@ public class FluidSimulationAdapter : MonoBehaviour {
         }
 
 
-
         //Vector2Int origin = new(m_width / 2 + 5, m_height / 2);
         //for (int i = 0; i < m_width; i++) {
         //    for (int j = 0; j < m_height; j++) {
@@ -199,7 +198,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
         Vector2 origin = transform.position - transform.localScale / 2;
         int i = 0;
         foreach (MarkerParticle particle in m_simulation.MarkerParticles()) {
-            if (i++ % 8 != 0) continue;
+            if (i++ % 1 != 0) continue;
             if (i % 64 < 32) Gizmos.color = Color.green;
             else Gizmos.color = Color.red;
             Vector2 position = new(particle.position.x, particle.position.y);
