@@ -39,6 +39,7 @@ set (SOURCE_FILES
 	"include/steps/Advection.h"
 	"include/steps/Diffusion.h"
 	"include/steps/Projection.h"
+	"include/steps/ExternalForces.h"
 
 	"include/math/dataStructures/Vector.h"
 	"include/math/dataStructures/Grid.h"
@@ -68,6 +69,7 @@ set (SOURCE_FILES
 	"src/steps/Advection.cpp"
 	"src/steps/Diffusion.cpp"
 	"src/steps/Projection.cpp"
+	"src/steps/ExternalForces.cpp"
 
 	"src/math/dataStructures/Vector.cpp"
 	"src/math/dataStructures/ScalarField.cpp"

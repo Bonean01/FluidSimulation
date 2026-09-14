@@ -5,6 +5,8 @@
 
 #include "utils/profiling/ScopeProfiler.h"
 
+#include "steps/ExternalForces.h"
+
 
 void FluidSimulation::step(float timeStep) {
 	ScopeProfiler p{ "============= COMPLETE SIMULATION STEP =============" };
@@ -22,6 +24,8 @@ void FluidSimulation::step(float timeStep) {
 	m_diffusion.execute(m_velocityField, m_boundaryData, m_kinematicViscosity, timeStep, m_iterationCount);
 	m_pressureSolver.solveJacobi(m_pressureField, m_velocityField, m_cellData, m_density, timeStep, m_iterationCount);
 	m_projection.execute(m_velocityField, m_pressureField, m_boundaryData, m_density, timeStep);
+
+	ExternalForces::applyGravity(m_velocityField, m_boundaryData, timeStep);
 }
 
 
