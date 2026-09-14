@@ -56,7 +56,7 @@ public:
 		m_projection(),
 
 		m_pressureSolver(m_gridWidth, m_gridHeight, m_cellWidth),
-		m_iterationCount(iterationCount) { DomainUtils::populateMarkerParticles(m_markerParticles, m_cellData); }
+		m_iterationCount(iterationCount) { }
 
 	void step(float timeStep);
 

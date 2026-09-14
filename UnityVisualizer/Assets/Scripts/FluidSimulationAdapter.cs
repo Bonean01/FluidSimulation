@@ -32,27 +32,35 @@ public class FluidSimulationAdapter : MonoBehaviour {
         CellConfig staticWall = new(new(CellType.Solid), new(BoundaryCondition.Dirichlet, new(0.0f, 0.0f)));
         CellConfig inlet = new(new(CellType.Fluid), new(BoundaryCondition.Dirichlet, new(12.5f, 0.0f)));
         CellConfig outflow = new(new(CellType.Fluid), new(BoundaryCondition.HomogeneousNeumann));
+        CellConfig fluid = new(new(CellType.Fluid), new(BoundaryCondition.None));
+
+
+        for (int j = 1; j < m_height - 1; j++) {
+            for (int i = 1; i < m_width - 1; i++) {
+                m_simulation.SetCell(i, j, ref fluid);
+            }
+        }
 
         for (int j = 0; j < m_height; j++) {
             m_simulation.SetCell(0, j, ref staticWall);
             m_simulation.SetCell(m_width - 1, j, ref staticWall);
         }
-
+        
         for (int i = 0; i < m_width; i++) {
             m_simulation.SetCell(i, 0, ref staticWall);
             m_simulation.SetCell(i, m_height - 1, ref staticWall);
         }
 
 
-        Vector2Int origin = new(m_width / 2 + 5, m_height / 2);
-        for (int i = 0; i < m_width; i++) {
-            for (int j = 0; j < m_height; j++) {
-                Vector2Int pos = new(i, j);
-                if ((origin - pos).magnitude < 5) {
-                    m_simulation.SetCell(i, j, ref staticWall);
-                }
-            }
-        }
+        //Vector2Int origin = new(m_width / 2 + 5, m_height / 2);
+        //for (int i = 0; i < m_width; i++) {
+        //    for (int j = 0; j < m_height; j++) {
+        //        Vector2Int pos = new(i, j);
+        //        if ((origin - pos).magnitude < 5) {
+        //            m_simulation.SetCell(i, j, ref fluid);
+        //        }
+        //    }
+        //}
     }
 
 
@@ -195,14 +203,11 @@ public class FluidSimulationAdapter : MonoBehaviour {
 
     private void OnDrawGizmosSelected() {
         if (m_simulation == null) return;
+        Gizmos.color = Color.antiqueWhite;
         Vector2 origin = transform.position - transform.localScale / 2;
-        int i = 0;
         foreach (MarkerParticle particle in m_simulation.MarkerParticles()) {
-            if (i++ % 1 != 0) continue;
-            if (i % 64 < 32) Gizmos.color = Color.green;
-            else Gizmos.color = Color.red;
-            Vector2 position = new(particle.position.x, particle.position.y);
-            Gizmos.DrawSphere(origin + position * m_cellWidth, 0.1f);
+            Vector2 position = new(particle.position.x / m_width * transform.localScale.x, particle.position.y / m_height * transform.localScale.y);
+            Gizmos.DrawSphere(origin + position, 0.05f);
         }
     }
 }

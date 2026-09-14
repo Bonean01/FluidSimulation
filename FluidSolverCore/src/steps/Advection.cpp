@@ -67,18 +67,20 @@ void Advection::execute(ScalarField2D& field, const StaggeredVectorField2D& velo
 // on the extrapolated velocity field, takes care of collisions with solids
 void Advection::execute(std::vector<MarkerParticle>& markerParticles, const StaggeredVectorField2D& velocityField, const Grid2D<CellData>& cellData, float timeStep) {
 	ScopeProfiler p{ "Marker Particles Advection" };
+
+	float dx = velocityField.cellWidth();
 	
 	#pragma omp parallel for
-	for (size_t i = 0; i < markerParticles.size(); i++) {
+	for (int i = 0; i < markerParticles.size(); i++) {
 		MarkerParticle& particle = markerParticles.at(i);
 		Vec2f& currentPos = particle.position;
 		Vec2f currentVel = velocityField.sampleBilinear(currentPos);
 		
-		Vec2f finalPos = particle.position + currentVel * timeStep;
+		Vec2f finalPos = particle.position + currentVel / dx * timeStep;
 		Vec2f finalVel = velocityField.sampleBilinear(finalPos);
 		
 		Vec2f averageVel = (currentVel + finalVel) / 2;
-		Vec2f newPos = particle.position + averageVel * timeStep;
+		Vec2f newPos = particle.position + averageVel / dx * timeStep;
 
 		const CellData& finalCell = cellData.getValue(std::floor(newPos.x), std::floor(newPos.y));
 		if (finalCell.cellType != CellType::Solid)

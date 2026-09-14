@@ -57,14 +57,14 @@ static void printDivergenceField(FluidSimulation simulation) {
 
 #include <omp.h>
 int main(int argc, char* argv[]) {
-	int width = 33;
+	int width = 66;
 	int height = 33;
 	float cellWidth = 1.0f / width;
 	float density = 1.0f;
-	float kinematicViscosity = 0.00001f;
-	float timestep = 1.0f / 120.0f;
+	float kinematicViscosity = 0.0001f;
+	float timestep = 1.0f / 30.0f;
 
-	FluidSimulation simulation{ width, height, cellWidth, density, kinematicViscosity };
+	FluidSimulation simulation{ width, height, cellWidth, density, kinematicViscosity, 15 };
 
 	CellConfig inlet{ {CellType::Fluid}, {BoundaryCondition::Dirichlet, {1.0f, 0.0f}} };
 	CellConfig outflow{ {CellType::Fluid}, {BoundaryCondition::HomogeneousNeumann} };

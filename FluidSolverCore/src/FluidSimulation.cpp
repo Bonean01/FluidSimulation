@@ -32,4 +32,12 @@ void FluidSimulation::setCell(int i, int j, const CellData& cellData, const Boun
 	m_boundaryData.setEdgeValue(X, i + 1, j, boundaryData);
 	m_boundaryData.setEdgeValue(Y, i, j, boundaryData);
 	m_boundaryData.setEdgeValue(Y, i, j + 1, boundaryData);
+
+	if (cellData.cellType == CellType::Fluid) {
+		Vec2f cellCenter = Vec2f(i + 0.5f, j + 0.5f);
+		m_markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x + 0.25f, cellCenter.y + 0.25f)));
+		m_markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x - 0.25f, cellCenter.y - 0.25f)));
+		m_markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x + 0.25f, cellCenter.y - 0.25f)));
+		m_markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x - 0.25f, cellCenter.y + 0.25f)));
+	}
 }
