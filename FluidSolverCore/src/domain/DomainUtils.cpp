@@ -98,7 +98,8 @@ namespace DomainUtils {
     void updateCellData(Grid2D<CellData>& cellData, const std::vector<MarkerParticle>& markerParticles) {
         int width = cellData.width();
         int height = cellData.height();
-
+        
+        #pragma omp parallel for
         for (int j = 0; j < height; j++) {
             for (int i = 0; i < width; i++) {
                 CellData& currentCell = cellData.at(i, j);
@@ -106,8 +107,9 @@ namespace DomainUtils {
                 else currentCell.cellType = CellType::Void;
             }
         }
-        
-        for (size_t i; i < markerParticles.size(); i++) {
+           
+        #pragma omp parallel for
+        for (int i = 0; i < markerParticles.size(); i++) {
             const MarkerParticle& particle = markerParticles.at(i);
             int cellPosX = std::floor(particle.position.x);
             int cellPosY = std::floor(particle.position.y);

@@ -4,7 +4,7 @@ enum FluidProperty {
     Velocity,
     Speed,
     Pressure,
-    SolidCells,
+    CellData,
     Divergence,
     Smoke
 }
@@ -17,7 +17,7 @@ public class FluidVisualizer : MonoBehaviour {
     [SerializeField] private Gradient speedGradient;
     [SerializeField] private float maxSpeed;
     private FluidSimulationAdapter m_simulationAdapter;
-    private Texture2D m_velocityTexture, m_pressureTexture, m_divergenceTexture, m_smokeTexture, m_solidCellMapTexture;
+    private Texture2D m_velocityTexture, m_pressureTexture, m_divergenceTexture, m_smokeTexture, m_cellDataTexture;
     private Texture2D m_speedGradientTexture;
     private SpriteRenderer m_spriteRenderer;
     
@@ -42,7 +42,7 @@ public class FluidVisualizer : MonoBehaviour {
         m_pressureTexture = m_simulationAdapter.CreateTexture();
         m_divergenceTexture = m_simulationAdapter.CreateTexture();
         m_smokeTexture = m_simulationAdapter.CreateTexture();
-        m_solidCellMapTexture = m_simulationAdapter.CreateTexture();
+        m_cellDataTexture = m_simulationAdapter.CreateTexture();
 
         //m_simulationAdapter.UpdateSolidMapCellTexture(ref m_solidCellMapTexture);
         //m_spriteRenderer.material.SetTexture("_SolidCellMapTexture", m_solidCellMapTexture);
@@ -111,6 +111,11 @@ public class FluidVisualizer : MonoBehaviour {
                 float total = m_simulationAdapter.UpdateSmokeTexture(ref m_smokeTexture);
                 m_spriteRenderer.material.SetTexture("_SmokeTexture", m_smokeTexture);
                 print($"total smoke: {total}");  
+                break;
+
+            case FluidProperty.CellData:
+                m_simulationAdapter.UpdateCellDataTexture(ref m_cellDataTexture);
+                m_spriteRenderer.material.SetTexture("_CellDataTexture", m_cellDataTexture);
                 break;
         }
     }

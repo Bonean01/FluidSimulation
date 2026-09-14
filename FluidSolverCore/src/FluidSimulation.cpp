@@ -12,7 +12,7 @@ void FluidSimulation::step(float timeStep) {
 	DomainUtils::updateSurfaceSDF(m_surfaceSDF, m_markerParticles, 5);
 	DomainUtils::extrapolateVelocity(m_velocityField, m_cellData);
 	m_advection.execute(m_markerParticles, m_velocityField, m_cellData, timeStep);
-	//DomainUtils::updateCellData(m_cellData, m_markerParticles);
+	DomainUtils::updateCellData(m_cellData, m_markerParticles);
 
 	m_advection.execute(m_smokeField, m_velocityField, m_cellData, timeStep);
 

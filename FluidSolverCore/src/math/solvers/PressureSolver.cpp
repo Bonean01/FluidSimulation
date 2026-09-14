@@ -28,21 +28,25 @@ float PressureSolver::solveCell(int i, int j, ScalarField2D& pressureField, Stag
 	using enum VectorComponent;
 	
 	bool isSolid = cellData.getValue(i, j).cellType == CellType::Solid;
+	bool isVoid = cellData.getValue(i, j).cellType == CellType::Void;
 
 	bool rightFluid = cellData.getValue(i + 1, j).cellType == CellType::Fluid;
 	bool leftFluid = cellData.getValue(i - 1, j).cellType == CellType::Fluid;
 	bool topFluid = cellData.getValue(i, j + 1).cellType == CellType::Fluid;
 	bool bottomFluid = cellData.getValue(i, j - 1).cellType == CellType::Fluid;
 
-	int totalFluidCells = rightFluid + leftFluid + topFluid + bottomFluid;
+	bool rightSolid = cellData.getValue(i + 1, j).cellType == CellType::Solid;
+	bool leftSolid = cellData.getValue(i - 1, j).cellType == CellType::Solid;
+	bool topSolid = cellData.getValue(i, j + 1).cellType == CellType::Solid;
+	bool bottomSolid = cellData.getValue(i, j - 1).cellType == CellType::Solid;
 
-	if (isSolid || totalFluidCells == 0) return 0.0f;
+	int totalSolidCells = rightSolid + leftSolid + topSolid + bottomSolid;
+	if (isSolid || isVoid || totalSolidCells == 4) return 0.0f;
 
 	float rightPres = pressureField.getValue(i + 1, j);
 	float leftPres = pressureField.getValue(i - 1, j);
 	float topPres = pressureField.getValue(i, j + 1);
 	float bottomPres = pressureField.getValue(i, j - 1);
-	// TODO: If a cell is void, set its pressure to 0
 	
 	float rightVel = velocityField.getEdgeValue(X, i + 1, j);
 	float leftVel = velocityField.getEdgeValue(X, i, j);
@@ -61,7 +65,7 @@ float PressureSolver::solveCell(int i, int j, ScalarField2D& pressureField, Stag
 	float k = cellWidth * density / timeStep;
 
 	float newPressure = pressureSum - k * (rightVel - leftVel + topVel - bottomVel);
-	newPressure /= totalFluidCells;
+	newPressure /= 4 - totalSolidCells;
 
 	return newPressure;
 }

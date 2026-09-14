@@ -35,8 +35,8 @@ public class FluidSimulationAdapter : MonoBehaviour {
         CellConfig fluid = new(new(CellType.Fluid), new(BoundaryCondition.None));
 
 
-        for (int j = 1; j < m_height - 1; j++) {
-            for (int i = 1; i < m_width - 1; i++) {
+        for (int j = 10; j < m_height - 10; j++) {
+            for (int i = 10; i < m_width - 10; i++) {
                 m_simulation.SetCell(i, j, ref fluid);
             }
         }
@@ -181,9 +181,22 @@ public class FluidSimulationAdapter : MonoBehaviour {
     }
     
 
-    public void UpdateSolidMapCellTexture(ref Texture2D solidMapCellTexture) {
-        //UpdateScalarFieldTexture(ref solidMapCellTexture, m_simulation.CellDataValues());
+    public void UpdateCellDataTexture(ref Texture2D cellDataTexture) {
+        int x = 0, y = 0;
+
+        // Traverse the collection such that it gets arranged in a grid that aligns with the texture
+        foreach (CellData value in m_simulation.CellDataValues()) {
+            if (y >= m_height)
+                throw new Exception("The number of values is greater than the number of cells in the simulation");
+
+            Color color = new ((byte)value.cellType, 0.0f, 0.0f, 1.0f);
+            cellDataTexture.SetPixel(x, y, color);
+
+            if (++x >= m_width) { x = 0; y++; }
+        }
+        cellDataTexture.Apply();
     }
+
 
     public (float min, float max) UpdatePressureTexture(ref Texture2D pressureTexture) {
         var res =  UpdateScalarFieldTexture(ref pressureTexture, m_simulation.PressureValues());
