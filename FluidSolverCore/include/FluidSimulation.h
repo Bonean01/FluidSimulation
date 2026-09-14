@@ -18,7 +18,7 @@
 #include "domain/BoundaryData.h"
 #include "domain/CellConfig.h"
 #include "domain/MarkerParticle.h"
-#include "domain/DomainUtils.h"
+#include "domain/FluidSurfaceSDF.h"
 
 #include "FluidSimulationConfig.h"
 
@@ -88,7 +88,8 @@ private:
 	float m_density, m_kinematicViscosity, m_cellWidth;
 
 	StaggeredVectorField2D m_velocityField;
-	ScalarField2D m_pressureField, m_divergenceField, m_smokeField, m_surfaceSDF;
+	ScalarField2D m_pressureField, m_divergenceField, m_smokeField;
+	FluidSurfaceSDF_2D m_surfaceSDF;
 	Grid2D<CellData> m_cellData;
 	StaggeredGrid2D<BoundaryData> m_boundaryData;
 	std::vector<MarkerParticle> m_markerParticles;
