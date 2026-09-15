@@ -37,7 +37,11 @@ void FluidSurfaceSDF_2D::calculateSDF(unsigned int detph) {
     #pragma omp parallel for
     for (int j = 0; j < m_height; j++) {
         for (int i = 0; i < m_width; i++) {
+            bool currentSign = std::signbit(m_levelSet.getValue(i, j));
+            bool rightSign = std::signbit(m_levelSet.getValue(i + 1, j));
+            bool topSign = std::signbit(m_levelSet.getValue(i, j + 1));
 
+            
         }
     }
 

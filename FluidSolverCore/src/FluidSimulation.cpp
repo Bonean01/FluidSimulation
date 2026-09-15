@@ -25,7 +25,7 @@ void FluidSimulation::step(float timeStep) {
 	m_pressureSolver.solveJacobi(m_pressureField, m_velocityField, m_cellData, m_density, timeStep, m_iterationCount);
 	m_projection.execute(m_velocityField, m_pressureField, m_boundaryData, m_density, timeStep);
 
-	ExternalForces::applyGravity(m_velocityField, m_boundaryData, timeStep);
+	//ExternalForces::applyGravity(m_velocityField, m_boundaryData, timeStep);
 }
 
 
