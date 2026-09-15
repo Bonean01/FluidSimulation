@@ -5,7 +5,7 @@
 
 
 namespace ExternalForces {
-	void ExternalForces::applyGravity(StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData, float timeStep, float gravity) {
+	void applyGravity(StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData, float timeStep, float gravity) {
 		int width = velocityField.getValuesWidth(VectorComponent::Y);
 		int height = velocityField.getValuesHeight(VectorComponent::Y);
 
