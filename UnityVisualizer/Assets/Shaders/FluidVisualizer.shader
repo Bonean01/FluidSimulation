@@ -7,7 +7,7 @@ Shader "Custom/FluidVisualizer" {
         _PressureTexture("Pressure Texture", 2D) = "white" {}
         _DivergenceTexture("Divergence Texture", 2D) = "white" {}
         _SmokeTexture("Smoke Texture", 2D) = "white" {} 
-        _SolidCellMapTexture("Solid Cell Map Texture", 2D) = "white" {}
+        sampler_CellDataTexture("Solid Cell Map Texture", 2D) = "white" {}
 
         _DisplayedField("Displayed Field", int) = 0
 
@@ -52,8 +52,8 @@ Shader "Custom/FluidVisualizer" {
             TEXTURE2D(_SmokeTexture);
             SAMPLER(sampler_SmokeTexture);
 
-            TEXTURE2D(_SolidCellMapTexture);
-            SAMPLER(sampler_SolidCellMapTexture);
+            TEXTURE2D(_CellDataTexture);
+            SAMPLER(sampler_CellDataTexture);
 
             TEXTURE2D(_SpeedGradientTexture);
             SAMPLER(sampler_SpeedGradientTexture);
@@ -98,6 +98,16 @@ Shader "Custom/FluidVisualizer" {
                         color = lerp(_MinPressureColor, _MaxPressureColor, (pressure - _MinPressure) / (_MaxPressure - _MinPressure));
                         break;
                     
+                    case 3:  // CELL DATA
+                        float cellType = SAMPLE_TEXTURE2D(_CellDataTexture, sampler_CellDataTexture, uv).x;
+                        bool fluid = cellType == 0;
+                        bool solid = cellType == 1;
+                        bool air = cellType == 2;
+                        color = float4(0.1f, 0.1f, 0.8f, 1);
+                        color = solid ? float4(0.5f, 0.25f, 0.1f, 1) : color;
+                        color = air ? float4(0, 0, 0, 1) : color;
+                        break;
+                        
                     case 4:  // VELOCITY DIVERGENCE
                         float divergence = SAMPLE_TEXTURE2D(_DivergenceTexture, sampler_DivergenceTexture, uv).x;
                         color = lerp(float4(0, 0, 0, 1), float4(1, 1, 1, 1), (divergence - _MinDivergence) / (_MaxDivergence - _MinDivergence));
@@ -107,9 +117,8 @@ Shader "Custom/FluidVisualizer" {
                         float smoke = SAMPLE_TEXTURE2D(_SmokeTexture, sampler_SmokeTexture, uv).x;
                         color = float4(smoke.xxx, 1.0f);
                         break;
+
                 }
-                //float solid = SAMPLE_TEXTURE2D(_SolidCellMapTexture, sampler_SolidCellMapTexture, uv).x;
-                //if (_DisplayedField == 5) color = solid ? float4(0.5f, 0.25f, 0.1f, 1) : color;
                 return color;
             }
             ENDHLSL

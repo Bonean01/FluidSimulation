@@ -17,6 +17,8 @@
 #include "domain/CellData.h"
 #include "domain/BoundaryData.h"
 #include "domain/CellConfig.h"
+#include "domain/MarkerParticle.h"
+#include "domain/FluidSurfaceSDF.h"
 
 #include "FluidSimulationConfig.h"
 
@@ -43,16 +45,18 @@ public:
 		m_pressureField(m_gridWidth, m_gridHeight, m_cellWidth),
 		m_divergenceField(m_gridWidth, m_gridHeight, m_cellWidth),
 		m_smokeField(m_gridWidth, m_gridHeight, m_cellWidth),
+		m_surfaceSDF(m_gridWidth, m_gridHeight, m_cellWidth),
+		
 		m_cellData(m_gridWidth, m_gridHeight),
 		m_boundaryData(m_gridWidth, m_gridHeight),
+		m_markerParticles(),
 
 		m_advection(m_gridWidth, m_gridHeight, m_cellWidth),
 		m_diffusion(m_gridWidth, m_gridHeight, m_cellWidth),
 		m_projection(),
 
 		m_pressureSolver(m_gridWidth, m_gridHeight, m_cellWidth),
-		m_iterationCount(iterationCount) {
-	}
+		m_iterationCount(iterationCount) { }
 
 	void step(float timeStep);
 
@@ -61,6 +65,7 @@ public:
 	const ScalarField2D& getDivergenceField() const { return m_divergenceField; }
 	const ScalarField2D& getSmokeField() const { return m_smokeField; }
 	const Grid2D<CellData>& getCellData() const { return m_cellData; }
+	const std::vector<MarkerParticle>& getMarkerParticles() const { return m_markerParticles; }
 
 	const int getGridWidth() const { return m_gridWidth; }
 	const int getGridHeight() const { return m_gridHeight; }
@@ -84,8 +89,10 @@ private:
 
 	StaggeredVectorField2D m_velocityField;
 	ScalarField2D m_pressureField, m_divergenceField, m_smokeField;
+	FluidSurfaceSDF_2D m_surfaceSDF;
 	Grid2D<CellData> m_cellData;
 	StaggeredGrid2D<BoundaryData> m_boundaryData;
+	std::vector<MarkerParticle> m_markerParticles;
 
 	Advection m_advection;
 	Projection m_projection;

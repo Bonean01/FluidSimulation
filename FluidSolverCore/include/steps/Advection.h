@@ -5,7 +5,8 @@
 #include "math/dataStructures/ScalarField.h"
 
 #include "domain/CellData.h"
-#include "domain/BoundaryUtils.h"
+#include "domain/BoundaryData.h"
+#include "domain/MarkerParticle.h"
 
 class Advection {
 public:
@@ -16,6 +17,7 @@ public:
 	// self-advection
 	void execute(StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>&, float timeStep);
 	void execute(ScalarField2D& field, const StaggeredVectorField2D& velocityField, const Grid2D<CellData>&, float timeStep);
+	void execute(std::vector<MarkerParticle>& markerParticles, const StaggeredVectorField2D& velocityField, const Grid2D<CellData>&, float timeStep);
 
 
 private:

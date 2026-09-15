@@ -1,11 +1,12 @@
-#include "domain/BoundaryUtils.h"
+#include "domain/DomainUtils.h"
 
 #include <omp.h>
+#include <cmath>
 
 #include "utils/profiling/ScopeProfiler.h"
 
 
-namespace BoundaryUtils {
+namespace DomainUtils {
     void applyVelocityBoundaryConditions(StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData) {
         ScopeProfiler p{ "Velocity BCs" };
         using enum VectorComponent;
@@ -49,7 +50,38 @@ namespace BoundaryUtils {
 	}
 
 
-    bool hasPrescribedVelocity(const BoundaryData& boundaryData) {
+    bool hasBoundaryPrescribedVelocity(const BoundaryData& boundaryData) {
         return boundaryData.velocityBoundaryCondition == BoundaryCondition::Dirichlet;
+    }
+
+
+    void extrapolateVelocity(StaggeredVectorField2D& velocityField, const Grid2D<CellData>& cellData) {
+        // Force that taking the directional derivative of the extrapolated velocity in the direction of
+        // the gradient of the SDF returns 0 (all the points between a point and the closest known 
+        // velocity should contain the same extrapolated velocity)
+    }
+
+
+    void updateCellData(Grid2D<CellData>& cellData, const std::vector<MarkerParticle>& markerParticles) {
+        int width = cellData.width();
+        int height = cellData.height();
+        
+        #pragma omp parallel for
+        for (int j = 0; j < height; j++) {
+            for (int i = 0; i < width; i++) {
+                CellData& currentCell = cellData.at(i, j);
+                if (currentCell.cellType == CellType::Solid) continue;
+                else currentCell.cellType = CellType::Void;
+            }
+        }
+
+        #pragma omp parallel for
+        for (int i = 0; i < markerParticles.size(); i++) {
+            const MarkerParticle& particle = markerParticles.at(i);
+            int cellPosX = std::floor(particle.position.x);
+            int cellPosY = std::floor(particle.position.y);
+            CellData& currentCell = cellData.at(cellPosX, cellPosY);
+            currentCell.cellType = CellType::Fluid;
+        }
     }
 }

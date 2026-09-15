@@ -5,7 +5,7 @@
 
 #include "TestUtils.h"
 #include "steps/Advection.h"
-#include "domain/BoundaryUtils.h"
+#include "domain/DomainUtils.h"
 
 
 using namespace Catch;
@@ -32,7 +32,7 @@ TEST_CASE("Advection - Constant velocity remains constant") {
 	for (int j = 0; j < height; j++) {
 		for (int i = 0; i < width + 1; i++) {
 			const BoundaryData& currentBoundary = boundaryData.getEdgeValue(VectorComponent::X, i, j);
-			if (BoundaryUtils::hasPrescribedVelocity(currentBoundary)) continue;
+			if (DomainUtils::hasBoundaryPrescribedVelocity(currentBoundary)) continue;
 			float edgeX = velocityField.getEdgeValue(VectorComponent::X, i, j);
 			CHECK_THAT(edgeX, Matchers::WithinRel(CONSTANT));
 		}
@@ -40,7 +40,7 @@ TEST_CASE("Advection - Constant velocity remains constant") {
 	for (int j = 0; j < height + 1; j++) {
 		for (int i = 0; i < width; i++) {
 			const BoundaryData& currentBoundary = boundaryData.getEdgeValue(VectorComponent::Y, i, j);
-			if (BoundaryUtils::hasPrescribedVelocity(currentBoundary)) continue;
+			if (DomainUtils::hasBoundaryPrescribedVelocity(currentBoundary)) continue;
 			float edgeY = velocityField.getEdgeValue(VectorComponent::Y, i, j);
 			CHECK_THAT(edgeY, Matchers::WithinRel(CONSTANT));
 		}

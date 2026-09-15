@@ -18,6 +18,7 @@ public:
 	float cellWidth() const { return m_cellWidth; }
 	int cellCount() const { return m_cellCount; }
 
+	
 	void setValue(int i, int j, T value) {
 		int index = getIndex(i, j);
 		if (index < 0 || index >= m_cellCount) return;
@@ -25,6 +26,7 @@ public:
 		m_values[index] = value;
 	}
 
+	
 	const T& getValue(int i, int j) const {
 		i = std::clamp(i, 0, m_width - 1);
 		j = std::clamp(j, 0, m_height - 1);
@@ -32,6 +34,16 @@ public:
 		
 		return m_values[index];
 	}
+
+
+	T& at(int i, int j) {
+		i = std::clamp(i, 0, m_width - 1);
+		j = std::clamp(j, 0, m_height - 1);
+		int index = getIndex(i, j);
+		
+		return m_values[index];
+	}
+
 
 	const T* getValuesPtr() const {
 		return m_values.data();

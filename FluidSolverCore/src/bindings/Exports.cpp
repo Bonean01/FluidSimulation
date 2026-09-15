@@ -44,6 +44,14 @@ extern "C" INTERFACE_EXPORT const CellData* GetCellDataPtr(FluidSimulation* hand
 	return handle->getCellData().getValuesPtr();
 }
 
+extern "C" INTERFACE_EXPORT const MarkerParticle* GetMarkerParticlesPtr(FluidSimulation* handle) {
+	return handle->getMarkerParticles().data();
+}
+
+extern "C" INTERFACE_EXPORT const int MarkerParticleCount(FluidSimulation* handle) {
+	return static_cast<int>(handle->getMarkerParticles().size());
+}
+
 
 extern "C" INTERFACE_EXPORT void SetVelocity(FluidSimulation* handle, int i, int j, Vec2f velocity) {
 	handle->setVelocity(i, j, velocity);

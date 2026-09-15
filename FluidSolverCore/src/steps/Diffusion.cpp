@@ -4,6 +4,7 @@
 
 #include "math/operators/Staggered.h"
 #include "utils/profiling/ScopeProfiler.h"
+#include "domain/DomainUtils.h"
 
 
 void Diffusion::execute(StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData, float kinematicViscosity, float timeStep, unsigned int iterationCount) {
@@ -36,7 +37,7 @@ void Diffusion::diffuseComponent(const VectorComponent& C, StaggeredVectorField2
 	for (int j = 0; j < height; j++) {
 		for (int i = 0; i < width; i++) {
 			const BoundaryData& currentBoundary = boundaryData.getEdgeValue(C, i, j);
-			if (BoundaryUtils::hasPrescribedVelocity(currentBoundary)) continue;
+			if (DomainUtils::hasBoundaryPrescribedVelocity(currentBoundary)) continue;
 
 			float currentVel = velocityField.getEdgeValue(C, i, j);
 			float laplacian = m_laplacianField.getEdgeValue(C, i, j);
