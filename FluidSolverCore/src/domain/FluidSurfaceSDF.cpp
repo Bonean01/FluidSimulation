@@ -33,8 +33,31 @@ void FluidSurfaceSDF_2D::updateLevelSet(ScalarField2D& levelSet, const std::vect
 
 
 void FluidSurfaceSDF_2D::calculateSDF(unsigned int detph) {
-    // Calculate where the linear interpolant becomes 0 (between cells where the sign changes),
-    // and set the signed distance of nearby cells
+    // Calculate where the linear interpolant becomes 0 (between neighbouring cells where the sign changes),
+    // calculate the distances and set the current cell to the minimum of them
+    #pragma omp parallel for
+    for (int j = 0; j < m_width; j++) {
+        for (int i = 0; i < m_height; i++) {
+            auto neighbourDistances = getNeighbourDistances(i, j);
+
+            float minValue = neighbourDistances[0];
+            Vec2i minPos = neighbourRelativePositions[0];
+            for (int k = 1; k < neighbourDistances.size(); k++) {
+                float value = neighbourDistances[k];
+                if (value < minValue) {
+                    minValue = value;
+                    minPos = neighbourRelativePositions[k];
+                }
+            }
+            if (minValue != std::numeric_limits<float>::infinity()) {
+                SDFCellData& current = m_SDFCellData.at(i, j);
+                current.estimatedSD = minValue;
+                current.closestSurfacePointPos = static_cast<Vec2f>(minPos * minValue);
+                current.known = true;
+                m_unknownsQueue.push(current);
+            }
+        }
+    }
     
 
     // Append neighbouring cells to a priority queue keyed by known distance

@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 #include <cstdint>
+#include <cmath>
 
 
 enum class VectorComponent : uint8_t {
@@ -23,9 +24,15 @@ struct Vec2f {
 		}
 	}
 
+	float magnitude() { return std::sqrt(x*x + y*y); }
+
 	static Vec2f lerp(const Vec2f& A, const Vec2f& B, float t);
 	static Vec2f biLerp(const Vec2f& A, const Vec2f& B, const Vec2f& C, const Vec2f& D, float tX, float tY);
 
+	operator Vec2i() const {
+		return Vec2i{ static_cast<int>(this->x), static_cast<int>(this->y) };
+	}
+	
 	Vec2f& operator *=(float n) {
 		x *= n;
 		y *= n;
@@ -68,12 +75,18 @@ struct Vec2i {
 
 	Vec2i(int x = 0, int y = 0) : x(x), y(y) {}
 	int get(const VectorComponent& component) const {
-		using enum VectorComponent;
-		switch (component) {
-		case X: return x;
-		case Y: return y;
-		default: throw std::runtime_error("Vec2i only has X and Y components.");
+			using enum VectorComponent;
+			switch (component) {
+			case X: return x;
+			case Y: return y;
+			default: throw std::runtime_error("Vec2i only has X and Y components.");
 		}
+	}
+
+	float magnitude() { return std::sqrt(x*x + y*y); }
+
+	operator Vec2f() const {
+		return Vec2f{ static_cast<float>(this->x), static_cast<float>(this->y) };
 	}
 
 	Vec2i& operator *=(int n) {
