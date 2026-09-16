@@ -52,6 +52,10 @@ extern "C" INTERFACE_EXPORT const int MarkerParticleCount(FluidSimulation* handl
 	return static_cast<int>(handle->getMarkerParticles().size());
 }
 
+extern "C" INTERFACE_EXPORT const float* GetSurfaceSDFPtr(FluidSimulation* handle) {
+	return handle->getSurfaceSDF().getValuesPtr();
+}
+
 
 extern "C" INTERFACE_EXPORT void SetVelocity(FluidSimulation* handle, int i, int j, Vec2f velocity) {
 	handle->setVelocity(i, j, velocity);

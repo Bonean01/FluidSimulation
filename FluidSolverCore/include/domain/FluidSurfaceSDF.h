@@ -13,30 +13,36 @@ public:
 	FluidSurfaceSDF_2D(int width, int height, float cellWidth) :
 		ScalarField2D(width, height, cellWidth),
 		m_levelSet(width, height, cellWidth),
-		m_SDFCellData(width, height, cellWidth) {
-	}
+		m_SDFCellData(width, height, cellWidth) { }
 
 	void update(const std::vector<MarkerParticle>& markerParticles, unsigned int depth);
 
 
 private:
 	struct SDFCellData {
+		Vec2i position;
 		Vec2f closestSurfacePointPos;
 		float estimatedSD;
 		bool known;
+	};
 
-		friend bool operator >(const SDFCellData& lhs, const SDFCellData& rhs) {
-			return lhs.estimatedSD > rhs.estimatedSD;
+	struct QueueEntry {
+		Vec2i position;
+		float priority;
+
+		auto operator <=>(const QueueEntry& other) const {
+			return this->priority <=> other.priority;
 		}
 	};
 
 	ScalarField2D m_levelSet;
-	typedef std::priority_queue<SDFCellData, std::vector<SDFCellData>, std::greater<SDFCellData>> MinHeapPQ;
+	typedef std::priority_queue<QueueEntry, std::vector<QueueEntry>, std::greater<QueueEntry>> MinHeapPQ;
 	MinHeapPQ m_unknownsQueue;
 	Grid2D<SDFCellData> m_SDFCellData;
 
-	std::array<Vec2i, 8> neighbourRelativePositions = 
-			{{{-1, 1}, {0, 1}, {1, 1}, {-1, 0}, {1, 0}, {-1, -1}, {0, -1}, {1, -1}}};
+	std::array<Vec2i, 8> neighbourRelativePositions = {{
+		{-1, 1}, {0, 1}, {1, 1}, {-1, 0}, {1, 0}, {-1, -1}, {0, -1}, {1, -1}
+	}};
 
 	void updateLevelSet(ScalarField2D& levelSet, const std::vector<MarkerParticle>& markerParticles);
 	void calculateSDF(unsigned int depth);

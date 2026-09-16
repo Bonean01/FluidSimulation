@@ -35,9 +35,9 @@ void FluidSurfaceSDF_2D::updateLevelSet(ScalarField2D& levelSet, const std::vect
 void FluidSurfaceSDF_2D::calculateSDF(unsigned int detph) {
     // Calculate where the linear interpolant becomes 0 (between neighbouring cells where the sign changes),
     // calculate the distances and set the current cell to the minimum of them
-    #pragma omp parallel for
-    for (int j = 0; j < m_width; j++) {
-        for (int i = 0; i < m_height; i++) {
+    //#pragma omp parallel for      we need a mutex for controlling access to the queue :(
+    for (int j = 0; j < m_height; j++) {
+        for (int i = 0; i < m_width; i++) {
             auto neighbourDistances = getNeighbourDistances(i, j);
 
             float minValue = neighbourDistances[0];
@@ -49,12 +49,13 @@ void FluidSurfaceSDF_2D::calculateSDF(unsigned int detph) {
                     minPos = neighbourRelativePositions[k];
                 }
             }
+            SDFCellData& current = m_SDFCellData.at(i, j);
+            current.position = { i, j };
             if (minValue != std::numeric_limits<float>::infinity()) {
-                SDFCellData& current = m_SDFCellData.at(i, j);
                 current.estimatedSD = minValue;
-                current.closestSurfacePointPos = static_cast<Vec2f>(minPos * minValue);
+                current.closestSurfacePointPos = static_cast<Vec2f>(minPos) * minValue;
                 current.known = true;
-                m_unknownsQueue.push(current);
+                m_unknownsQueue.emplace(current.position, current.estimatedSD);
             }
         }
     }
@@ -63,4 +64,17 @@ void FluidSurfaceSDF_2D::calculateSDF(unsigned int detph) {
     // Append neighbouring cells to a priority queue keyed by known distance
     // Repeat and update distance of neighbouring cells accordingly
     // Stop at "depth" to allow for narrow band methods
+    #pragma omp parallel for
+    for (int j = 0; j < m_height; j++) {
+        for (int i = 0; i < m_width; i++) {
+            this->setValue(i, j, 0.0f);
+        }
+    }
+
+    while (!m_unknownsQueue.empty()) {
+        Vec2i position = m_unknownsQueue.top().position;
+        m_unknownsQueue.pop();
+        SDFCellData current = m_SDFCellData.at(position.x, position.y);
+        this->setValue(current.position.x, current.position.y, current.estimatedSD);
+    }
 }

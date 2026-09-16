@@ -7,7 +7,8 @@ Shader "Custom/FluidVisualizer" {
         _PressureTexture("Pressure Texture", 2D) = "white" {}
         _DivergenceTexture("Divergence Texture", 2D) = "white" {}
         _SmokeTexture("Smoke Texture", 2D) = "white" {} 
-        sampler_CellDataTexture("Solid Cell Map Texture", 2D) = "white" {}
+        _CellDataTexture("Solid Cell Map Texture", 2D) = "white" {}
+        _SurfaceSDFTexture("Surface SDF Texture", 2D) = "white" {}
 
         _DisplayedField("Displayed Field", int) = 0
 
@@ -43,6 +44,9 @@ Shader "Custom/FluidVisualizer" {
             TEXTURE2D(_VelocityTexture);
             SAMPLER(sampler_VelocityTexture);
 
+            TEXTURE2D(_SpeedGradientTexture);
+            SAMPLER(sampler_SpeedGradientTexture);
+
             TEXTURE2D(_PressureTexture);
             SAMPLER(sampler_PressureTexture);
 
@@ -55,8 +59,8 @@ Shader "Custom/FluidVisualizer" {
             TEXTURE2D(_CellDataTexture);
             SAMPLER(sampler_CellDataTexture);
 
-            TEXTURE2D(_SpeedGradientTexture);
-            SAMPLER(sampler_SpeedGradientTexture);
+            TEXTURE2D(_SurfaceSDFTexture);
+            SAMPLER(sampler_SurfaceSDFTexture);
 
             struct Attributes {
                 float4 positionOS : POSITION;
@@ -117,7 +121,11 @@ Shader "Custom/FluidVisualizer" {
                         float smoke = SAMPLE_TEXTURE2D(_SmokeTexture, sampler_SmokeTexture, uv).x;
                         color = float4(smoke.xxx, 1.0f);
                         break;
-
+                    
+                    case 6:  // SURFACE SDF
+                        float sdf = SAMPLE_TEXTURE2D(_SurfaceSDFTexture, sampler_SurfaceSDFTexture, uv).x;
+                        color = float4(sdf.xxx, 1.0f);
+                        break;
                 }
                 return color;
             }

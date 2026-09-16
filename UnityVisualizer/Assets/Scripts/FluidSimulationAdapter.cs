@@ -212,6 +212,10 @@ public class FluidSimulationAdapter : MonoBehaviour {
         return UpdateScalarFieldTexture(ref smokeTexture, m_simulation.SmokeValues()).total;
     }
 
+    public void UpdateSurfaceSDFTexture(ref Texture2D surfaceSDFTexture) {
+        UpdateScalarFieldTexture(ref surfaceSDFTexture, m_simulation.SurfaceSDFValues());
+    }
+
 
 
     private void OnDrawGizmosSelected() {

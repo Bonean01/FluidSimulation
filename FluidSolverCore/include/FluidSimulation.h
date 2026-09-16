@@ -66,6 +66,7 @@ public:
 	const ScalarField2D& getSmokeField() const { return m_smokeField; }
 	const Grid2D<CellData>& getCellData() const { return m_cellData; }
 	const std::vector<MarkerParticle>& getMarkerParticles() const { return m_markerParticles; }
+	const FluidSurfaceSDF_2D& getSurfaceSDF() const { return m_surfaceSDF; }
 
 	const int getGridWidth() const { return m_gridWidth; }
 	const int getGridHeight() const { return m_gridHeight; }

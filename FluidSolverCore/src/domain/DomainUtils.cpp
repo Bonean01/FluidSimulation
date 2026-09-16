@@ -78,8 +78,8 @@ namespace DomainUtils {
         #pragma omp parallel for
         for (int i = 0; i < markerParticles.size(); i++) {
             const MarkerParticle& particle = markerParticles.at(i);
-            int cellPosX = std::floor(particle.position.x);
-            int cellPosY = std::floor(particle.position.y);
+            int cellPosX = static_cast<int>(std::floor(particle.position.x));
+            int cellPosY = static_cast<int>(std::floor(particle.position.y));
             CellData& currentCell = cellData.at(cellPosX, cellPosY);
             currentCell.cellType = CellType::Fluid;
         }

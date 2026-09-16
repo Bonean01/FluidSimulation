@@ -29,9 +29,6 @@ struct Vec2f {
 	static Vec2f lerp(const Vec2f& A, const Vec2f& B, float t);
 	static Vec2f biLerp(const Vec2f& A, const Vec2f& B, const Vec2f& C, const Vec2f& D, float tX, float tY);
 
-	operator Vec2i() const {
-		return Vec2i{ static_cast<int>(this->x), static_cast<int>(this->y) };
-	}
 	
 	Vec2f& operator *=(float n) {
 		x *= n;
@@ -83,9 +80,9 @@ struct Vec2i {
 		}
 	}
 
-	float magnitude() { return std::sqrt(x*x + y*y); }
+	float magnitude() const { return static_cast<float>(std::sqrt(x*x + y*y)); }
 
-	operator Vec2f() const {
+	explicit operator Vec2f() const {
 		return Vec2f{ static_cast<float>(this->x), static_cast<float>(this->y) };
 	}
 

@@ -55,7 +55,6 @@ static void printDivergenceField(FluidSimulation simulation) {
 #include "utils/profiling/Profiler.h"
 #include "utils/profiling/ScopeProfiler.h"
 
-#include <omp.h>
 int main(int argc, char* argv[]) {
 	int width = 66;
 	int height = 33;

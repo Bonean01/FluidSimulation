@@ -23,6 +23,7 @@ public class FluidSimulation : IDisposable {
     [DllImport("FluidSolver")] private extern static IntPtr GetCellDataPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static IntPtr GetMarkerParticlesPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static int MarkerParticleCount(IntPtr handle);
+    [DllImport("FluidSolver")] private extern static IntPtr GetSurfaceSDFPtr(IntPtr handle);
 
     [DllImport("FluidSolver")] private extern static void SetVelocity(IntPtr handle, int i, int j, Vec2f velocity);
     [DllImport("FluidSolver")] private extern static Vec2f GetVelocity(IntPtr handle, int i, int j);
@@ -81,6 +82,13 @@ public class FluidSimulation : IDisposable {
         int count = MarkerParticleCount(m_handle);
         for (int i = 0; i < count; i++)
             yield return GetElementFromPointer<MarkerParticle>(ptr, i);
+    }
+
+    public IEnumerable<float> SurfaceSDFValues() {
+        IntPtr ptr = GetSurfaceSDFPtr(m_handle);
+        for (int i = 0 ; i < m_cellCount; i++) {
+            yield return GetElementFromPointer<float>(ptr, i);
+        }
     }
 
 
