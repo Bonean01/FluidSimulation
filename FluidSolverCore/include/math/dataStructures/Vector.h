@@ -61,3 +61,53 @@ struct Vec2f {
 		return { -vec.x, -vec.y };
 	}
 };
+
+
+struct Vec2i {
+	int x, y;
+
+	Vec2i(int x = 0, int y = 0) : x(x), y(y) {}
+	int get(const VectorComponent& component) const {
+		using enum VectorComponent;
+		switch (component) {
+		case X: return x;
+		case Y: return y;
+		default: throw std::runtime_error("Vec2i only has X and Y components.");
+		}
+	}
+
+	Vec2i& operator *=(int n) {
+		x *= n;
+		y *= n;
+		return *this;
+	}
+
+	friend Vec2i operator *(int n, const Vec2i& vec) {
+		return { n * vec.x, n * vec.y };
+	}
+	friend Vec2i operator *(const Vec2i& vec, int n) {
+		return n * vec;
+	}
+
+	friend Vec2i operator /(const Vec2i& vec, int n) {
+		return { vec.x / n, vec.y / n };
+	}
+
+	Vec2i& operator +=(const Vec2i other) {
+		x += other.x;
+		y += other.y;
+		return *this;
+	}
+
+	friend Vec2i operator +(const Vec2i& vec1, const Vec2i& vec2) {
+		return { vec1.x + vec2.x, vec1.y + vec2.y };
+	}
+
+	friend Vec2i operator -(const Vec2i& vec1, const Vec2i& vec2) {
+		return { vec1.x - vec2.x, vec1.y - vec2.y };
+	}
+
+	friend Vec2i operator -(const Vec2i& vec) {
+		return { -vec.x, -vec.y };
+	}
+};
