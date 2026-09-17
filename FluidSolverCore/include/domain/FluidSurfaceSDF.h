@@ -24,6 +24,7 @@ private:
 		Vec2f closestSurfacePointPos;
 		float estimatedSD;
 		bool known;
+		unsigned int depth;
 	};
 
 	struct QueueEntry {
@@ -49,7 +50,6 @@ private:
 
 
 	std::array<SDFCellData*, 8> getNeighbours(int posX, int posY) {
-		auto neighbours = std::array<SDFCellData*, 8>();
 		int width = m_SDFCellData.width();
 		int height = m_SDFCellData.height();
 
@@ -59,7 +59,7 @@ private:
 			int i = posX + neighbourRelativePos.x;
 			int j = posY + neighbourRelativePos.y;
 
-			if (0 >= i && i < width && 0 >= j && j < height) {
+			if (0 <= i && i < width && 0 <= j && j < height) {
 				res[k] = &m_SDFCellData.at(i, j);
 			}
 		}
@@ -67,7 +67,7 @@ private:
 	}
 
 
-	std::array<float, 8> getNeighbourDistances(int i, int j) {
+	std::array<float, 8> getNeighbourSignedDistances(int i, int j) {
 		auto res = std::array<float, 8>{};
 		for (int i = 0; i < res.size(); i++) { res[i] = std::numeric_limits<float>::infinity(); }
 		
@@ -80,7 +80,7 @@ private:
 			float neighbourLS = m_levelSet.getValue(i + neighbourRelativePos.x, j + neighbourRelativePos.y);
 			
 			if (std::signbit(neighbourLS) != std::signbit(currentLS)) {
-				float t = (currentLS - neighbourLS) / currentLS;
+				float t = currentLS / (currentLS - neighbourLS);
 				float distance = t * neighbourRelativePos.magnitude();
 				float signedDistance = currentLS < 0 ? -distance : distance;
 				res[k] = signedDistance;
