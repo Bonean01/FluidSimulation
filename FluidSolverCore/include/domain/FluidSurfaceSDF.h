@@ -28,11 +28,10 @@ private:
 	};
 
 	struct QueueEntry {
-		Vec2i position;
-		float priority;
+		SDFCellData* cellData;
 
 		auto operator <=>(const QueueEntry& other) const {
-			return this->priority <=> other.priority;
+			return this->cellData->estimatedSD <=> other.cellData->estimatedSD;
 		}
 	};
 
@@ -48,7 +47,9 @@ private:
 	void updateLevelSet(ScalarField2D& levelSet, const std::vector<MarkerParticle>& markerParticles);
 	void calculateSDF(unsigned int depth);
 
-
+	std::array<SDFCellData*, 8> getNeighbours(const SDFCellData& current) {
+		return getNeighbours(current.position.x, current.position.y);
+	}
 	std::array<SDFCellData*, 8> getNeighbours(int posX, int posY) {
 		int width = m_SDFCellData.width();
 		int height = m_SDFCellData.height();

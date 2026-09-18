@@ -54,6 +54,7 @@ void FluidSurfaceSDF_2D::calculateSDF(unsigned int depth) {
         for (int i = 0; i < m_width; i++) {
             auto neighbourSDs = getNeighbourSignedDistances(i, j);
 
+            // obtain the minimum distance and the relative position of the closest surface point
             float minDistance = std::abs(neighbourSDs[0]);
             Vec2i minRelPos = neighbourRelativePositions[0];
 
@@ -81,58 +82,46 @@ void FluidSurfaceSDF_2D::calculateSDF(unsigned int depth) {
      //Repeat and update distance of neighbouring cells accordingly
      //Stop at "depth" to allow for narrow band methods
      //we need a mutex for controlling access to the queue
+
+
+    // WE STILL NEED TO ESTIMATE THEIR SIGNED DISTANCE AND CLOSEST SURFACE POINT
     for (int j = 0; j < m_height; j++) {
         for (int i = 0; i < m_width; i++) {
             const SDFCellData& current = m_SDFCellData.getValue(i, j);
             if (!current.known) continue;
     
             auto neighbours = getNeighbours(i, j);
-            for (auto& neighbour : neighbours) {
+            for (SDFCellData* neighbour : neighbours) {
                 if (neighbour == nullptr) continue;
                 if (!neighbour->known) {
-                    m_unknownsQueue.emplace(neighbour->position, neighbour->estimatedSD);
+                    neighbour->estimatedSD = current.estimatedSD;
+                    m_unknownsQueue.emplace(neighbour);
                 }
+
             }
         }
     }
-
     
+
     while (!m_unknownsQueue.empty()) {
-        Vec2i position = m_unknownsQueue.top().position;
+        SDFCellData* current = m_unknownsQueue.top().cellData;
         m_unknownsQueue.pop();
-        SDFCellData& current = m_SDFCellData.at(position.x, position.y);
-        
-        if (current.depth > depth) continue;
+        current->known = true;
 
-        float minSurfacePtDst = std::numeric_limits<float>::infinity();
-    
-        for (auto& neighbour : getNeighbours(position.x, position.y)) {
+        float minDist = std::numeric_limits<float>::infinity();
+        Vec2f closestSurfacePoint;
+        auto neighbours = getNeighbours(*current);
+
+        for (SDFCellData* neighbour : neighbours) {
             if (neighbour == nullptr) continue;
-    
-            // Find all neighbour cells that have a known signed distance and closest surface point
-            if (neighbour->known) {
-                Vec2f& closestSurfacePoint = neighbour->closestSurfacePointPos;
-                float surfacePtDst = (closestSurfacePoint - static_cast<Vec2f>(position)).magnitude();
-    
-                // If current is closer than a neighbour mark the neighbour as unknown again
-                if (surfacePtDst < std::abs(neighbour->estimatedSD)) neighbour->known = false;
-    
-                // Take the minimum of the distances
-                if (surfacePtDst < minSurfacePtDst) {
-                    minSurfacePtDst = surfacePtDst;
-                    current.closestSurfacePointPos = closestSurfacePoint;
-                }
-            }
-            if (!neighbour->known) {
-                neighbour->depth = current.depth + 1;
-                m_unknownsQueue.emplace(neighbour->position, neighbour->estimatedSD);
+            if (!neighbour->known) continue;
+            
+            float distance = (neighbour->closestSurfacePointPos - static_cast<Vec2f>(current->position)).magnitude();
+            if (distance < minDist) {
+                minDist = distance;
+                closestSurfacePoint = neighbour->closestSurfacePointPos;
             }
         }
-        // Determine if current is inside or outside the surface and set its signed distance accordingly
-        float currentLS = m_levelSet.getValue(position.x, position.y);
-        float signedDistance = currentLS < 0 ? -minSurfacePtDst : minSurfacePtDst;
-        current.estimatedSD = signedDistance;
-        current.known = true;
     }
 
     
