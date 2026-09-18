@@ -57,9 +57,11 @@ static void printSurfaceSDF(FluidSimulation simulation) {
 	FluidSurfaceSDF_2D surfaceSDF = simulation.getSurfaceSDF();
 	int width = surfaceSDF.width();
 	int height = surfaceSDF.height();
-	for (int i = 0; i < width; i++) {
-		for (int j = 0; j < height; j++) {
-			std::cout << "(" << surfaceSDF.getValue(i, j) << ")\t\t";
+	for (int j = height - 1; j >= 0; j--) {
+		for (int i = 0; i < width; i++) {
+			float value = surfaceSDF.getValue(i, j);
+			float roundedValue = static_cast<int>(value * 100) / 100.0f;
+			std::cout << "(" << (value == std::numeric_limits<float>::infinity() ? value : roundedValue) << ")\t\t";
 		}
 		std::cout << std::endl;
 	}
@@ -70,8 +72,8 @@ static void printSurfaceSDF(FluidSimulation simulation) {
 #include "utils/profiling/ScopeProfiler.h"
 
 int main(int argc, char* argv[]) {
-	int width = 8;//66;
-	int height = 8;// 33;
+	int width = 9;//66;
+	int height = 9;// 33;
 	float cellWidth = 1.0f / width;
 	float density = 1.0f;
 	float kinematicViscosity = 0.0001f;
@@ -84,21 +86,8 @@ int main(int argc, char* argv[]) {
 	CellConfig staticWall{ {CellType::Solid}, {BoundaryCondition::Dirichlet, {0.0f, 0.0f}} };
 	CellConfig fluid{ {CellType::Fluid}, {BoundaryCondition::None} };
 
-	for (int j = 0; j < height; j++) {
-		simulation.setCell(0, j, staticWall);
-		simulation.setCell(width - 1, j, staticWall);
-	}
 
-	for (int i = 0; i < width; i++) {
-		simulation.setCell(i, 0, staticWall);
-		simulation.setCell(i, height - 1, staticWall);
-	}
-
-	for (int j = 3; j < height - 3; j++) {
-		for (int i = 3; i < width - 3; i++) {
-			simulation.setCell(i, j, fluid);
-		}
-	}
+	simulation.setCell(4, 4, fluid);
 
 
 	for (int k = 0; k < 1; k++) {
@@ -106,6 +95,8 @@ int main(int argc, char* argv[]) {
 	}
 
 	printSurfaceSDF(simulation);
+	std::cout << "=========================CLOSEST SURFACE POINTS=========================" << std::endl;
+	simulation.getSurfaceSDF().printClosestSurfacePoints();
 
 	Profiler& profiler = Profiler::getInstance();
 

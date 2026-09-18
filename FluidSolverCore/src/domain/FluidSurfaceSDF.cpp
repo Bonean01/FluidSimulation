@@ -71,7 +71,7 @@ void FluidSurfaceSDF_2D::calculateSDF(unsigned int depth) {
 
             if (minDistance != std::numeric_limits<float>::infinity()) {
                 current.estimatedSD = currentLS < 0 ? -minDistance : minDistance;
-                current.closestSurfacePointPos = static_cast<Vec2f>(minRelPos) / minRelPos.magnitude() * minDistance;
+                current.closestSurfacePointPos = static_cast<Vec2f>(current.position) + static_cast<Vec2f>(minRelPos) / minRelPos.magnitude() * minDistance;
                 current.known = true;
             }
         }
@@ -90,11 +90,12 @@ void FluidSurfaceSDF_2D::calculateSDF(unsigned int depth) {
             const SDFCellData& current = m_SDFCellData.getValue(i, j);
             if (!current.known) continue;
     
-            auto neighbours = getNeighbours(i, j);
+            auto neighbours = getNeighbours(current);
             for (SDFCellData* neighbour : neighbours) {
                 if (neighbour == nullptr) continue;
-                if (!neighbour->known) {
+                if (!neighbour->known && !neighbour->inQueue) {
                     neighbour->estimatedSD = current.estimatedSD;
+                    neighbour->inQueue = true;
                     m_unknownsQueue.emplace(neighbour);
                 }
 
@@ -102,34 +103,59 @@ void FluidSurfaceSDF_2D::calculateSDF(unsigned int depth) {
         }
     }
     
-
+    
     while (!m_unknownsQueue.empty()) {
         SDFCellData* current = m_unknownsQueue.top().cellData;
         m_unknownsQueue.pop();
+
         current->known = true;
+        current->inQueue = false;
+
+        if (current->depth > depth) continue;
 
         float minDist = std::numeric_limits<float>::infinity();
-        Vec2f closestSurfacePoint;
         auto neighbours = getNeighbours(*current);
 
+        // Loop over all known neighbours
         for (SDFCellData* neighbour : neighbours) {
             if (neighbour == nullptr) continue;
-            if (!neighbour->known) continue;
-            
-            float distance = (neighbour->closestSurfacePointPos - static_cast<Vec2f>(current->position)).magnitude();
-            if (distance < minDist) {
-                minDist = distance;
-                closestSurfacePoint = neighbour->closestSurfacePointPos;
+
+            if (neighbour->known) {
+                // Calculate the distance from the current cell to known neighbour surface points
+                float distance = (neighbour->closestSurfacePointPos - static_cast<Vec2f>(current->position)).magnitude();
+
+                // If current is closer than a neighbour mark the neighbour as unknown again
+                if (distance < std::abs(neighbour->estimatedSD)) {
+                    neighbour->known = false;
+                    neighbour->inQueue = true;
+                    m_unknownsQueue.emplace(neighbour);
+                }
+                // Take the minimum of the distances, determine if current is inside or outside and set it's signed distance
+                if (distance < minDist) {
+                    minDist = distance;
+                    current->closestSurfacePointPos = neighbour->closestSurfacePointPos;
+                }
+                float signedDistance = isInsideFluid(*current) ? -minDist : minDist;
+                current->estimatedSD = signedDistance;
+            }
+
+            else {
+                if (!neighbour->inQueue) {
+                    neighbour->depth = current->depth + 1;
+                    neighbour->inQueue = true;
+                    m_unknownsQueue.emplace(neighbour);
+                }
             }
         }
     }
-
+    
     
     #pragma omp parallel for
     for (int j = 0; j < m_height; j++) {
         for (int i = 0; i < m_width; i++) {
             const SDFCellData& current = m_SDFCellData.getValue(i, j);
             this->setValue(i, j, current.estimatedSD);
+            m_closestSurfacePoints.setValue(i, j, current.closestSurfacePointPos);
         }
     }
 }

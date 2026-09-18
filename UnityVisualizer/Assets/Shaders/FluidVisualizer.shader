@@ -124,7 +124,7 @@ Shader "Custom/FluidVisualizer" {
                     
                     case 6:  // SURFACE SDF
                         float sdf = SAMPLE_TEXTURE2D(_SurfaceSDFTexture, sampler_SurfaceSDFTexture, uv).x;
-                        color = float4(sdf.xxx, 1.0f);
+                        color = float4(sdf.xxx / 5, 1.0f);
                         break;
                 }
                 return color;
