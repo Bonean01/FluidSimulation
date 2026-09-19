@@ -52,7 +52,7 @@ extern "C" INTERFACE_EXPORT const int MarkerParticleCount(FluidSimulation* handl
 	return static_cast<int>(handle->getMarkerParticles().size());
 }
 
-extern "C" INTERFACE_EXPORT const float* GetSurfaceSDFPtr(FluidSimulation* handle) {
+extern "C" INTERFACE_EXPORT const SurfaceData* GetSurfaceSDFPtr(FluidSimulation* handle) {
 	return handle->getSurfaceSDF().getValuesPtr();
 }
 

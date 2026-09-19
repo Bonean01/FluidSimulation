@@ -2,6 +2,8 @@
 
 #include "StaggeredGrid.h"
 
+#include <iostream>
+
 class StaggeredVectorField2D : public StaggeredGrid2D<float> {
 public:
     StaggeredVectorField2D(int width, int height, float cellWidth) : StaggeredGrid2D(width, height, cellWidth) {}

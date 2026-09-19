@@ -35,7 +35,7 @@ set (SOURCE_FILES
 	"include/domain/BoundaryCondition.h"
 	"include/domain/BoundaryData.h"
 	"include/domain/MarkerParticle.h"
-	"include/domain/FluidSurfaceSDF.h"
+	"include/domain/FluidSurface.h"
 
 	"include/steps/Advection.h"
 	"include/steps/Diffusion.h"
@@ -66,7 +66,7 @@ set (SOURCE_FILES
 	"src/FluidSimulation.cpp"
 
 	"src/domain/DomainUtils.cpp"
-	"src/domain/FluidSurfaceSDF.cpp"
+	"src/domain/FluidSurface.cpp"
 
 	"src/steps/Advection.cpp"
 	"src/steps/Diffusion.cpp"

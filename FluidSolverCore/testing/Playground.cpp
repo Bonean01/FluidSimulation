@@ -54,12 +54,12 @@ static void printDivergenceField(FluidSimulation simulation) {
 
 
 static void printSurfaceSDF(FluidSimulation simulation) {
-	FluidSurfaceSDF_2D surfaceSDF = simulation.getSurfaceSDF();
-	int width = surfaceSDF.width();
-	int height = surfaceSDF.height();
+	FluidSurface surfaceData = simulation.getSurfaceSDF();
+	int width = surfaceData.width();
+	int height = surfaceData.height();
 	for (int j = height - 1; j >= 0; j--) {
 		for (int i = 0; i < width; i++) {
-			float value = surfaceSDF.getValue(i, j);
+			float value = surfaceData.getValue(i, j).estimatedSD;
 			float roundedValue = static_cast<int>(value * 100) / 100.0f;
 			std::cout << "(" << (value == std::numeric_limits<float>::infinity() ? value : roundedValue) << ")\t\t";
 		}
@@ -72,8 +72,8 @@ static void printSurfaceSDF(FluidSimulation simulation) {
 #include "utils/profiling/ScopeProfiler.h"
 
 int main(int argc, char* argv[]) {
-	int width = 9;//66;
-	int height = 9;// 33;
+	int width = 9;
+	int height = 9;
 	float cellWidth = 1.0f / width;
 	float density = 1.0f;
 	float kinematicViscosity = 0.0001f;
@@ -93,10 +93,7 @@ int main(int argc, char* argv[]) {
 	for (int k = 0; k < 1; k++) {
 		simulation.step(timestep);
 	}
-
 	printSurfaceSDF(simulation);
-	std::cout << "=========================CLOSEST SURFACE POINTS=========================" << std::endl;
-	simulation.getSurfaceSDF().printClosestSurfacePoints();
 
 	Profiler& profiler = Profiler::getInstance();
 

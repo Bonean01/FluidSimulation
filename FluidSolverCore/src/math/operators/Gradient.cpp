@@ -2,7 +2,7 @@
 #include "math/operators/Staggered.h"
 
 #include <array>
-
+#include <iostream>
 
 namespace FiniteDifference {
 	Vec2f Central::gradient(int i, int j, const ScalarField2D& scalarField) {
@@ -95,18 +95,18 @@ namespace Staggered {
 	}
 
 
-	StaggeredVectorField2D gradient(const ScalarField2D& scalarField) {
-		StaggeredVectorField2D res{ scalarField.width(), scalarField.height(), scalarField.cellWidth() };
+	void gradient(StaggeredVectorField2D& result, const ScalarField2D& scalarField) {
+		if (result.width() != scalarField.width() || result.height() != scalarField.height()) return;
 
 		std::array<VectorComponent, 2> components = { VectorComponent::X, VectorComponent::Y };
 		for (VectorComponent C : components) {
-			int width = res.getValuesWidth(C);
-			int height = res.getValuesHeight(C);
+			int width = result.getValuesWidth(C);
+			int height = result.getValuesHeight(C);
 			#pragma omp parallel for
 			for (int j = 0; j < height; j++) {
 				for (int i = 0; i < width; i++) {
 					float gradient = Staggered::gradient(C, i, j, scalarField);
-					res.setEdgeValue(C, i, j, gradient);
+					result.setEdgeValue(C, i, j, gradient);
 				}
 			}
 		}

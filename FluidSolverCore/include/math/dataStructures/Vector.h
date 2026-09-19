@@ -25,6 +25,11 @@ struct Vec2f {
 	}
 
 	float magnitude() const { return std::sqrt(x*x + y*y); }
+	void normalize() { 
+		float norm = magnitude();
+		this->x /= norm;
+		this->y /= norm;
+	}
 
 	static Vec2f lerp(const Vec2f& A, const Vec2f& B, float t);
 	static Vec2f biLerp(const Vec2f& A, const Vec2f& B, const Vec2f& C, const Vec2f& D, float tX, float tY);

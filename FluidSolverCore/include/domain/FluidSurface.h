@@ -8,47 +8,52 @@
 #include <iostream>
 #include <cstdio>
 
-#include "math/dataStructures/ScalarField.h"
+#include "math/dataStructures/Grid.h"
 #include "math/dataStructures/VectorField.h"
 #include "domain/MarkerParticle.h"
 
 
-class FluidSurfaceSDF_2D : public ScalarField2D {
+struct SurfaceData {
+	Vec2i position;
+	Vec2f closestSurfacePointPos;
+	float estimatedSD;
+	bool known;
+	bool inQueue;
+	unsigned int depth;
+};
+
+
+class FluidSurface : public Grid2D<SurfaceData> {
 public:
-	FluidSurfaceSDF_2D(int width, int height, float cellWidth) :
-		ScalarField2D(width, height, cellWidth),
-		m_closestSurfacePoints(width, height, cellWidth),
-		m_levelSet(width, height, cellWidth),
-		m_SDFCellData(width, height, cellWidth) { }
+	FluidSurface(int width, int height) :
+		Grid2D(width, height, 1),
+		m_levelSet(width, height, 1) {
+			m_container.reserve(m_cellCount * sizeof(QueueEntry));
+			m_unknownsQueue = MinHeapPQ{ std::greater<QueueEntry>(), std::move(m_container) };
+		}
 
 	void update(const std::vector<MarkerParticle>& markerParticles, unsigned int depth);
-
+	Vec2f gradient(int i, int j) const {
+		const SurfaceData& current = this->getValue(i, j);
+		Vec2f distance = (current.closestSurfacePointPos - static_cast<Vec2f>(current.position));
+		distance.normalize();
+		return distance;
+	}
 
 private:
-	struct SDFCellData {
-		Vec2i position;
-		Vec2f closestSurfacePointPos;
-		float estimatedSD;
-		bool known;
-		bool inQueue;
-		unsigned int depth;
-	};
-
 	struct QueueEntry {
-		SDFCellData* cellData;
+		SurfaceData* surfaceData;
 
 		auto operator <=>(const QueueEntry& other) const {
-			return this->cellData->estimatedSD <=> other.cellData->estimatedSD;
+			return this->surfaceData->estimatedSD <=> other.surfaceData->estimatedSD;
 		}
 	};
 
-	//temp
-	VectorField2D m_closestSurfacePoints;
-
 	ScalarField2D m_levelSet;
+
+	std::vector<QueueEntry> m_container;
 	typedef std::priority_queue<QueueEntry, std::vector<QueueEntry>, std::greater<QueueEntry>> MinHeapPQ;
 	MinHeapPQ m_unknownsQueue;
-	Grid2D<SDFCellData> m_SDFCellData;
 
 	std::array<Vec2i, 8> neighbourRelativePositions = {{
 		{-1, 1}, {0, 1}, {1, 1}, {-1, 0}, {1, 0}, {-1, -1}, {0, -1}, {1, -1}
@@ -58,22 +63,19 @@ private:
 	void calculateSDF(unsigned int depth);
 
 
-	std::array<SDFCellData*, 8> getNeighbours(const SDFCellData& current) {
+	std::array<SurfaceData*, 8> getNeighbours(const SurfaceData& current) {
 		return getNeighbours(current.position.x, current.position.y);
 	}
 
-	std::array<SDFCellData*, 8> getNeighbours(int posX, int posY) {
-		int width = m_SDFCellData.width();
-		int height = m_SDFCellData.height();
-
-		auto res = std::array<SDFCellData*, 8>{};
+	std::array<SurfaceData*, 8> getNeighbours(int posX, int posY) {
+		auto res = std::array<SurfaceData*, 8>{};
 		for (int k = 0; k < neighbourRelativePositions.size(); k++) {
 			auto& neighbourRelativePos = neighbourRelativePositions[k];
 			int i = posX + neighbourRelativePos.x;
 			int j = posY + neighbourRelativePos.y;
 
-			if (0 <= i && i < width && 0 <= j && j < height) {
-				res[k] = &m_SDFCellData.at(i, j);
+			if (0 <= i && i < m_width && 0 <= j && j < m_height) {
+				res[k] = &this->at(i, j);
 			}
 		}
 		return res;
@@ -103,7 +105,7 @@ private:
 	}
 
 
-	bool isInsideFluid(const SDFCellData& current) {
+	bool isInsideFluid(const SurfaceData& current) {
 		int posX = current.position.x;
 		int posY = current.position.y;
 
@@ -111,14 +113,12 @@ private:
 	}
 
 
-	//temp
 public:
+	//temp
 	void printClosestSurfacePoints() const {
-		int width = m_closestSurfacePoints.width();
-		int height = m_closestSurfacePoints.height();
-		for (int j = height - 1; j >= 0; j--) {
-			for (int i = 0; i < width; i++) {
-				Vec2f closestSurfacePoint = m_closestSurfacePoints.getValue(i, j);
+		for (int j = m_height - 1; j >= 0; j--) {
+			for (int i = 0; i < m_width; i++) {
+				Vec2f closestSurfacePoint = this->getValue(i, j).closestSurfacePointPos;
 				std::printf("(%.2f, %.2f)\t", closestSurfacePoint.x, closestSurfacePoint.y);
 			}
 			std::cout << std::endl;

@@ -56,12 +56,18 @@ namespace DomainUtils {
     }
 
 
-    void extrapolateVelocity(StaggeredVectorField2D& velocityField, const FluidSurfaceSDF_2D& surfaceSDF, const Grid2D<CellData>& cellData) {
+    void extrapolateVelocity(StaggeredVectorField2D& velocityField, const FluidSurface& surfaceSDF, const Grid2D<CellData>& cellData) {
         // Force that taking the directional derivative of the extrapolated velocity in the direction of
-        // the gradient of the SDF returns 0 (all the points between a point and the closest known 
+        // the gradient of the SDF returns 0 (all the points between a point and the closest known
         // velocity should contain the same extrapolated velocity)
 
-        //StaggeredVectorField2D surfaceSDFGradient = Staggered::gradient(surfaceSDF);
+        // Order air cells in an array in ascending signed distance value
+        // Maybe store a surface mask inside of the surfaceSDF
+        // Change FluidSurfaceSDF to FluidSurface as a grid that stores SurfaceData
+        // surfaceSDF.getSurfaceAirCells()
+
+        // Iterate through them and set u(x) = u(x - \nabla \phi)
+
     }
 
 

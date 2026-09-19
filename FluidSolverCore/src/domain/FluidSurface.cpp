@@ -1,19 +1,21 @@
 #include <cmath>
 #include <limits>
 
-#include "domain/FluidSurfaceSDF.h"
-
+#include "domain/FluidSurface.h"
+#include "utils/profiling/ScopeProfiler.h"
 
 #include <iostream>
 
 
-void FluidSurfaceSDF_2D::update(const std::vector<MarkerParticle>& markerParticles, unsigned int depth) {
+void FluidSurface::update(const std::vector<MarkerParticle>& markerParticles, unsigned int depth) {
+    ScopeProfiler p{ "Updating Surface SDF" };
+
     updateLevelSet(m_levelSet, markerParticles);
     calculateSDF(depth);
 }
 
 
-void FluidSurfaceSDF_2D::updateLevelSet(ScalarField2D& levelSet, const std::vector<MarkerParticle>& markerParticles) {
+void FluidSurface::updateLevelSet(ScalarField2D& levelSet, const std::vector<MarkerParticle>& markerParticles) {
     // Set cells with makers to -1 and cells without them to +1
     #pragma omp parallel for
     for (int j = 0; j < m_height; j++) {
@@ -34,12 +36,12 @@ void FluidSurfaceSDF_2D::updateLevelSet(ScalarField2D& levelSet, const std::vect
 }
 
 
-void FluidSurfaceSDF_2D::calculateSDF(unsigned int depth) {
+void FluidSurface::calculateSDF(unsigned int depth) {
     // Reset
     #pragma omp parallel for
     for (int j = 0; j < m_height; j++) {
         for (int i = 0; i < m_width; i++) {
-            SDFCellData& current = m_SDFCellData.at(i, j);
+            SurfaceData& current = this->at(i, j);
             current.known = false;
             current.estimatedSD = std::numeric_limits<float>::infinity();
             current.depth = std::numeric_limits<int>::max();
@@ -67,7 +69,7 @@ void FluidSurfaceSDF_2D::calculateSDF(unsigned int depth) {
                 }
             }
 
-            SDFCellData& current = m_SDFCellData.at(i, j);
+            SurfaceData& current = this->at(i, j);
             float currentLS = m_levelSet.getValue(i, j);
 
             if (minDistance != std::numeric_limits<float>::infinity()) {
@@ -86,11 +88,11 @@ void FluidSurfaceSDF_2D::calculateSDF(unsigned int depth) {
      //we need a mutex for controlling access to the queue
     for (int j = 0; j < m_height; j++) {
         for (int i = 0; i < m_width; i++) {
-            const SDFCellData& current = m_SDFCellData.getValue(i, j);
+            const SurfaceData& current = this->getValue(i, j);
             if (!current.known) continue;
     
             auto neighbours = getNeighbours(current);
-            for (SDFCellData* neighbour : neighbours) {
+            for (SurfaceData* neighbour : neighbours) {
                 if (neighbour == nullptr) continue;
                 if (!neighbour->known && !neighbour->inQueue) {
                     neighbour->estimatedSD = current.estimatedSD;
@@ -104,7 +106,7 @@ void FluidSurfaceSDF_2D::calculateSDF(unsigned int depth) {
     
     
     while (!m_unknownsQueue.empty()) {
-        SDFCellData* current = m_unknownsQueue.top().cellData;
+        SurfaceData* current = m_unknownsQueue.top().surfaceData;
         m_unknownsQueue.pop();
         if (current == nullptr) continue;
 
@@ -115,7 +117,7 @@ void FluidSurfaceSDF_2D::calculateSDF(unsigned int depth) {
         auto neighbours = getNeighbours(*current);
 
         // Loop over all known neighbours
-        for (SDFCellData* neighbour : neighbours) {
+        for (SurfaceData* neighbour : neighbours) {
             if (neighbour == nullptr) continue;
 
             if (neighbour->known) {
@@ -157,9 +159,7 @@ void FluidSurfaceSDF_2D::calculateSDF(unsigned int depth) {
     #pragma omp parallel for
     for (int j = 0; j < m_height; j++) {
         for (int i = 0; i < m_width; i++) {
-            const SDFCellData& current = m_SDFCellData.getValue(i, j);
-            this->setValue(i, j, current.estimatedSD);
-            m_closestSurfacePoints.setValue(i, j, current.closestSurfacePointPos);
+            const SurfaceData& current = this->getValue(i, j);
         }
     }
 }
