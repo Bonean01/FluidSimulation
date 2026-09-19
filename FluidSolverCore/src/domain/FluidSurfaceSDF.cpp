@@ -42,10 +42,11 @@ void FluidSurfaceSDF_2D::calculateSDF(unsigned int depth) {
             SDFCellData& current = m_SDFCellData.at(i, j);
             current.known = false;
             current.estimatedSD = std::numeric_limits<float>::infinity();
-            current.depth = 0;
+            current.depth = std::numeric_limits<int>::max();
             current.position = { i, j };
         }
     }
+
 
     // Calculate where the linear interpolant becomes 0 (between neighbouring cells where the sign changes),
     // calculate the distances and set the current cell to the minimum of them
@@ -73,6 +74,7 @@ void FluidSurfaceSDF_2D::calculateSDF(unsigned int depth) {
                 current.estimatedSD = currentLS < 0 ? -minDistance : minDistance;
                 current.closestSurfacePointPos = static_cast<Vec2f>(current.position) + static_cast<Vec2f>(minRelPos) / minRelPos.magnitude() * minDistance;
                 current.known = true;
+                current.depth = 1;
             }
         }
     }
@@ -82,9 +84,6 @@ void FluidSurfaceSDF_2D::calculateSDF(unsigned int depth) {
      //Repeat and update distance of neighbouring cells accordingly
      //Stop at "depth" to allow for narrow band methods
      //we need a mutex for controlling access to the queue
-
-
-    // WE STILL NEED TO ESTIMATE THEIR SIGNED DISTANCE AND CLOSEST SURFACE POINT
     for (int j = 0; j < m_height; j++) {
         for (int i = 0; i < m_width; i++) {
             const SDFCellData& current = m_SDFCellData.getValue(i, j);
@@ -96,9 +95,9 @@ void FluidSurfaceSDF_2D::calculateSDF(unsigned int depth) {
                 if (!neighbour->known && !neighbour->inQueue) {
                     neighbour->estimatedSD = current.estimatedSD;
                     neighbour->inQueue = true;
+                    neighbour->depth = 2;
                     m_unknownsQueue.emplace(neighbour);
                 }
-
             }
         }
     }
@@ -107,11 +106,10 @@ void FluidSurfaceSDF_2D::calculateSDF(unsigned int depth) {
     while (!m_unknownsQueue.empty()) {
         SDFCellData* current = m_unknownsQueue.top().cellData;
         m_unknownsQueue.pop();
+        if (current == nullptr) continue;
 
         current->known = true;
         current->inQueue = false;
-
-        if (current->depth > depth) continue;
 
         float minDist = std::numeric_limits<float>::infinity();
         auto neighbours = getNeighbours(*current);
@@ -140,16 +138,22 @@ void FluidSurfaceSDF_2D::calculateSDF(unsigned int depth) {
             }
 
             else {
-                if (!neighbour->inQueue) {
-                    neighbour->depth = current->depth + 1;
+                // Apropriately set the neighbours depth and add it to the queue
+                if (neighbour->inQueue) continue;
+
+                unsigned int minDepth = std::numeric_limits<int>::max();
+                for (auto* ady : getNeighbours(*neighbour)) {
+                    if (ady != nullptr && ady->depth < minDepth) minDepth = ady->depth;
+                }
+                neighbour->depth = minDepth + 1;
+                if (neighbour->depth <= depth) {
                     neighbour->inQueue = true;
                     m_unknownsQueue.emplace(neighbour);
                 }
             }
         }
     }
-    
-    
+
     #pragma omp parallel for
     for (int j = 0; j < m_height; j++) {
         for (int i = 0; i < m_width; i++) {

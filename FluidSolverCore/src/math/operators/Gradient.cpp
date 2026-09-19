@@ -1,6 +1,8 @@
 #include "math/operators/FiniteDifference.h"
 #include "math/operators/Staggered.h"
 
+#include <array>
+
 
 namespace FiniteDifference {
 	Vec2f Central::gradient(int i, int j, const ScalarField2D& scalarField) {
@@ -90,5 +92,23 @@ namespace Staggered {
 			throw std::runtime_error(
 				"StaggeredGrid2D only has components X and Y but accessed another one"
         	);
+	}
+
+
+	StaggeredVectorField2D gradient(const ScalarField2D& scalarField) {
+		StaggeredVectorField2D res{ scalarField.width(), scalarField.height(), scalarField.cellWidth() };
+
+		std::array<VectorComponent, 2> components = { VectorComponent::X, VectorComponent::Y };
+		for (VectorComponent C : components) {
+			int width = res.getValuesWidth(C);
+			int height = res.getValuesHeight(C);
+			#pragma omp parallel for
+			for (int j = 0; j < height; j++) {
+				for (int i = 0; i < width; i++) {
+					float gradient = Staggered::gradient(C, i, j, scalarField);
+					res.setEdgeValue(C, i, j, gradient);
+				}
+			}
+		}
 	}
 }

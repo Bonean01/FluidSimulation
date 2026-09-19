@@ -4,6 +4,7 @@
 #include <cmath>
 
 #include "utils/profiling/ScopeProfiler.h"
+#include "math/operators/Staggered.h"
 
 
 namespace DomainUtils {
@@ -55,10 +56,12 @@ namespace DomainUtils {
     }
 
 
-    void extrapolateVelocity(StaggeredVectorField2D& velocityField, const Grid2D<CellData>& cellData) {
+    void extrapolateVelocity(StaggeredVectorField2D& velocityField, const FluidSurfaceSDF_2D& surfaceSDF, const Grid2D<CellData>& cellData) {
         // Force that taking the directional derivative of the extrapolated velocity in the direction of
         // the gradient of the SDF returns 0 (all the points between a point and the closest known 
         // velocity should contain the same extrapolated velocity)
+
+        //StaggeredVectorField2D surfaceSDFGradient = Staggered::gradient(surfaceSDF);
     }
 
 

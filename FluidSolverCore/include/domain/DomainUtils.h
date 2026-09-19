@@ -8,6 +8,7 @@
 #include "BoundaryCondition.h"
 #include "CellData.h"
 #include "MarkerParticle.h"
+#include "FluidSurfaceSDF.h"
 
 
 namespace DomainUtils {
@@ -16,6 +17,6 @@ namespace DomainUtils {
 	void applyVelocityBCsToEdge(const VectorComponent& C, int i, int j, StaggeredVectorField2D& velocityField, const BoundaryData& boundaryData);
 	bool hasBoundaryPrescribedVelocity(const BoundaryData& boundaryData);
 	
-	void extrapolateVelocity(StaggeredVectorField2D& velocityField, const Grid2D<CellData>& cellData);
+	void extrapolateVelocity(StaggeredVectorField2D& velocityField, const FluidSurfaceSDF_2D& surfaceSDF, const Grid2D<CellData>& cellData);
 	void updateCellData(Grid2D<CellData>& cellData, const std::vector<MarkerParticle>& markerParticles);
 }
