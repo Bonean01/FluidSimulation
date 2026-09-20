@@ -56,18 +56,23 @@ namespace DomainUtils {
     }
 
 
-    void extrapolateVelocity(StaggeredVectorField2D& velocityField, const FluidSurface& surfaceSDF, const Grid2D<CellData>& cellData) {
+    void extrapolateVelocity(StaggeredVectorField2D& velocityField, const FluidSurface& surfaceData, const Grid2D<CellData>& cellData) {
         // Force that taking the directional derivative of the extrapolated velocity in the direction of
         // the gradient of the SDF returns 0 (all the points between a point and the closest known
         // velocity should contain the same extrapolated velocity)
+        int width = surfaceData.width();
+        int height = surfaceData.height();
 
-        // Order air cells in an array in ascending signed distance value
-        // Maybe store a surface mask inside of the surfaceSDF
-        // Change FluidSurfaceSDF to FluidSurface as a grid that stores SurfaceData
-        // surfaceSDF.getSurfaceAirCells()
+        #pragma omp parallel for
+        for (int j = 0; j < height; j++) {
+            for (int i = 0; i < width; i++) {
+                SurfaceData current = surfaceData.getValue(i, j);
+                if (!current.known || cellData.getValue(i, j).cellType == CellType::Fluid) continue;
 
-        // Iterate through them and set u(x) = u(x - \nabla \phi)
-
+                Vec2f vel = velocityField.sampleBilinear(current.closestSurfacePointPos);
+                velocityField.setCellValue(i, j, vel);
+            }
+        }
     }
 
 

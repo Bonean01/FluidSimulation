@@ -33,6 +33,7 @@ public:
 		}
 
 	void update(const std::vector<MarkerParticle>& markerParticles, unsigned int depth);
+
 	Vec2f gradient(int i, int j) const {
 		const SurfaceData& current = this->getValue(i, j);
 		Vec2f distance = (current.closestSurfacePointPos - static_cast<Vec2f>(current.position));

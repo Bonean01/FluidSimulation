@@ -69,21 +69,25 @@ void Advection::execute(std::vector<MarkerParticle>& markerParticles, const Stag
 	ScopeProfiler p{ "Marker Particles Advection" };
 
 	float dx = velocityField.cellWidth();
-	
-	#pragma omp parallel for
-	for (int i = 0; i < markerParticles.size(); i++) {
-		MarkerParticle& particle = markerParticles.at(i);
-		Vec2f& currentPos = particle.position;
-		Vec2f currentVel = velocityField.sampleBilinear(currentPos);
-		
-		Vec2f finalPos = particle.position + currentVel / dx * timeStep;
-		Vec2f finalVel = velocityField.sampleBilinear(finalPos);
-		
-		Vec2f averageVel = (currentVel + finalVel) / 2;
-		Vec2f newPos = particle.position + averageVel / dx * timeStep;
 
-		const CellData& finalCell = cellData.getValue(static_cast<int>(std::floor(newPos.x)), static_cast<int>(std::floor(newPos.y)));
-		if (finalCell.cellType != CellType::Solid)
-			particle.position = newPos;
+	int n = 50;
+	timeStep /= n;
+	for (int k = 0; k < n; k++) {
+		#pragma omp parallel for
+		for (int i = 0; i < markerParticles.size(); i++) {
+			MarkerParticle& particle = markerParticles.at(i);
+			Vec2f& currentPos = particle.position;
+			Vec2f currentVel = velocityField.sampleBilinear(currentPos);
+
+			Vec2f finalPos = particle.position + currentVel / dx * timeStep;
+			Vec2f finalVel = velocityField.sampleBilinear(finalPos);
+
+			Vec2f averageVel = (currentVel + finalVel) / 2;
+			Vec2f newPos = particle.position + averageVel / dx * timeStep;
+
+			const CellData& finalCell = cellData.getValue(static_cast<int>(std::floor(newPos.x)), static_cast<int>(std::floor(newPos.y)));
+			if (finalCell.cellType != CellType::Solid)
+				particle.position = newPos;
+		}
 	}
 }

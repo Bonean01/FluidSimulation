@@ -8,7 +8,7 @@
 
 
 void FluidSurface::update(const std::vector<MarkerParticle>& markerParticles, unsigned int depth) {
-    ScopeProfiler p{ "Updating Surface SDF" };
+    ScopeProfiler p{ "Updating Fluid Surface" };
 
     updateLevelSet(m_levelSet, markerParticles);
     calculateSDF(depth);

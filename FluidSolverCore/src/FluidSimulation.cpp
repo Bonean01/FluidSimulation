@@ -11,10 +11,11 @@
 void FluidSimulation::step(float timeStep) {
 	ScopeProfiler p{ "============= COMPLETE SIMULATION STEP =============" };
 
-	m_surfaceSDF.update(m_markerParticles, 5);
+	m_surfaceSDF.update(m_markerParticles, 3);
 	DomainUtils::extrapolateVelocity(m_velocityField, m_surfaceSDF, m_cellData);
 	m_advection.execute(m_markerParticles, m_velocityField, m_cellData, timeStep);
 	DomainUtils::updateCellData(m_cellData, m_markerParticles);
+	ExternalForces::applyGravity(m_velocityField, m_boundaryData, timeStep);
 
 	m_advection.execute(m_smokeField, m_velocityField, m_cellData, timeStep);
 
@@ -25,7 +26,7 @@ void FluidSimulation::step(float timeStep) {
 	m_pressureSolver.solveJacobi(m_pressureField, m_velocityField, m_cellData, m_density, timeStep, m_iterationCount);
 	m_projection.execute(m_velocityField, m_pressureField, m_boundaryData, m_density, timeStep);
 
-	//ExternalForces::applyGravity(m_velocityField, m_boundaryData, timeStep);
+	Staggered::divergence(m_divergenceField, m_velocityField);
 }
 
 
