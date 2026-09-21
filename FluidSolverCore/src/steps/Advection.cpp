@@ -70,7 +70,7 @@ void Advection::execute(std::vector<MarkerParticle>& markerParticles, const Stag
 
 	float dx = velocityField.cellWidth();
 
-	int n = 50;
+	int n = 5;
 	timeStep /= n;
 	for (int k = 0; k < n; k++) {
 		#pragma omp parallel for

@@ -46,7 +46,7 @@ public:
 		m_divergenceField(m_gridWidth, m_gridHeight, m_cellWidth),
 		m_smokeField(m_gridWidth, m_gridHeight, m_cellWidth),
 		m_surfaceSDF(m_gridWidth, m_gridHeight),
-		
+
 		m_cellData(m_gridWidth, m_gridHeight),
 		m_boundaryData(m_gridWidth, m_gridHeight),
 		m_markerParticles(),

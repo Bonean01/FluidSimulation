@@ -17,10 +17,12 @@ static void printSimulationState(const FluidSimulation& simulation) {
 	for (int j = height - 1; j >= 0; j--) {
 		for (int i = 0; i < width; i++) {
 			Vec2f vec = simulation.getVelocity(i, j);
+			float roundedX = static_cast<int>(vec.x * 100) / 100.0f;
+			float roundedY = static_cast<int>(vec.y * 100) / 100.0f;
 			bool isSolid = simulation.getCellData().getValue(i, j).cellType == CellType::Solid;
 			bool isFluid = simulation.getCellData().getValue(i, j).cellType == CellType::Fluid;
-			std::cout << "(" << vec.x << ", " << vec.y << ")";
-			std::cout << (isSolid ? "@" : isFluid ? "O" : "-") << "\t\t";
+			std::cout << "(" << roundedX << ", " << roundedY << ")";
+			std::cout << (isSolid ? "@" : isFluid ? "O" : "-") << "\t";
 		}
 		std::cout << std::endl;
 	}
@@ -72,14 +74,14 @@ static void printSurfaceSDF(FluidSimulation simulation) {
 #include "utils/profiling/ScopeProfiler.h"
 
 int main(int argc, char* argv[]) {
-	int width = 9;
-	int height = 9;
-	float cellWidth = 1.0f / width;
+	int width = 88;
+	int height = 44;
+	float cellWidth = 0.75f; //1.0f / width;
 	float density = 1.0f;
-	float kinematicViscosity = 0.0001f;
+	float kinematicViscosity = 0;
 	float timestep = 1.0f / 30.0f;
 
-	FluidSimulation simulation{ width, height, cellWidth, density, kinematicViscosity, 15 };
+	FluidSimulation simulation{ width, height, cellWidth, density, kinematicViscosity, 30 };
 
 	CellConfig inlet{ {CellType::Fluid}, {BoundaryCondition::Dirichlet, {1.0f, 0.0f}} };
 	CellConfig outflow{ {CellType::Fluid}, {BoundaryCondition::HomogeneousNeumann} };
@@ -87,13 +89,26 @@ int main(int argc, char* argv[]) {
 	CellConfig fluid{ {CellType::Fluid}, {BoundaryCondition::None} };
 
 
-	simulation.setCell(4, 4, fluid);
+	for (int j = 10; j < height - 10; j++) {
+		for (int i = 10; i < width - 10; i++) {
+			simulation.setCell(i, j, fluid);
+		}
+	}
 
+	for (int j = 0; j < height; j++) {
+		simulation.setCell(0, j, staticWall);
+		simulation.setCell(width - 1, j, staticWall);
+	}
+
+	for (int i = 0; i < width; i++) {
+		simulation.setCell(i, 0, staticWall);
+		simulation.setCell(i, height - 1, staticWall);
+	}
 
 	for (int k = 0; k < 1; k++) {
 		simulation.step(timestep);
 	}
-	printSurfaceSDF(simulation);
+	//printSimulationState(simulation);
 
 	Profiler& profiler = Profiler::getInstance();
 

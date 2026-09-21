@@ -60,6 +60,10 @@ namespace DomainUtils {
         // Force that taking the directional derivative of the extrapolated velocity in the direction of
         // the gradient of the SDF returns 0 (all the points between a point and the closest known
         // velocity should contain the same extrapolated velocity)
+        ScopeProfiler p{"Velocity Extrapolation"};
+
+        VectorField2D extrapolatedVelField{velocityField.width(), velocityField.height(), velocityField.cellWidth()};
+        
         int width = surfaceData.width();
         int height = surfaceData.height();
 
@@ -70,7 +74,40 @@ namespace DomainUtils {
                 if (!current.known || cellData.getValue(i, j).cellType == CellType::Fluid) continue;
 
                 Vec2f vel = velocityField.sampleBilinear(current.closestSurfacePointPos);
-                velocityField.setCellValue(i, j, vel);
+                extrapolatedVelField.setValue(i, j, vel);
+            }
+        }
+
+
+        std::array<VectorComponent, 2> components = { VectorComponent::X, VectorComponent::Y };
+        for (VectorComponent C : components) {
+            int width = velocityField.getValuesWidth(C);
+            int height = velocityField.getValuesHeight(C);
+            #pragma omp parallel for
+            for (int j = 0; j < height; j++) {
+                for (int i = 0; i < width; i++) {
+                    SurfaceData cell0 = (C == VectorComponent::X)
+                        ? surfaceData.getValue(i - 1, j)
+                        : surfaceData.getValue(i, j - 1);
+                    SurfaceData cell1 = surfaceData.getValue(i, j);
+
+                    bool isFluid0 = (C == VectorComponent::X)
+                        ? cellData.getValue(i - 1, j).cellType == CellType::Fluid
+                        : cellData.getValue(i, j - 1).cellType == CellType::Fluid;
+                    bool isFluid1 = cellData.getValue(i, j).cellType == CellType::Fluid;
+                    if (!cell0.known || !cell1.known || isFluid0 || isFluid1) continue;
+
+                    float vel0 = (C == VectorComponent::X)
+                        ? extrapolatedVelField.getValue(i - 1, j).x
+                        : extrapolatedVelField.getValue(i, j - 1).y;
+                    float vel1 = (C == VectorComponent::X) 
+                        ? extrapolatedVelField.getValue(i, j).x 
+                        : extrapolatedVelField.getValue(i, j).y;
+
+                    float average = (vel0 + vel1) / 2;
+                    velocityField.setEdgeValue(C, i, j, average);
+                    
+                }
             }
         }
     }
