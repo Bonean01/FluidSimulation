@@ -82,10 +82,10 @@ void FluidSurface::calculateSDF(unsigned int depth) {
     }
 
 
-     //Append neighbouring cells to a priority queue keyed by known distance
-     //Repeat and update distance of neighbouring cells accordingly
-     //Stop at "depth" to allow for narrow band methods
-     //we need a mutex for controlling access to the queue
+    //Append neighbouring cells to a priority queue keyed by known distance
+    //Repeat and update distance of neighbouring cells accordingly
+    //Stop at "depth" to allow for narrow band methods
+    //we need a mutex for controlling access to the queue
     for (int j = 0; j < m_height; j++) {
         for (int i = 0; i < m_width; i++) {
             const SurfaceData& current = this->getValue(i, j);
@@ -153,13 +153,6 @@ void FluidSurface::calculateSDF(unsigned int depth) {
                     m_unknownsQueue.emplace(neighbour);
                 }
             }
-        }
-    }
-
-    #pragma omp parallel for
-    for (int j = 0; j < m_height; j++) {
-        for (int i = 0; i < m_width; i++) {
-            const SurfaceData& current = this->getValue(i, j);
         }
     }
 }
