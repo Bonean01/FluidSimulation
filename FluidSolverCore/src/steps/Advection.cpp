@@ -85,9 +85,27 @@ void Advection::execute(std::vector<MarkerParticle>& markerParticles, const Stag
 			Vec2f averageVel = (currentVel + finalVel) / 2;
 			Vec2f newPos = particle.position + averageVel / dx * timeStep;
 
-			const CellData& finalCell = cellData.getValue(static_cast<int>(std::floor(newPos.x)), static_cast<int>(std::floor(newPos.y)));
-			if (finalCell.cellType != CellType::Solid)
-				particle.position = newPos;
+			Vec2i cellPos = { static_cast<int>(std::floor(newPos.x)), static_cast<int>(std::floor(newPos.y)) };
+			const CellData& finalCell = cellData.getValue(cellPos.x, cellPos.y);
+
+
+			// Collision resolving
+			if (finalCell.cellType == CellType::Solid) {
+				Vec2f& collisionPos = currentPos;
+				Vec2f cellWorldPos = { (static_cast<float>(cellPos.x) + 0.5f) * dx, (static_cast<float>(cellPos.y) + 0.5f) * dx };
+
+				// Detect in which edge the collision occured
+				Vec2f collisionRelativePos = collisionPos - cellWorldPos;
+				if (std::abs(collisionRelativePos.x) < std::abs(collisionRelativePos.y)) {
+					// Vertical collision (top or bottom edges)
+					newPos = { newPos.x, collisionPos.y };
+				}
+				else {
+					// Horizontal or diagonal collision (right or left edges + corners)
+					newPos = { collisionPos.x, newPos.y };
+				}
+			}
+			particle.position = newPos;
 		}
 	}
 }
