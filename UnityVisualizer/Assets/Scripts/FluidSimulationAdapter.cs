@@ -36,7 +36,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
 
 
         for (int j = 1; j < m_height - 10; j++) {
-            for (int i = 1; i < m_width - 1; i++) {
+            for (int i = 10; i < m_width - 10; i++) {
                 if (i < 10 && j < 10) continue;
                 m_simulation.SetCell(i, j, ref fluid);
             }
@@ -53,11 +53,11 @@ public class FluidSimulationAdapter : MonoBehaviour {
         }
 
 
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
-                m_simulation.SetCell(i, j, ref staticWall);
-            }
-        }
+        //for (int i = 0; i < 10; i++) {
+        //    for (int j = 0; j < 10; j++) {
+        //        m_simulation.SetCell(i, j, ref staticWall);
+        //    }
+        //}
 
 
         //Vector2Int origin = new(m_width / 2 + 5, m_height / 2);

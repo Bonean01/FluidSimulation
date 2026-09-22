@@ -2,6 +2,7 @@
 
 #include <omp.h>
 #include <cmath>
+#include <iostream>
 
 #include "utils/profiling/ScopeProfiler.h"
 #include "domain/DomainUtils.h"
@@ -70,7 +71,7 @@ void Advection::execute(std::vector<MarkerParticle>& markerParticles, const Stag
 
 	float dx = velocityField.cellWidth();
 
-	int n = 5;
+	int n = 10;
 	timeStep /= n;
 	for (int k = 0; k < n; k++) {
 		#pragma omp parallel for
@@ -105,7 +106,10 @@ void Advection::execute(std::vector<MarkerParticle>& markerParticles, const Stag
 					newPos = { collisionPos.x, newPos.y };
 				}
 			}
-			particle.position = newPos;
+			cellPos = { static_cast<int>(std::floor(newPos.x)), static_cast<int>(std::floor(newPos.y)) };
+			const CellData& newFinalCell = cellData.getValue(cellPos.x, cellPos.y);
+			if (newFinalCell.cellType != CellType::Solid)
+				particle.position = newPos;
 		}
 	}
 }
