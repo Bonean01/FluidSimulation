@@ -37,7 +37,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
 
         for (int j = 1; j < m_height - 10; j++) {
             for (int i = 10; i < m_width - 10; i++) {
-                if (i < 10 && j < 10) continue;
+                //if (i < 10 && j < 10) continue;
                 m_simulation.SetCell(i, j, ref fluid);
             }
         }

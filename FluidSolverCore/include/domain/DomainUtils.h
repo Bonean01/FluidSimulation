@@ -16,6 +16,7 @@ namespace DomainUtils {
 	void applyVelocityBCsToComponent(const VectorComponent& C, StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData);
 	void applyVelocityBCsToEdge(const VectorComponent& C, int i, int j, StaggeredVectorField2D& velocityField, const BoundaryData& boundaryData);
 	bool hasBoundaryPrescribedVelocity(const BoundaryData& boundaryData);
+	bool isFluidEdge(const VectorComponent& C, int i, int j, const Grid2D<CellData>& cellData);
 	
 	void extrapolateVelocity(StaggeredVectorField2D& velocityField, const FluidSurface& surfaceSDF, const Grid2D<CellData>& cellData);
 	void updateCellData(Grid2D<CellData>& cellData, const std::vector<MarkerParticle>& markerParticles);

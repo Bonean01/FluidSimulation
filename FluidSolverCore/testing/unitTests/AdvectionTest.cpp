@@ -19,6 +19,7 @@ TEST_CASE("Advection - Constant velocity remains constant") {
 
 	StaggeredVectorField2D velocityField{ width, height, cellWidth };
 	StaggeredGrid2D<BoundaryData> boundaryData{ width, height, cellWidth };
+	Grid2D<CellData> cellData{ width, height, cellWidth };
 	const float CONSTANT = 10.0f;
 
 	Advection advection{ width, height, cellWidth };
@@ -26,7 +27,7 @@ TEST_CASE("Advection - Constant velocity remains constant") {
 
 	TestUtils::initializeConstantVelocities(velocityField, CONSTANT);
 
-	advection.execute(velocityField, boundaryData, timeStep);
+	advection.execute(velocityField, boundaryData, cellData, timeStep);
 
 	// Check that all of the values remain the same
 	for (int j = 0; j < height; j++) {

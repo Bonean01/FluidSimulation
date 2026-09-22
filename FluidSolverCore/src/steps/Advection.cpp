@@ -8,7 +8,7 @@
 #include "domain/DomainUtils.h"
 
 
-void Advection::execute(StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData, float timeStep) {
+void Advection::execute(StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData, const Grid2D<CellData>& cellData, float timeStep) {
 	ScopeProfiler p{ "Self Advection" };
 	using enum VectorComponent;
 
@@ -16,14 +16,14 @@ void Advection::execute(StaggeredVectorField2D& velocityField, const StaggeredGr
 	int height = velocityField.height();
 	if (m_auxStaggeredVectorField.width() != width || m_auxStaggeredVectorField.height() != height) return;
 
-	advectComponent(X, velocityField, boundaryData, timeStep);
-	advectComponent(Y, velocityField, boundaryData, timeStep);
+	advectComponent(X, velocityField, boundaryData, cellData, timeStep);
+	advectComponent(Y, velocityField, boundaryData, cellData, timeStep);
 
 	std::swap(velocityField, m_auxStaggeredVectorField);
 }
 
 
-void Advection::advectComponent(const VectorComponent& C, StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData, float timeStep) {
+void Advection::advectComponent(const VectorComponent& C, StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData, const Grid2D<CellData>& cellData, float timeStep) {
 	int width = velocityField.getValuesWidth(C);
 	int height = velocityField.getValuesHeight(C);
 	
@@ -32,6 +32,7 @@ void Advection::advectComponent(const VectorComponent& C, StaggeredVectorField2D
 		for (int i = 0; i < width; i++) {
 			const BoundaryData& currentBoundary = boundaryData.getEdgeValue(C, i, j);
 			if (DomainUtils::hasBoundaryPrescribedVelocity(currentBoundary)) continue;
+			if (not DomainUtils::isFluidEdge(C, i, j, cellData)) continue;
 
 			Vec2f position = velocityField.getEdgePosition(C, i, j);
 			Vec2f currentVel = velocityField.sampleBilinear(position);
@@ -93,7 +94,7 @@ void Advection::execute(std::vector<MarkerParticle>& markerParticles, const Stag
 			// Collision resolving
 			if (finalCell.cellType == CellType::Solid) {
 				Vec2f& collisionPos = currentPos;
-				Vec2f cellWorldPos = { (static_cast<float>(cellPos.x) + 0.5f) * dx, (static_cast<float>(cellPos.y) + 0.5f) * dx };
+				Vec2f cellWorldPos = { (static_cast<float>(cellPos.x) + 0.5f), (static_cast<float>(cellPos.y) + 0.5f) };
 
 				// Detect in which edge the collision occured
 				Vec2f collisionRelativePos = collisionPos - cellWorldPos;

@@ -15,7 +15,7 @@ public:
 		m_auxScalarField(gridWidth, gridHeight, cellWidth) {}
 
 	// self-advection
-	void execute(StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>&, float timeStep);
+	void execute(StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>&, const Grid2D<CellData>& cellData, float timeStep);
 	void execute(ScalarField2D& field, const StaggeredVectorField2D& velocityField, const Grid2D<CellData>&, float timeStep);
 	void execute(std::vector<MarkerParticle>& markerParticles, const StaggeredVectorField2D& velocityField, const Grid2D<CellData>&, float timeStep);
 
@@ -24,5 +24,5 @@ private:
 	StaggeredVectorField2D m_auxStaggeredVectorField;
 	ScalarField2D m_auxScalarField;
 
-	void advectComponent(const VectorComponent& C, StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData, float timeStep);
+	void advectComponent(const VectorComponent& C, StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData, const Grid2D<CellData>& cellData, float timeStep);
 };

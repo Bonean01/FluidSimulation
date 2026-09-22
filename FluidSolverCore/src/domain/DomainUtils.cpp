@@ -55,6 +55,12 @@ namespace DomainUtils {
         return boundaryData.velocityBoundaryCondition == BoundaryCondition::Dirichlet;
     }
 
+    bool isFluidEdge(const VectorComponent& C, int i, int j, const Grid2D<CellData>& cellData) {
+        const CellType& cell0 = cellData.getValue(i, j).cellType;
+        const CellType& cell1 = (C == VectorComponent::X) ? cellData.getValue(i - 1, j).cellType : cellData.getValue(i, j - 1).cellType;
+        return cell0 == CellType::Fluid || cell1 == CellType::Fluid;
+    }
+
 
     void extrapolateVelocity(StaggeredVectorField2D& velocityField, const FluidSurface& surfaceData, const Grid2D<CellData>& cellData) {
         // Force that taking the directional derivative of the extrapolated velocity in the direction of
