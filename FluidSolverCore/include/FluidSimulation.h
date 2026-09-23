@@ -49,7 +49,10 @@ public:
 		m_pressureSolver(m_gridWidth, m_gridHeight, m_cellWidth),
 		m_iterationCount(config.linearSolverConfig.iterationCount),
 	
-		m_useMarkerParticles(config.useMarkerParticles) { if (config.threadCount > 0) omp_set_num_threads(config.threadCount); }
+		m_useMarkerParticles(config.useMarkerParticles) { 
+			if (config.threadCount > 0) omp_set_num_threads(config.threadCount);
+			if (not config.useMarkerParticles) floodDomain(m_cellData);
+		}
 
 	void step(float timeStep);
 
@@ -75,6 +78,8 @@ public:
 
 	void setCell(int i, int j, const CellData&, const BoundaryData&);
 	void setCell(int i, int j, const CellConfig& config) { setCell(i, j, config.cellData, config.boundaryData); }
+
+	void floodDomain(Grid2D<CellData>&);
 
 
 private:

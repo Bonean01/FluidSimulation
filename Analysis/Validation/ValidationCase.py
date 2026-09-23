@@ -30,7 +30,22 @@ class ValidationCase(ABC):
 
     def _initialize(self) -> None:
         cell_width = 1.0 / self._config.grid_width
-        self._simulation = fs.FluidSimulation(self._config.grid_width, self._config.grid_height, cell_width, self._config.density, self._config.kinematic_viscosity, self._config.solver_iteration_count)
+        linear_solver_config = fs.LinearSolverConfig(
+            fs.LinearSolverAlgorithm.JACOBI,
+            self._config.solver_iteration_count
+        )
+        self._simulation = fs.FluidSimulation(
+            fs.FluidSimulationConfig(
+                self._config.grid_width,
+                self._config.grid_height,
+                cell_width,
+                self._config.density,
+                self._config.kinematic_viscosity,
+                linear_solver_config,
+                thread_count=0,
+                use_marker_particles=False
+            )
+        )
 
 
     def _run_simulation(self, progress_callback: Callable[[float], None] = None) -> None:
