@@ -55,10 +55,13 @@ namespace DomainUtils {
         return boundaryData.velocityBoundaryCondition == BoundaryCondition::Dirichlet;
     }
 
+
     bool isFluidEdge(const VectorComponent& C, int i, int j, const Grid2D<CellData>& cellData) {
-        const CellType& cell0 = cellData.getValue(i, j).cellType;
-        const CellType& cell1 = (C == VectorComponent::X) ? cellData.getValue(i - 1, j).cellType : cellData.getValue(i, j - 1).cellType;
-        return cell0 == CellType::Fluid || cell1 == CellType::Fluid;
+        bool isFluid0 = (C == VectorComponent::X)
+            ? cellData.getValue(i - 1, j).cellType == CellType::Fluid
+            : cellData.getValue(i, j - 1).cellType == CellType::Fluid;
+        bool isFluid1 = cellData.getValue(i, j).cellType == CellType::Fluid;
+        return isFluid0 || isFluid1;
     }
 
 
@@ -97,11 +100,7 @@ namespace DomainUtils {
                         : surfaceData.getValue(i, j - 1);
                     SurfaceData cell1 = surfaceData.getValue(i, j);
 
-                    bool isFluid0 = (C == VectorComponent::X)
-                        ? cellData.getValue(i - 1, j).cellType == CellType::Fluid
-                        : cellData.getValue(i, j - 1).cellType == CellType::Fluid;
-                    bool isFluid1 = cellData.getValue(i, j).cellType == CellType::Fluid;
-                    if (!cell0.known || !cell1.known || isFluid0 || isFluid1) continue;
+                    if (!cell0.known || !cell1.known || DomainUtils::isFluidEdge(C, i, j, cellData)) continue;
 
                     float vel0 = (C == VectorComponent::X)
                         ? extrapolatedVelField.getValue(i - 1, j).x

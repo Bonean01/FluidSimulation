@@ -22,7 +22,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
         m_width = width;
         m_height = height;
         m_cellWidth = cellWidth;
-        m_simulation = new(m_width, m_height, m_cellWidth, density, kinematicViscosity, solverIterationCount);
+        m_simulation = new(new(m_width, m_height, m_cellWidth, density, kinematicViscosity, new(iterationCount: solverIterationCount), useMarkerParticles: false));
         SetCells();
     }
 

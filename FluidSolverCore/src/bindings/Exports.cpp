@@ -14,8 +14,8 @@
 #endif
 
 
-extern "C" INTERFACE_EXPORT FluidSimulation* CreateSimulation(int width, int height, float cellWidth, float density, float kinematicViscosity, unsigned int iterationCount) {
-	return new FluidSimulation(width, height, cellWidth, density, kinematicViscosity, iterationCount);
+extern "C" INTERFACE_EXPORT FluidSimulation* CreateSimulation(FluidSimulationConfig simulationConfig) {
+	return new FluidSimulation(FluidSimulationConfig(simulationConfig));
 }
 
 extern "C" INTERFACE_EXPORT void DestroySimulation(FluidSimulation* handle) {

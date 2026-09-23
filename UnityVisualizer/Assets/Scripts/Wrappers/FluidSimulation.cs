@@ -12,7 +12,7 @@ public class FluidSimulation : IDisposable {
     public int GetCellCount() => m_cellCount;
 
 
-    [DllImport("FluidSolver")] private extern static IntPtr CreateSimulation(int width, int height, float cellWidth, float density, float kinematicViscosity, uint iterationCount);
+    [DllImport("FluidSolver")] private extern static IntPtr CreateSimulation(FluidSimulationConfig config);
     [DllImport("FluidSolver")] private extern static void DestroySimulation(IntPtr handle);
 
     [DllImport("FluidSolver")] private extern static void Step(IntPtr handle, float dt);
@@ -32,11 +32,11 @@ public class FluidSimulation : IDisposable {
     [DllImport("FluidSolver")] private extern static void SetCell(IntPtr handle, int i, int j, ref CellConfig cellProperties);
 
 
-    public FluidSimulation(int width, int height, float cellWidth, float density = 1, float kinematicViscosity = 0, uint iterationCount = 60) {
-        m_handle = CreateSimulation(width, height, cellWidth, density, kinematicViscosity, iterationCount);
-        m_width = width;
-        m_height = height;
-        m_cellCount = width * height;
+    public FluidSimulation(FluidSimulationConfig config) {
+        m_handle = CreateSimulation(config);
+        m_width = config.gridWidth;
+        m_height = config.gridHeight;
+        m_cellCount = m_width * m_height;
     }
 
     public void Dispose() {

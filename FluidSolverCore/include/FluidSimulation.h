@@ -25,21 +25,12 @@
 
 class FluidSimulation {
 public:
-	FluidSimulation(const FluidSimulationConfig& config) : FluidSimulation(
-		config.gridWidth,
-		config.gridHeight,
-		config.cellWidth,
-		config.density,
-		config.kinematicViscosity,
-		config.linearSolverConfig.iterationCount
-	) { omp_set_num_threads(config.threadCount); }
-
-	FluidSimulation(int gridWidth, int gridHeight, float cellWidth, float density = 1, float kinematicViscosity = 0, unsigned int iterationCount = 30) :
-		m_gridWidth(gridWidth),
-		m_gridHeight(gridHeight),
-		m_cellWidth(cellWidth),
-		m_density(density),
-		m_kinematicViscosity(kinematicViscosity),
+	FluidSimulation(const FluidSimulationConfig& config) :
+		m_gridWidth(config.gridWidth),
+		m_gridHeight(config.gridHeight),
+		m_cellWidth(config.cellWidth),
+		m_density(config.density),
+		m_kinematicViscosity(config.kinematicViscosity),
 
 		m_velocityField(m_gridWidth, m_gridHeight, m_cellWidth),
 		m_pressureField(m_gridWidth, m_gridHeight, m_cellWidth),
@@ -56,7 +47,9 @@ public:
 		m_projection(),
 
 		m_pressureSolver(m_gridWidth, m_gridHeight, m_cellWidth),
-		m_iterationCount(iterationCount) { }
+		m_iterationCount(config.linearSolverConfig.iterationCount),
+	
+		m_useMarkerParticles(config.useMarkerParticles) { if (config.threadCount > 0) omp_set_num_threads(config.threadCount); }
 
 	void step(float timeStep);
 
@@ -101,4 +94,6 @@ private:
 
 	PressureSolver m_pressureSolver;
 	int m_iterationCount;
+
+	bool m_useMarkerParticles;
 };

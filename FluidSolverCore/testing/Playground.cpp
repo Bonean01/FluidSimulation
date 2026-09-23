@@ -81,7 +81,15 @@ int main(int argc, char* argv[]) {
 	float kinematicViscosity = 0;
 	float timestep = 1.0f / 30.0f;
 
-	FluidSimulation simulation{ width, height, cellWidth, density, kinematicViscosity, 30 };
+	FluidSimulation simulation{ 
+		FluidSimulationConfig{ 
+			width, 
+			height, 
+			cellWidth, 
+			density, 
+			kinematicViscosity
+	}
+};
 
 	CellConfig inlet{ {CellType::Fluid}, {BoundaryCondition::Dirichlet, {1.0f, 0.0f}} };
 	CellConfig outflow{ {CellType::Fluid}, {BoundaryCondition::HomogeneousNeumann} };
