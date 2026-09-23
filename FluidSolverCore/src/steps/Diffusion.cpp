@@ -4,9 +4,10 @@
 
 #include "math/operators/Staggered.h"
 #include "utils/profiling/ScopeProfiler.h"
+#include "domain/DomainUtils.h"
 
 
-void Diffusion::execute(StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData, float kinematicViscosity, float timeStep, unsigned int iterationCount) {
+void Diffusion::execute(StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData, const Grid2D<CellData>& cellData, float kinematicViscosity, float timeStep, unsigned int iterationCount) {
 	ScopeProfiler p{ "Diffusion" };
 	using enum VectorComponent;
 
@@ -19,8 +20,8 @@ void Diffusion::execute(StaggeredVectorField2D& velocityField, const StaggeredGr
 	for (unsigned int k = 0; k < iterationCount; k++) {
 		Staggered::laplacian(m_laplacianField, velocityField);
 		
-		diffuseComponent(X, velocityField, boundaryData, kinematicViscosity, timeStep, iterationCount, alpha, beta);
-		diffuseComponent(Y, velocityField, boundaryData, kinematicViscosity, timeStep, iterationCount, alpha, beta);
+		diffuseComponent(X, velocityField, boundaryData, cellData, kinematicViscosity, timeStep, iterationCount, alpha, beta);
+		diffuseComponent(Y, velocityField, boundaryData, cellData, kinematicViscosity, timeStep, iterationCount, alpha, beta);
 
 		if (k < iterationCount - 1)
 			std::swap(m_auxStaggeredVectorField, velocityField);
@@ -28,7 +29,7 @@ void Diffusion::execute(StaggeredVectorField2D& velocityField, const StaggeredGr
 }
 
 
-void Diffusion::diffuseComponent(const VectorComponent& C, StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData, float kinematicViscosity, float timeStep, unsigned int iterationCount, float alpha, float beta) {
+void Diffusion::diffuseComponent(const VectorComponent& C, StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData, const Grid2D<CellData>& cellData, float kinematicViscosity, float timeStep, unsigned int iterationCount, float alpha, float beta) {
 	int width = velocityField.getValuesWidth(C);
 	int height = velocityField.getValuesHeight(C);
 
@@ -36,7 +37,8 @@ void Diffusion::diffuseComponent(const VectorComponent& C, StaggeredVectorField2
 	for (int j = 0; j < height; j++) {
 		for (int i = 0; i < width; i++) {
 			const BoundaryData& currentBoundary = boundaryData.getEdgeValue(C, i, j);
-			if (BoundaryUtils::hasPrescribedVelocity(currentBoundary)) continue;
+			if (DomainUtils::hasBoundaryPrescribedVelocity(currentBoundary)) continue;
+			if (not DomainUtils::isFluidEdge(C, i, j, cellData)) continue;
 
 			float currentVel = velocityField.getEdgeValue(C, i, j);
 			float laplacian = m_laplacianField.getEdgeValue(C, i, j);

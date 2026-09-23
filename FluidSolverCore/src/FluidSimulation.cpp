@@ -1,24 +1,34 @@
 #include "FluidSimulation.h"
 
 #include "math/operators/Staggered.h"
-#include "domain/BoundaryUtils.h"
+#include "domain/DomainUtils.h"
 
 #include "utils/profiling/ScopeProfiler.h"
+
+#include "steps/ExternalForces.h"
 
 
 void FluidSimulation::step(float timeStep) {
 	ScopeProfiler p{ "============= COMPLETE SIMULATION STEP =============" };
 
-	BoundaryUtils::applyVelocityBoundaryConditions(m_velocityField, m_boundaryData);
-
-	m_advection.execute(m_velocityField, m_boundaryData, timeStep);
-
-	m_diffusion.execute(m_velocityField, m_boundaryData, m_kinematicViscosity, timeStep, m_iterationCount);
-
+	if (m_useMarkerParticles) {
+		m_surfaceSDF.update(m_markerParticles, 3);
+		DomainUtils::extrapolateVelocity(m_velocityField, m_surfaceSDF, m_cellData);
+		m_advection.execute(m_markerParticles, m_velocityField, m_cellData, timeStep);
+		DomainUtils::updateCellData(m_cellData, m_markerParticles);
+	}
+	ExternalForces::applyGravity(m_velocityField, m_boundaryData, m_cellData, timeStep);
+	
+	m_advection.execute(m_smokeField, m_velocityField, m_cellData, timeStep);
+	
+	DomainUtils::applyVelocityBoundaryConditions(m_velocityField, m_boundaryData);
+	
+	m_advection.execute(m_velocityField, m_boundaryData, m_cellData, timeStep);
+	m_diffusion.execute(m_velocityField, m_boundaryData, m_cellData, m_kinematicViscosity, timeStep, m_iterationCount);
 	m_pressureSolver.solveJacobi(m_pressureField, m_velocityField, m_cellData, m_density, timeStep, m_iterationCount);
 	m_projection.execute(m_velocityField, m_pressureField, m_boundaryData, m_density, timeStep);
-
-	m_advection.execute(m_smokeField, m_velocityField, m_cellData, timeStep);
+	
+	Staggered::divergence(m_divergenceField, m_velocityField);
 }
 
 
@@ -29,4 +39,27 @@ void FluidSimulation::setCell(int i, int j, const CellData& cellData, const Boun
 	m_boundaryData.setEdgeValue(X, i + 1, j, boundaryData);
 	m_boundaryData.setEdgeValue(Y, i, j, boundaryData);
 	m_boundaryData.setEdgeValue(Y, i, j + 1, boundaryData);
+
+	if (m_useMarkerParticles && cellData.cellType == CellType::Fluid) {
+		Vec2f cellCenter = Vec2f(i + 0.5f, j + 0.5f);
+		m_markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x + 0.25f, cellCenter.y + 0.25f)));
+		m_markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x - 0.25f, cellCenter.y - 0.25f)));
+		m_markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x + 0.25f, cellCenter.y - 0.25f)));
+		m_markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x - 0.25f, cellCenter.y + 0.25f)));
+	}
+}
+
+
+void FluidSimulation::floodDomain(Grid2D<CellData>& cellData) {
+	int width = cellData.width();
+	int height = cellData.height();
+	CellConfig fluid = {{CellType::Fluid}, {BoundaryCondition::None}};
+
+	#pragma omp parallel for
+	for (int j = 0; j < height; j++) {
+		for (int i = 0; i < width; i++) {
+			CellData& current = cellData.at(i, j);
+			if (current.cellType == CellType::Void) setCell(i, j, fluid);
+		}
+	}
 }

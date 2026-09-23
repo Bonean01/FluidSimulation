@@ -12,7 +12,7 @@ public class FluidSimulation : IDisposable {
     public int GetCellCount() => m_cellCount;
 
 
-    [DllImport("FluidSolver")] private extern static IntPtr CreateSimulation(int width, int height, float cellWidth, float density, float kinematicViscosity, uint iterationCount);
+    [DllImport("FluidSolver")] private extern static IntPtr CreateSimulation(FluidSimulationConfig config);
     [DllImport("FluidSolver")] private extern static void DestroySimulation(IntPtr handle);
 
     [DllImport("FluidSolver")] private extern static void Step(IntPtr handle, float dt);
@@ -21,6 +21,9 @@ public class FluidSimulation : IDisposable {
     [DllImport("FluidSolver")] private extern static IntPtr GetDivergenceFieldPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static IntPtr GetSmokeFieldPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static IntPtr GetCellDataPtr(IntPtr handle);
+    [DllImport("FluidSolver")] private extern static IntPtr GetMarkerParticlesPtr(IntPtr handle);
+    [DllImport("FluidSolver")] private extern static int MarkerParticleCount(IntPtr handle);
+    [DllImport("FluidSolver")] private extern static IntPtr GetSurfaceSDFPtr(IntPtr handle);
 
     [DllImport("FluidSolver")] private extern static void SetVelocity(IntPtr handle, int i, int j, Vec2f velocity);
     [DllImport("FluidSolver")] private extern static Vec2f GetVelocity(IntPtr handle, int i, int j);
@@ -29,11 +32,11 @@ public class FluidSimulation : IDisposable {
     [DllImport("FluidSolver")] private extern static void SetCell(IntPtr handle, int i, int j, ref CellConfig cellProperties);
 
 
-    public FluidSimulation(int width, int height, float cellWidth, float density = 1, float kinematicViscosity = 0, uint iterationCount = 60) {
-        m_handle = CreateSimulation(width, height, cellWidth, density, kinematicViscosity, iterationCount);
-        m_width = width;
-        m_height = height;
-        m_cellCount = width * height;
+    public FluidSimulation(FluidSimulationConfig config) {
+        m_handle = CreateSimulation(config);
+        m_width = config.gridWidth;
+        m_height = config.gridHeight;
+        m_cellCount = m_width * m_height;
     }
 
     public void Dispose() {
@@ -72,6 +75,20 @@ public class FluidSimulation : IDisposable {
         IntPtr ptr = GetCellDataPtr(m_handle);
         for (int i = 0; i < m_cellCount; i++)
             yield return GetElementFromPointer<CellData>(ptr, i);
+    }
+
+    public IEnumerable<MarkerParticle> MarkerParticles() {
+        IntPtr ptr = GetMarkerParticlesPtr(m_handle);
+        int count = MarkerParticleCount(m_handle);
+        for (int i = 0; i < count; i++)
+            yield return GetElementFromPointer<MarkerParticle>(ptr, i);
+    }
+
+    public IEnumerable<float> SurfaceSDFValues() {
+        IntPtr ptr = GetSurfaceSDFPtr(m_handle);
+        for (int i = 0 ; i < m_cellCount; i++) {
+            yield return GetElementFromPointer<SurfaceData>(ptr, i).estimatedSD;
+        }
     }
 
 

@@ -8,4 +8,5 @@ namespace Staggered {
 	void divergence(ScalarField2D& result, const StaggeredVectorField2D& vectorField);
 	void laplacian(StaggeredVectorField2D&result, const StaggeredVectorField2D& vectorField);
 	float gradient(const VectorComponent& C, int i, int j, const ScalarField2D& scalarField);
+	void gradient(StaggeredVectorField2D& result, const ScalarField2D& scalarField);
 }

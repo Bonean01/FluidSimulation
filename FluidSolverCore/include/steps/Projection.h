@@ -4,8 +4,10 @@
 #include "math/dataStructures/ScalarField.h"
 #include "math/dataStructures/Grid.h"
 #include "math/operators/Staggered.h"
+
 #include "domain/CellData.h"
-#include "domain/BoundaryUtils.h"
+#include "domain/BoundaryData.h"
+
 
 class Projection {
 public:

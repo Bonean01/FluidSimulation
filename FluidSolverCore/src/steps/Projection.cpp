@@ -3,6 +3,7 @@
 #include <omp.h>
 
 #include "utils/profiling/ScopeProfiler.h"
+#include "domain/DomainUtils.h"
 
 
 void Projection::execute(StaggeredVectorField2D& velocityField, const ScalarField2D& pressureField, const StaggeredGrid2D<BoundaryData>& boundaryData, float density, float timeStep) {
@@ -22,7 +23,7 @@ void Projection::projectComponent(const VectorComponent& C, StaggeredVectorField
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width; i++) {
 				const BoundaryData& currentBoundary = boundaryData.getEdgeValue(C, i, j);
-				if (BoundaryUtils::hasPrescribedVelocity(currentBoundary)) continue;
+				if (DomainUtils::hasBoundaryPrescribedVelocity(currentBoundary)) continue;
 
 				float gradient = Staggered::gradient(C, i, j, pressureField);
 				float currentVel = velocityField.getEdgeValue(C, i, j);

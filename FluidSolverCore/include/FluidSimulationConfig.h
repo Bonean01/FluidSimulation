@@ -15,11 +15,23 @@ struct FluidSimulationConfig {
 	int gridWidth;
 	int gridHeight;
 	float cellWidth;
-	float density = 1;
-	float kinematicViscosity = 0;
-    unsigned int threadCount = 1;
-    LinearSolverConfig linearSolverConfig{};
+	float density;
+	float kinematicViscosity;
+    LinearSolverConfig linearSolverConfig;
+    unsigned int threadCount;
+    bool useMarkerParticles;
+
+    FluidSimulationConfig(int gridWidth, int gridHeight, float cellWidth, float density = 1, float kinematicViscosity = 0,
+                          LinearSolverConfig linearSolverConfig = {}, unsigned int threadCount = 0, bool useMarkerParticles = false) :
+        gridWidth(gridWidth),
+        gridHeight(gridHeight),
+        cellWidth(cellWidth),
+        density(density),
+        kinematicViscosity(kinematicViscosity),
+        linearSolverConfig(linearSolverConfig),
+        threadCount(threadCount),
+        useMarkerParticles(useMarkerParticles) { }
 };
 
 // For a future GPU implementation we should proabably have a separate FluidSimulationGPU class
-// since settings like LinearSolverAlgorithm::JACOBI or threadCount don't make sense in the GPU
+// since some settings here don't make sense in the GPU

@@ -14,8 +14,8 @@
 #endif
 
 
-extern "C" INTERFACE_EXPORT FluidSimulation* CreateSimulation(int width, int height, float cellWidth, float density, float kinematicViscosity, unsigned int iterationCount) {
-	return new FluidSimulation(width, height, cellWidth, density, kinematicViscosity, iterationCount);
+extern "C" INTERFACE_EXPORT FluidSimulation* CreateSimulation(FluidSimulationConfig simulationConfig) {
+	return new FluidSimulation(FluidSimulationConfig(simulationConfig));
 }
 
 extern "C" INTERFACE_EXPORT void DestroySimulation(FluidSimulation* handle) {
@@ -42,6 +42,18 @@ extern "C" INTERFACE_EXPORT const float* GetSmokeFieldPtr(FluidSimulation* handl
 
 extern "C" INTERFACE_EXPORT const CellData* GetCellDataPtr(FluidSimulation* handle) {
 	return handle->getCellData().getValuesPtr();
+}
+
+extern "C" INTERFACE_EXPORT const MarkerParticle* GetMarkerParticlesPtr(FluidSimulation* handle) {
+	return handle->getMarkerParticles().data();
+}
+
+extern "C" INTERFACE_EXPORT const int MarkerParticleCount(FluidSimulation* handle) {
+	return static_cast<int>(handle->getMarkerParticles().size());
+}
+
+extern "C" INTERFACE_EXPORT const SurfaceData* GetSurfaceSDFPtr(FluidSimulation* handle) {
+	return handle->getSurfaceSDF().getValuesPtr();
 }
 
 

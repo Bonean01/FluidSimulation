@@ -3,8 +3,6 @@
 #include <pybind11/stl.h>
 #include <pybind11/chrono.h>
 
-#include <omp.h>
-
 #include "FluidSimulation.h"
 #include "utils/profiling/Profiler.h"
 
@@ -53,16 +51,32 @@ PYBIND11_MODULE(FluidSolverPython, m) {
 		.def(py::init<CellData, BoundaryData>(),
 			py::arg("cell_data") = CellData{},
 			py::arg("boundary_data") = BoundaryData{});
+	
 
+	py::native_enum<LinearSolverAlgorithm>(m, "LinearSolverAlgorithm", "enum.Enum")
+		.value("JACOBI", LinearSolverAlgorithm::JACOBI)
+		.export_values()
+		.finalize();
 
-	py::class_<FluidSimulation>(m, "FluidSimulation")
-		.def(py::init<int, int, float, float, float, unsigned int>(),
+	py::class_<LinearSolverConfig>(m, "LinearSolverConfig")
+		.def(py::init<LinearSolverAlgorithm, unsigned int>(),
+			py::arg("algorithm"),
+			py::arg("iteration_count"));
+
+	py::class_<FluidSimulationConfig>(m, "FluidSimulationConfig")
+		.def(py::init<int, int, float, float, float, LinearSolverConfig, unsigned int, bool>(),
 			py::arg("width"),
 			py::arg("height"),
 			py::arg("cell_width"),
 			py::arg("density"),
 			py::arg("kinematic_viscosity"),
-			py::arg("iteration_count"))
+			py::arg("linear_solver_config"),
+			py::arg("thread_count"),
+			py::arg("use_marker_particles"));
+
+	py::class_<FluidSimulation>(m, "FluidSimulation")
+		.def(py::init<const FluidSimulationConfig&>(),
+			py::arg("config"))
 		.def("step", &FluidSimulation::step,
 			py::arg("time_step"))
 		.def("get_grid_width", &FluidSimulation::getGridWidth)
