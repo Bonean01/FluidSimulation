@@ -7,6 +7,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
     [SerializeField] private int width, height;
     [SerializeField] private float cellWidth, density, kinematicViscosity;
     [SerializeField] private uint solverIterationCount;
+    [SerializeField] private bool useMarkerParticles;
 
     private int m_width, m_height;
     private float m_cellWidth;
@@ -22,7 +23,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
         m_width = width;
         m_height = height;
         m_cellWidth = cellWidth;
-        m_simulation = new(new(m_width, m_height, m_cellWidth, density, kinematicViscosity, new(iterationCount: solverIterationCount), useMarkerParticles: true));
+        m_simulation = new(new(m_width, m_height, m_cellWidth, density, kinematicViscosity, new(iterationCount: solverIterationCount), useMarkerParticles: useMarkerParticles));
         SetCells();
     }
 
