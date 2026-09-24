@@ -66,6 +66,13 @@ bool Domain::isFluidEdge(const VectorComponent& C, int i, int j) const {
 }
 
 
+bool Domain::isPointInsideSolidCell(const Vec2f& point) const {
+    Vec2i cellPos = Vec2i{ static_cast<int>(std::floor(point.x)), static_cast<int>(std::floor(point.y)) };
+    const CellData& cell = getCell(cellPos.x, cellPos.y);
+    return cell.cellType == CellType::Solid;
+}
+
+
 void Domain::setCell(int i, int j, const CellData& cellData, const BoundaryData& boundaryData) {
     using enum VectorComponent;
 

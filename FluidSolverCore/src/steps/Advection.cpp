@@ -89,30 +89,19 @@ void Advection::execute(Domain& domain, const StaggeredVectorField2D& velocityFi
 			Vec2f averageVel = (currentVel + finalVel) / 2;
 			Vec2f newPos = particle.position + averageVel / dx * timeStep;
 
-			Vec2i cellPos = { static_cast<int>(std::floor(newPos.x)), static_cast<int>(std::floor(newPos.y)) };
-			const CellData& finalCell = domain.getCell(cellPos.x, cellPos.y);
-
 
 			// Collision resolving
-			if (finalCell.cellType == CellType::Solid) {
-				Vec2f& collisionPos = currentPos;
-				Vec2f cellWorldPos = { (static_cast<float>(cellPos.x) + 0.5f), (static_cast<float>(cellPos.y) + 0.5f) };
+			Vec2f& collisionPos = currentPos;
+			Vec2f correctedPos = newPos;
 
-				// Detect in which edge the collision occured
-				Vec2f collisionRelativePos = collisionPos - cellWorldPos;
-				if (std::abs(collisionRelativePos.x) < std::abs(collisionRelativePos.y)) {
-					// Vertical collision (top or bottom edges)
-					newPos = { newPos.x, collisionPos.y };
-				}
-				else {
-					// Horizontal or diagonal collision (right or left edges + corners)
-					newPos = { collisionPos.x, newPos.y };
-				}
-			}
-			cellPos = { static_cast<int>(std::floor(newPos.x)), static_cast<int>(std::floor(newPos.y)) };
-			const CellData& newFinalCell = domain.getCell(cellPos.x, cellPos.y);
-			if (newFinalCell.cellType != CellType::Solid)
-				particle.position = newPos;
+			if (domain.isPointInsideSolidCell(newPos))
+				correctedPos = { newPos.x, collisionPos.y };
+			
+			if (domain.isPointInsideSolidCell(correctedPos))
+				correctedPos = { collisionPos.x, newPos.y };
+
+			if (not domain.isPointInsideSolidCell(correctedPos))
+				particle.position = correctedPos;
 		}
 	}
 }
