@@ -3,27 +3,25 @@
 #include <omp.h>
 
 #include "utils/profiling/ScopeProfiler.h"
-#include "domain/DomainUtils.h"
 
 
-void Projection::execute(StaggeredVectorField2D& velocityField, const ScalarField2D& pressureField, const StaggeredGrid2D<BoundaryData>& boundaryData, float density, float timeStep) {
+void Projection::execute(StaggeredVectorField2D& velocityField, const ScalarField2D& pressureField, const Domain& domain, float density, float timeStep) {
 	ScopeProfiler p{ "Projection" };
 	using enum VectorComponent;
 
-	projectComponent(X, velocityField, pressureField, boundaryData, density, timeStep);
-	projectComponent(Y, velocityField, pressureField, boundaryData, density, timeStep);	
+	projectComponent(X, velocityField, pressureField, domain, density, timeStep);
+	projectComponent(Y, velocityField, pressureField, domain, density, timeStep);	
 }
 
 
-void Projection::projectComponent(const VectorComponent& C, StaggeredVectorField2D& velocityField, const ScalarField2D& pressureField, const StaggeredGrid2D<BoundaryData>& boundaryData, float density, float timeStep) {
+void Projection::projectComponent(const VectorComponent& C, StaggeredVectorField2D& velocityField, const ScalarField2D& pressureField, const Domain& domain, float density, float timeStep) {
 		int width = velocityField.getValuesWidth(C);
 		int height = velocityField.getValuesHeight(C);
 		
 		#pragma omp parallel for
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width; i++) {
-				const BoundaryData& currentBoundary = boundaryData.getEdgeValue(C, i, j);
-				if (DomainUtils::hasBoundaryPrescribedVelocity(currentBoundary)) continue;
+				if (domain.hasEdgePrescribedVelocity(C, i, j)) continue;
 
 				float gradient = Staggered::gradient(C, i, j, pressureField);
 				float currentVel = velocityField.getEdgeValue(C, i, j);

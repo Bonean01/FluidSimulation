@@ -18,8 +18,7 @@ TEST_CASE("Advection - Constant velocity remains constant") {
 	float timeStep = 1.0f / 60.0f;
 
 	StaggeredVectorField2D velocityField{ width, height, cellWidth };
-	StaggeredGrid2D<BoundaryData> boundaryData{ width, height, cellWidth };
-	Grid2D<CellData> cellData{ width, height, cellWidth };
+	Domain domain{ width, height };
 	const float CONSTANT = 10.0f;
 
 	Advection advection{ width, height, cellWidth };
@@ -27,23 +26,17 @@ TEST_CASE("Advection - Constant velocity remains constant") {
 
 	TestUtils::initializeConstantVelocities(velocityField, CONSTANT);
 
-	advection.execute(velocityField, boundaryData, cellData, timeStep);
+	advection.execute(velocityField, domain, timeStep);
 
 	// Check that all of the values remain the same
-	for (int j = 0; j < height; j++) {
-		for (int i = 0; i < width + 1; i++) {
-			const BoundaryData& currentBoundary = boundaryData.getEdgeValue(VectorComponent::X, i, j);
-			if (DomainUtils::hasBoundaryPrescribedVelocity(currentBoundary)) continue;
-			float edgeX = velocityField.getEdgeValue(VectorComponent::X, i, j);
-			CHECK_THAT(edgeX, Matchers::WithinRel(CONSTANT));
-		}
-	}
-	for (int j = 0; j < height + 1; j++) {
-		for (int i = 0; i < width; i++) {
-			const BoundaryData& currentBoundary = boundaryData.getEdgeValue(VectorComponent::Y, i, j);
-			if (DomainUtils::hasBoundaryPrescribedVelocity(currentBoundary)) continue;
-			float edgeY = velocityField.getEdgeValue(VectorComponent::Y, i, j);
-			CHECK_THAT(edgeY, Matchers::WithinRel(CONSTANT));
+	std::array<VectorComponent, 2> components = { VectorComponent::X, VectorComponent::Y };
+	for (VectorComponent C : components) {
+		for (int j = 0; j < height; j++) {
+			for (int i = 0; i < width + 1; i++) {
+				if (domain.hasEdgePrescribedVelocity(C, i, j)) continue;
+				float edge = velocityField.getEdgeValue(C, i, j);
+				CHECK_THAT(edge, Matchers::WithinRel(CONSTANT));
+			}
 		}
 	}
 }

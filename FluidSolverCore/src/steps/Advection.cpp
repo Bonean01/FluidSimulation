@@ -8,7 +8,7 @@
 #include "domain/DomainUtils.h"
 
 
-void Advection::execute(StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData, const Grid2D<CellData>& cellData, float timeStep) {
+void Advection::execute(StaggeredVectorField2D& velocityField, const Domain& domain, float timeStep) {
 	ScopeProfiler p{ "Self Advection" };
 	using enum VectorComponent;
 
@@ -16,23 +16,23 @@ void Advection::execute(StaggeredVectorField2D& velocityField, const StaggeredGr
 	int height = velocityField.height();
 	if (m_auxStaggeredVectorField.width() != width || m_auxStaggeredVectorField.height() != height) return;
 
-	advectComponent(X, velocityField, boundaryData, cellData, timeStep);
-	advectComponent(Y, velocityField, boundaryData, cellData, timeStep);
+	advectComponent(X, velocityField, domain, timeStep);
+	advectComponent(Y, velocityField, domain, timeStep);
 
 	std::swap(velocityField, m_auxStaggeredVectorField);
 }
 
 
-void Advection::advectComponent(const VectorComponent& C, StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData, const Grid2D<CellData>& cellData, float timeStep) {
+void Advection::advectComponent(const VectorComponent& C, StaggeredVectorField2D& velocityField, const Domain& domain, float timeStep) {
 	int width = velocityField.getValuesWidth(C);
 	int height = velocityField.getValuesHeight(C);
 	
 	#pragma omp parallel for
 	for (int j = 0; j < height; j++) {
 		for (int i = 0; i < width; i++) {
-			const BoundaryData& currentBoundary = boundaryData.getEdgeValue(C, i, j);
-			if (DomainUtils::hasBoundaryPrescribedVelocity(currentBoundary)) continue;
-			if (not DomainUtils::isFluidEdge(C, i, j, cellData)) continue;
+			const BoundaryData& currentBoundary = domain.getBoundary(C, i, j);
+			if (domain.hasEdgePrescribedVelocity(C, i, j)) continue;
+			if (not domain.isFluidEdge(C, i, j)) continue;
 
 			Vec2f position = velocityField.getEdgePosition(C, i, j);
 			Vec2f currentVel = velocityField.sampleBilinear(position);
@@ -43,7 +43,7 @@ void Advection::advectComponent(const VectorComponent& C, StaggeredVectorField2D
 }
 
 
-void Advection::execute(ScalarField2D& field, const StaggeredVectorField2D& velocityField, const Grid2D<CellData>& cellData, float timeStep) {
+void Advection::execute(ScalarField2D& field, const StaggeredVectorField2D& velocityField, const Domain& domain, float timeStep) {
 	ScopeProfiler p{ "Scalar Field Advection" };
 
 	int width = field.width();
@@ -54,7 +54,7 @@ void Advection::execute(ScalarField2D& field, const StaggeredVectorField2D& velo
 	#pragma omp parallel for
 	for (int j = 0; j < height; j++) {
 		for (int i = 0; i < width; i++) {
-			if (cellData.getValue(i, j).cellType == CellType::Solid) { m_auxScalarField.setValue(i, j, 0.0f); continue; }
+			if (domain.getCell(i, j).cellType == CellType::Solid) { m_auxScalarField.setValue(i, j, 0.0f); continue; }
 			Vec2f position = { (float)i, (float)j };
 			Vec2f currentVel = velocityField.sampleBilinear(position);
 			float newValue = field.sampleBilinear(position - currentVel / dx * timeStep);
@@ -67,10 +67,12 @@ void Advection::execute(ScalarField2D& field, const StaggeredVectorField2D& velo
 
 // Uses second order Runge-Kutta advection to advect marker particles based 
 // on the extrapolated velocity field, takes care of collisions with solids
-void Advection::execute(std::vector<MarkerParticle>& markerParticles, const StaggeredVectorField2D& velocityField, const Grid2D<CellData>& cellData, float timeStep) {
+void Advection::execute(Domain& domain, const StaggeredVectorField2D& velocityField, float timeStep) {
 	ScopeProfiler p{ "Marker Particles Advection" };
 
 	float dx = velocityField.cellWidth();
+
+	std::vector<MarkerParticle>& markerParticles = domain.getMarkerParticles();
 
 	int n = 10;
 	timeStep /= n;
@@ -88,7 +90,7 @@ void Advection::execute(std::vector<MarkerParticle>& markerParticles, const Stag
 			Vec2f newPos = particle.position + averageVel / dx * timeStep;
 
 			Vec2i cellPos = { static_cast<int>(std::floor(newPos.x)), static_cast<int>(std::floor(newPos.y)) };
-			const CellData& finalCell = cellData.getValue(cellPos.x, cellPos.y);
+			const CellData& finalCell = domain.getCell(cellPos.x, cellPos.y);
 
 
 			// Collision resolving
@@ -108,7 +110,7 @@ void Advection::execute(std::vector<MarkerParticle>& markerParticles, const Stag
 				}
 			}
 			cellPos = { static_cast<int>(std::floor(newPos.x)), static_cast<int>(std::floor(newPos.y)) };
-			const CellData& newFinalCell = cellData.getValue(cellPos.x, cellPos.y);
+			const CellData& newFinalCell = domain.getCell(cellPos.x, cellPos.y);
 			if (newFinalCell.cellType != CellType::Solid)
 				particle.position = newPos;
 		}

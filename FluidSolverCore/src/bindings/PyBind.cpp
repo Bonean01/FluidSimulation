@@ -5,6 +5,7 @@
 
 #include "FluidSimulation.h"
 #include "utils/profiling/Profiler.h"
+#include "domain/DomainUtils.h"
 
 
 namespace py = pybind11;
@@ -112,7 +113,8 @@ PYBIND11_MODULE(FluidSolverPython, m) {
 		.def("get_results", &Profiler::getResults)
 		.def("clear_data", &Profiler::clearData)
 		.def_static("get_instance", &Profiler::getInstance, py::return_value_policy::reference);
-
+	
+		
 	m.def("set_num_threads", &omp_set_num_threads,
 		py::arg("n"));
 }

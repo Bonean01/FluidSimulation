@@ -19,7 +19,6 @@ struct FluidSimulationConfig {
 	float kinematicViscosity;
     LinearSolverConfig linearSolverConfig;
     unsigned int threadCount;
-    bool useMarkerParticles;
 
     FluidSimulationConfig(int gridWidth, int gridHeight, float cellWidth, float density = 1, float kinematicViscosity = 0,
                           LinearSolverConfig linearSolverConfig = {}, unsigned int threadCount = 0, bool useMarkerParticles = false) :
@@ -29,8 +28,7 @@ struct FluidSimulationConfig {
         density(density),
         kinematicViscosity(kinematicViscosity),
         linearSolverConfig(linearSolverConfig),
-        threadCount(threadCount),
-        useMarkerParticles(useMarkerParticles) { }
+        threadCount(threadCount) { }
 };
 
 // For a future GPU implementation we should proabably have a separate FluidSimulationGPU class

@@ -5,7 +5,7 @@
 #include "utils/profiling/ScopeProfiler.h"
 
 
-void PressureSolver::solveJacobi(ScalarField2D& result, StaggeredVectorField2D& velocityField, const Grid2D<CellData>& cellData, float density, float timeStep, unsigned int iterationCount) {
+void PressureSolver::solveJacobi(ScalarField2D& result, StaggeredVectorField2D& velocityField, const Domain& domain, float density, float timeStep, unsigned int iterationCount) {
 	ScopeProfiler p{ "Pressure Solve" };
 
 	int width = result.width();
@@ -14,7 +14,7 @@ void PressureSolver::solveJacobi(ScalarField2D& result, StaggeredVectorField2D& 
 		#pragma omp parallel for
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width; i++) {
-				float newCellValue = solveCell(i, j, m_auxScalarField, velocityField, cellData, density, timeStep);
+				float newCellValue = solveCell(i, j, m_auxScalarField, velocityField, domain, density, timeStep);
 				result.setValue(i, j, newCellValue);
 			}
 		}
@@ -24,21 +24,21 @@ void PressureSolver::solveJacobi(ScalarField2D& result, StaggeredVectorField2D& 
 }
 
 
-float PressureSolver::solveCell(int i, int j, ScalarField2D& pressureField, StaggeredVectorField2D& velocityField, const Grid2D<CellData>& cellData, float density, float timeStep) {
+float PressureSolver::solveCell(int i, int j, ScalarField2D& pressureField, StaggeredVectorField2D& velocityField, const Domain& domain, float density, float timeStep) {
 	using enum VectorComponent;
 	
-	bool isSolid = cellData.getValue(i, j).cellType == CellType::Solid;
-	bool isVoid = cellData.getValue(i, j).cellType == CellType::Void;
+	bool isSolid = domain.getCell(i, j).cellType == CellType::Solid;
+	bool isVoid = domain.getCell(i, j).cellType == CellType::Void;
 
-	bool rightFluid = cellData.getValue(i + 1, j).cellType == CellType::Fluid;
-	bool leftFluid = cellData.getValue(i - 1, j).cellType == CellType::Fluid;
-	bool topFluid = cellData.getValue(i, j + 1).cellType == CellType::Fluid;
-	bool bottomFluid = cellData.getValue(i, j - 1).cellType == CellType::Fluid;
+	bool rightFluid = domain.getCell(i + 1, j).cellType == CellType::Fluid;
+	bool leftFluid = domain.getCell(i - 1, j).cellType == CellType::Fluid;
+	bool topFluid = domain.getCell(i, j + 1).cellType == CellType::Fluid;
+	bool bottomFluid = domain.getCell(i, j - 1).cellType == CellType::Fluid;
 
-	bool rightSolid = cellData.getValue(i + 1, j).cellType == CellType::Solid;
-	bool leftSolid = cellData.getValue(i - 1, j).cellType == CellType::Solid;
-	bool topSolid = cellData.getValue(i, j + 1).cellType == CellType::Solid;
-	bool bottomSolid = cellData.getValue(i, j - 1).cellType == CellType::Solid;
+	bool rightSolid = domain.getCell(i + 1, j).cellType == CellType::Solid;
+	bool leftSolid = domain.getCell(i - 1, j).cellType == CellType::Solid;
+	bool topSolid = domain.getCell(i, j + 1).cellType == CellType::Solid;
+	bool bottomSolid = domain.getCell(i, j - 1).cellType == CellType::Solid;
 
 	int totalSolidCells = rightSolid + leftSolid + topSolid + bottomSolid;
 	if (isSolid || isVoid || totalSolidCells == 4) return 0.0f;

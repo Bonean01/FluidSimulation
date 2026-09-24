@@ -5,7 +5,8 @@
 
 #include "domain/BoundaryData.h"
 #include "domain/CellData.h"
+#include "domain/DomainUtils.h"
 
 namespace ExternalForces {
-	void applyGravity(StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData, const Grid2D<CellData>& cellData, float timeStep, float gravity = -9.8f);
+	void applyGravity(StaggeredVectorField2D& velocityField, const Domain& domain, float timeStep, float gravity = -9.8f);
 }

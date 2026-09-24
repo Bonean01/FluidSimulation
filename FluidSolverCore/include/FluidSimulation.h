@@ -36,22 +36,16 @@ public:
 		m_pressureField(m_gridWidth, m_gridHeight, m_cellWidth),
 		m_divergenceField(m_gridWidth, m_gridHeight, m_cellWidth),
 		m_smokeField(m_gridWidth, m_gridHeight, m_cellWidth),
-		m_surfaceSDF(m_gridWidth, m_gridHeight),
-
-		m_cellData(m_gridWidth, m_gridHeight),
-		m_boundaryData(m_gridWidth, m_gridHeight),
-		m_markerParticles(),
+		
+		m_domain(m_gridWidth, m_gridHeight),
 
 		m_advection(m_gridWidth, m_gridHeight, m_cellWidth),
 		m_diffusion(m_gridWidth, m_gridHeight, m_cellWidth),
 		m_projection(),
 
 		m_pressureSolver(m_gridWidth, m_gridHeight, m_cellWidth),
-		m_iterationCount(config.linearSolverConfig.iterationCount),
-	
-		m_useMarkerParticles(config.useMarkerParticles) { 
+		m_iterationCount(config.linearSolverConfig.iterationCount) { 
 			if (config.threadCount > 0) omp_set_num_threads(config.threadCount);
-			if (not config.useMarkerParticles) floodDomain(m_cellData);
 		}
 
 	void step(float timeStep);
@@ -60,9 +54,9 @@ public:
 	const ScalarField2D& getPressureField() const { return m_pressureField; }
 	const ScalarField2D& getDivergenceField() const { return m_divergenceField; }
 	const ScalarField2D& getSmokeField() const { return m_smokeField; }
-	const Grid2D<CellData>& getCellData() const { return m_cellData; }
-	const std::vector<MarkerParticle>& getMarkerParticles() const { return m_markerParticles; }
-	const FluidSurface& getSurfaceSDF() const { return m_surfaceSDF; }
+	const Grid2D<CellData>& getCellData() const { return m_domain.getCellData(); }
+	std::vector<MarkerParticle>& getMarkerParticles() { return m_domain.getMarkerParticles(); }
+	const FluidSurface& getSurfaceSDF() const { return m_domain.getFluidSurfaceData(); }
 
 	const int getGridWidth() const { return m_gridWidth; }
 	const int getGridHeight() const { return m_gridHeight; }
@@ -76,10 +70,9 @@ public:
 
 	void addSmoke(int i, int j, float deltaSmoke) { m_smokeField.setValue(i, j, m_smokeField.getValue(i, j) + deltaSmoke); }
 
-	void setCell(int i, int j, const CellData&, const BoundaryData&);
-	void setCell(int i, int j, const CellConfig& config) { setCell(i, j, config.cellData, config.boundaryData); }
-
-	void floodDomain(Grid2D<CellData>&);
+	void setCell(int i, int j, const CellConfig& config) { m_domain.setCell(i, j, config); }
+	void floodDomain() { m_domain.flood(); }
+	void drainDomain() { m_domain.drain(); }
 
 
 private:
@@ -88,10 +81,8 @@ private:
 
 	StaggeredVectorField2D m_velocityField;
 	ScalarField2D m_pressureField, m_divergenceField, m_smokeField;
-	FluidSurface m_surfaceSDF;
-	Grid2D<CellData> m_cellData;
-	StaggeredGrid2D<BoundaryData> m_boundaryData;
-	std::vector<MarkerParticle> m_markerParticles;
+
+	Domain m_domain;
 
 	Advection m_advection;
 	Projection m_projection;

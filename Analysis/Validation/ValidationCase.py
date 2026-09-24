@@ -42,8 +42,7 @@ class ValidationCase(ABC):
                 self._config.density,
                 self._config.kinematic_viscosity,
                 linear_solver_config,
-                thread_count=0,
-                use_marker_particles=False
+                thread_count=0
             )
         )
 
