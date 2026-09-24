@@ -78,7 +78,7 @@ int main(int argc, char* argv[]) {
 	int height = 44;
 	float cellWidth = 0.75f; //1.0f / width;
 	float density = 1.0f;
-	float kinematicViscosity = 0.0001;
+	float kinematicViscosity = 0.0001f;
 	float timestep = 1.0f / 30.0f;
 
 	FluidSimulation simulation{ 

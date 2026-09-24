@@ -29,7 +29,11 @@ public class FluidSimulation : IDisposable {
     [DllImport("FluidSolver")] private extern static Vec2f GetVelocity(IntPtr handle, int i, int j);
     [DllImport("FluidSolver")] private extern static void AddVelocity(IntPtr handle, int i, int j, Vec2f deltaVel);
     [DllImport("FluidSolver")] private extern static void AddSmoke(IntPtr handle, int i, int j, float deltaSmoke);
+
     [DllImport("FluidSolver")] private extern static void SetCell(IntPtr handle, int i, int j, ref CellConfig cellProperties);
+    [DllImport("FluidSolver")] private extern static void FloodDomain(IntPtr handle);
+    [DllImport("FluidSolver")] private extern static void DrainDomain(IntPtr handle);
+    [DllImport("FluidSolver")] private extern static void CreateMarkerParticles(IntPtr handle);
 
 
     public FluidSimulation(FluidSimulationConfig config) {
@@ -98,4 +102,7 @@ public class FluidSimulation : IDisposable {
     public void AddSmoke(int i, int j, float deltaSmoke) => AddSmoke(m_handle, i, j, deltaSmoke);
 
     public void SetCell(int i, int j, ref CellConfig cellProperties) => SetCell(m_handle, i, j, ref cellProperties);
+    public void FloodDomain() => FloodDomain(m_handle);
+    public void DrainDomain() => DrainDomain(m_handle);
+    public void CreateMarkerParticles() => CreateMarkerParticles(m_handle);
 }

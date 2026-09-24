@@ -81,6 +81,18 @@ extern "C" INTERFACE_EXPORT void SetCell(FluidSimulation* handle, int i, int j, 
 	handle->setCell(i, j, config);
 }
 
+extern "C" INTERFACE_EXPORT void FloodDomain(FluidSimulation* handle) {
+	handle->floodDomain();
+}
+
+extern "C" INTERFACE_EXPORT void DrainDomain(FluidSimulation* handle) {
+	handle->drainDomain();
+}
+
+extern "C" INTERFACE_EXPORT void CreateMarkerParticles(FluidSimulation* handle) {
+	handle->createMarkerParticles();
+}
+
 
 extern "C" INTERFACE_EXPORT void SetNumThreads(int n) {
 	omp_set_num_threads(n);

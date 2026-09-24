@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include "utils/profiling/ScopeProfiler.h"
-#include "domain/DomainUtils.h"
+#include "domain/Domain.h"
 
 
 void Advection::execute(StaggeredVectorField2D& velocityField, const Domain& domain, float timeStep) {

@@ -7,7 +7,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
     [SerializeField] private int width, height;
     [SerializeField] private float cellWidth, density, kinematicViscosity;
     [SerializeField] private uint solverIterationCount;
-    [SerializeField] private bool useMarkerParticles;
+    [SerializeField] private bool applyGravity;
 
     private int m_width, m_height;
     private float m_cellWidth;
@@ -23,12 +23,12 @@ public class FluidSimulationAdapter : MonoBehaviour {
         m_width = width;
         m_height = height;
         m_cellWidth = cellWidth;
-        m_simulation = new(new(m_width, m_height, m_cellWidth, density, kinematicViscosity, new(iterationCount: solverIterationCount)));
-        SetCells();
+        m_simulation = new(new(m_width, m_height, m_cellWidth, density, kinematicViscosity, new(iterationCount: solverIterationCount), applyGravity: applyGravity));
+        SetUpDomain();
     }
 
 
-    private void SetCells() {
+    private void SetUpDomain() {
         CellConfig movingWall = new(new(CellType.Solid), new(BoundaryCondition.Dirichlet, new(50.0f, 0.0f)));
         CellConfig staticWall = new(new(CellType.Solid), new(BoundaryCondition.Dirichlet, new(0.0f, 0.0f)));
         CellConfig inlet = new(new(CellType.Fluid), new(BoundaryCondition.Dirichlet, new(12.5f, 0.0f)));
@@ -70,6 +70,8 @@ public class FluidSimulationAdapter : MonoBehaviour {
         //        }
         //    }
         //}
+        //m_simulation.FloodDomain();
+        m_simulation.CreateMarkerParticles();
     }
 
 

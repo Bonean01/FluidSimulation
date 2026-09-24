@@ -1,7 +1,7 @@
 #include "FluidSimulation.h"
 
 #include "math/operators/Staggered.h"
-#include "domain/DomainUtils.h"
+#include "domain/Domain.h"
 
 #include "utils/profiling/ScopeProfiler.h"
 
@@ -10,10 +10,12 @@
 
 void FluidSimulation::step(float timeStep) {
 	ScopeProfiler p{ "============= COMPLETE SIMULATION STEP =============" };
+
 	m_domain.extrapolateVelocity(m_velocityField, 3);
 	m_advection.execute(m_domain, m_velocityField, timeStep);
 	m_domain.updateCellData();
-	ExternalForces::applyGravity(m_velocityField, m_domain, timeStep);
+
+	if (m_applyGravity) ExternalForces::applyGravity(m_velocityField, m_domain, timeStep);
 	
 	m_advection.execute(m_smokeField, m_velocityField, m_domain, timeStep);
 	

@@ -5,7 +5,7 @@
 #include <cstdint>
 
 #include "math/dataStructures/Grid.h"
-#include "math/dataStructures/VectorField.h"
+#include "math/dataStructures/ScalarField.h"
 #include "domain/MarkerParticle.h"
 
 

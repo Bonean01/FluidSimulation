@@ -3,7 +3,7 @@
 #include "math/dataStructures/StaggeredVectorField.h"
 #include "math/dataStructures/Grid.h"
 
-#include "domain/DomainUtils.h"
+#include "domain/Domain.h"
 
 
 class Diffusion {

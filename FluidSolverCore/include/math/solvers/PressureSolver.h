@@ -3,7 +3,7 @@
 #include "math/dataStructures/ScalarField.h"
 #include "math/dataStructures/StaggeredVectorField.h"
 
-#include "domain/DomainUtils.h"
+#include "domain/Domain.h"
 
 class PressureSolver {
 public:

@@ -5,7 +5,7 @@
 #include "math/dataStructures/Grid.h"
 #include "math/operators/Staggered.h"
 
-#include "domain/DomainUtils.h"
+#include "domain/Domain.h"
 
 
 class Projection {

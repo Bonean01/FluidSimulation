@@ -1,8 +1,12 @@
 #pragma once
 
-#include "math/dataStructures/StaggeredVectorField.h"
+#include <vector>
+
 #include "math/dataStructures/ScalarField.h"
+#include "math/dataStructures/VectorField.h"
+#include "math/dataStructures/StaggeredVectorField.h"
 #include "math/dataStructures/Grid.h"
+#include "math/dataStructures/StaggeredGrid.h"
 
 #include "BoundaryData.h"
 #include "BoundaryCondition.h"
@@ -49,7 +53,7 @@ public:
 	void setCell(int i, int j, const CellConfig& config) { setCell(i, j, config.cellData, config.boundaryData); }
 	void setCell(int i, int j, const CellData&, const BoundaryData&);
 
-	void populateMarkerParticles();
+	void createMarkerParticles();
 	void updateCellData();
 	void flood();
 	void drain();

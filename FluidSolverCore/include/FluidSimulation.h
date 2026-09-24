@@ -14,11 +14,8 @@
 #include "steps/Projection.h"
 #include "steps/Diffusion.h"
 
-#include "domain/CellData.h"
-#include "domain/BoundaryData.h"
 #include "domain/CellConfig.h"
-#include "domain/MarkerParticle.h"
-#include "domain/FluidSurface.h"
+#include "domain/Domain.h"
 
 #include "FluidSimulationConfig.h"
 
@@ -44,7 +41,9 @@ public:
 		m_projection(),
 
 		m_pressureSolver(m_gridWidth, m_gridHeight, m_cellWidth),
-		m_iterationCount(config.linearSolverConfig.iterationCount) { 
+		m_iterationCount(config.linearSolverConfig.iterationCount),
+
+		m_applyGravity(config.applyGravity) { 
 			if (config.threadCount > 0) omp_set_num_threads(config.threadCount);
 		}
 
@@ -73,6 +72,7 @@ public:
 	void setCell(int i, int j, const CellConfig& config) { m_domain.setCell(i, j, config); }
 	void floodDomain() { m_domain.flood(); }
 	void drainDomain() { m_domain.drain(); }
+	void createMarkerParticles() { m_domain.createMarkerParticles(); }
 
 
 private:
@@ -91,5 +91,5 @@ private:
 	PressureSolver m_pressureSolver;
 	int m_iterationCount;
 
-	bool m_useMarkerParticles;
+	bool m_applyGravity;
 };

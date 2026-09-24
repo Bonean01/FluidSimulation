@@ -27,9 +27,9 @@ public struct FluidSimulationConfig {
     public float kinematicViscosity;
     public LinearSolverConfig linearSolverConfig;
     public uint threadCount;
-    public bool useMarkerParticles;
+    public bool applyGravity;
 
-    public FluidSimulationConfig(int gridWidth, int gridHeight, float cellWidth, float density, float kinematicViscosity, LinearSolverConfig linearSolverConfig = new(), uint threadCount = 0, bool useMarkerParticles = false) {
+    public FluidSimulationConfig(int gridWidth, int gridHeight, float cellWidth, float density, float kinematicViscosity, LinearSolverConfig linearSolverConfig = new(), uint threadCount = 0, bool applyGravity = false) {
         this.gridWidth = gridWidth;
         this.gridHeight = gridHeight;
         this.cellWidth = cellWidth;
@@ -37,6 +37,6 @@ public struct FluidSimulationConfig {
         this.kinematicViscosity = kinematicViscosity;
         this.linearSolverConfig = linearSolverConfig;
         this.threadCount = threadCount;
-        this.useMarkerParticles = useMarkerParticles;
+        this.applyGravity = applyGravity;
     }
 }

@@ -44,7 +44,8 @@ class PoiseuilleFlow(ValidationCase):
 
         width = self._simulation.get_grid_width()
         height = self._simulation.get_grid_height()
-
+        
+        self._simulation.flood_domain()
         for i in range(width):
             self._simulation.set_cell(i, height - 1, static_wall)
             self._simulation.set_cell(i, 0, static_wall)

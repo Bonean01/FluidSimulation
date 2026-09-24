@@ -4,10 +4,9 @@
 #include "math/dataStructures/Grid.h"
 #include "math/dataStructures/ScalarField.h"
 
-#include "domain/CellData.h"
 #include "domain/BoundaryData.h"
 #include "domain/MarkerParticle.h"
-#include "domain/DomainUtils.h"
+#include "domain/Domain.h"
 
 class Advection {
 public:

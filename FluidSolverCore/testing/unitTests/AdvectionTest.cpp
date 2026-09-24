@@ -5,7 +5,7 @@
 
 #include "TestUtils.h"
 #include "steps/Advection.h"
-#include "domain/DomainUtils.h"
+#include "domain/Domain.h"
 
 
 using namespace Catch;

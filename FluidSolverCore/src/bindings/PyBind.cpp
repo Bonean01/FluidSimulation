@@ -5,7 +5,7 @@
 
 #include "FluidSimulation.h"
 #include "utils/profiling/Profiler.h"
-#include "domain/DomainUtils.h"
+#include "domain/Domain.h"
 
 
 namespace py = pybind11;
@@ -73,7 +73,7 @@ PYBIND11_MODULE(FluidSolverPython, m) {
 			py::arg("kinematic_viscosity"),
 			py::arg("linear_solver_config"),
 			py::arg("thread_count"),
-			py::arg("use_marker_particles"));
+			py::arg("apply_gravity"));
 
 	py::class_<FluidSimulation>(m, "FluidSimulation")
 		.def(py::init<const FluidSimulationConfig&>(),
@@ -89,7 +89,10 @@ PYBIND11_MODULE(FluidSolverPython, m) {
 		.def("set_cell", py::overload_cast<int, int, const CellConfig&>(&FluidSimulation::setCell),
 			py::arg("i"),
 			py::arg("j"),
-			py::arg("cell_config"));
+			py::arg("cell_config"))
+		.def("flood_domain", &FluidSimulation::floodDomain)
+		.def("drain_domain", &FluidSimulation::drainDomain)
+		.def("create_marker_particles", &FluidSimulation::createMarkerParticles);
 
 
 	py::class_<TaskData>(m, "TaskData")

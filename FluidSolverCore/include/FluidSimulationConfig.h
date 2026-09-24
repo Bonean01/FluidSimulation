@@ -19,16 +19,18 @@ struct FluidSimulationConfig {
 	float kinematicViscosity;
     LinearSolverConfig linearSolverConfig;
     unsigned int threadCount;
+    bool applyGravity;
 
     FluidSimulationConfig(int gridWidth, int gridHeight, float cellWidth, float density = 1, float kinematicViscosity = 0,
-                          LinearSolverConfig linearSolverConfig = {}, unsigned int threadCount = 0, bool useMarkerParticles = false) :
+                          LinearSolverConfig linearSolverConfig = {}, unsigned int threadCount = 0, bool applyGravity = false) :
         gridWidth(gridWidth),
         gridHeight(gridHeight),
         cellWidth(cellWidth),
         density(density),
         kinematicViscosity(kinematicViscosity),
         linearSolverConfig(linearSolverConfig),
-        threadCount(threadCount) { }
+        threadCount(threadCount),
+        applyGravity(applyGravity) { }
 };
 
 // For a future GPU implementation we should proabably have a separate FluidSimulationGPU class
