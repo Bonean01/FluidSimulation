@@ -97,7 +97,44 @@ void FluidSurface::updateLevelSet(ScalarField2D& levelSet, const std::vector<Mar
         levelSet.setValue(cellPosX, cellPosY, -1.0f);
     }
 
-    // TODO: Smooth the level set with weighted averages to avoid stair-step artifacts
+    //smoothLevelSet(levelSet);
+}
+
+
+typedef std::array<std::array<float, 3>, 3> Matrix3x3;
+
+void FluidSurface::smoothLevelSet(ScalarField2D& levelSet) {
+    constexpr Matrix3x3 weights = {{
+		{1.0f, 2.0f, 1.0f},
+		{2.0f, 4.0f, 2.0f},
+		{1.0f, 2.0f, 1.0f}
+	}};
+
+    int width = levelSet.width();
+    int height = levelSet.height();
+
+    #pragma omp parallel for
+    for (int j = 0; j < height; j++) {
+        for (int i = 0; i < width; i++) {
+            SurfaceData& current = this->at(i, j);
+            auto neighbours = getNeighbours(current);
+
+            float currentLS = levelSet.getValue(current.position.x, current.position.y);
+            float weightedSum = weights[1][1] * currentLS;
+            float weightSum = weights[1][1];
+
+            for (auto& neighbour : neighbours) {
+                if (neighbour == nullptr) continue;
+                Vec2i relativePos = neighbour->position - current.position;
+                float weight = weights[relativePos.x + 1][relativePos.y + 1];
+                float neighbourLS = levelSet.getValue(neighbour->position.x, neighbour->position.y);
+                weightSum += weight;
+                weightedSum += weight * neighbourLS;
+            }
+
+            levelSet.setValue(i, j, weightedSum / weightSum);
+        }
+    }
 }
 
 

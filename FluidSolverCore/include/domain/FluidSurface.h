@@ -43,10 +43,13 @@ private:
 	std::vector<QueueEntry> m_container;
 	MinHeapPQ m_unknownsQueue;
 	std::array<Vec2i, 8> neighbourRelativePositions = {{
-		{-1, 1}, {0, 1}, {1, 1}, {-1, 0}, {1, 0}, {-1, -1}, {0, -1}, {1, -1}
+		{-1, 1},  {0, 1},  {1, 1}, 
+		{-1, 0}, 		   {1, 0},
+		{-1, -1}, {0, -1}, {1, -1}
 	}};
 
 	void updateLevelSet(ScalarField2D& levelSet, const std::vector<MarkerParticle>& markerParticles);
+	void smoothLevelSet(ScalarField2D& levelSet);
 	void resetSurfaceData();
 	void setClosestCellsSD();
 	void populateWithClosestNeighbours(MinHeapPQ& queue);
