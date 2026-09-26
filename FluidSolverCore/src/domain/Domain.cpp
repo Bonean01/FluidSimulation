@@ -84,22 +84,19 @@ void Domain::setCell(int i, int j, const CellData& cellData, const BoundaryData&
 }
 
 
-void Domain::extrapolateVelocity(StaggeredVectorField2D& velocityField, unsigned int depth) {
+void Domain::extrapolateVelocity(StaggeredVectorField2D& velocityField, const FluidSurface& fluidSurface) {
     // Force that taking the directional derivative of the extrapolated velocity in the direction of
     // the gradient of the SDF returns 0 (all the points between a point and the closest known
     // velocity should contain the same extrapolated velocity)
     ScopeProfiler p{"Velocity Extrapolation"};
 
-    if (m_markerParticles.empty()) return;
-
-    int width = m_fluidSurface.width();
-    int height = m_fluidSurface.height();
-    m_fluidSurface.update(m_markerParticles, depth);
+    int width = fluidSurface.width();
+    int height = fluidSurface.height();
 
     #pragma omp parallel for
     for (int j = 0; j < height; j++) {
         for (int i = 0; i < width; i++) {
-            SurfaceData current = m_fluidSurface.getValue(i, j);
+            SurfaceData current = fluidSurface.getValue(i, j);
             if (!current.known || m_cellData.getValue(i, j).cellType == CellType::Fluid) continue;
 
             Vec2f vel = velocityField.sampleBilinear(current.closestSurfacePointPos);
@@ -116,9 +113,9 @@ void Domain::extrapolateVelocity(StaggeredVectorField2D& velocityField, unsigned
         for (int j = 0; j < height; j++) {
             for (int i = 0; i < width; i++) {
                 SurfaceData cell0 = (C == VectorComponent::X)
-                    ? m_fluidSurface.getValue(i - 1, j)
-                    : m_fluidSurface.getValue(i, j - 1);
-                SurfaceData cell1 = m_fluidSurface.getValue(i, j);
+                    ? fluidSurface.getValue(i - 1, j)
+                    : fluidSurface.getValue(i, j - 1);
+                SurfaceData cell1 = fluidSurface.getValue(i, j);
 
                 if (!cell0.known || !cell1.known || isFluidEdge(C, i, j)) continue;
 
@@ -131,15 +128,14 @@ void Domain::extrapolateVelocity(StaggeredVectorField2D& velocityField, unsigned
 
                 float average = (vel0 + vel1) / 2;
                 velocityField.setEdgeValue(C, i, j, average);
-                
             }
         }
     }
 }
 
 
-void Domain::updateCellData() {
-    if (m_markerParticles.empty()) return;
+void Domain::updateCellData(const std::vector<MarkerParticle>& markerParticles) {
+    if (markerParticles.empty()) return;
 
     int width = m_cellData.width();
     int height = m_cellData.height();
@@ -154,8 +150,8 @@ void Domain::updateCellData() {
     }
 
     #pragma omp parallel for
-    for (int i = 0; i < m_markerParticles.size(); i++) {
-        const MarkerParticle& particle = m_markerParticles.at(i);
+    for (int i = 0; i < markerParticles.size(); i++) {
+        const MarkerParticle& particle = markerParticles.at(i);
         int cellPosX = static_cast<int>(std::floor(particle.position.x));
         int cellPosY = static_cast<int>(std::floor(particle.position.y));
         CellData& currentCell = m_cellData.at(cellPosX, cellPosY);
@@ -192,7 +188,7 @@ void Domain::drain() {
 }
 
 
-void Domain::createMarkerParticles()  {
+void Domain::createMarkerParticles(std::vector<MarkerParticle>& markerParticles)  {
     int width = m_cellData.width();
     int height = m_cellData.height();
 
@@ -201,10 +197,10 @@ void Domain::createMarkerParticles()  {
             CellType cellType = m_cellData.getValue(i, j).cellType;
             if (cellType != CellType::Fluid) continue;
             Vec2f cellCenter = Vec2f(i + 0.5f, j + 0.5f);
-            m_markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x + 0.25f, cellCenter.y + 0.25f)));
-            m_markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x - 0.25f, cellCenter.y - 0.25f)));
-            m_markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x + 0.25f, cellCenter.y - 0.25f)));
-            m_markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x - 0.25f, cellCenter.y + 0.25f)));
+            markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x + 0.25f, cellCenter.y + 0.25f)));
+            markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x - 0.25f, cellCenter.y - 0.25f)));
+            markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x + 0.25f, cellCenter.y - 0.25f)));
+            markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x - 0.25f, cellCenter.y + 0.25f)));
         }
     }
 }

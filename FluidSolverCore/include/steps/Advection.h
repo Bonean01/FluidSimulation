@@ -17,7 +17,7 @@ public:
 	// self-advection
 	void execute(StaggeredVectorField2D& velocityField, const Domain& domain, float timeStep);
 	void execute(ScalarField2D& field, const StaggeredVectorField2D& velocityField, const Domain& domain, float timeStep);
-	void execute(Domain& domain, const StaggeredVectorField2D& velocityField, float timeStep);
+	void execute(std::vector<MarkerParticle>& markerParticles, const StaggeredVectorField2D& velocityField, const Domain& domain, float timeStep);
 
 
 private:
