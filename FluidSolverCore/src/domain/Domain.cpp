@@ -96,10 +96,10 @@ void Domain::extrapolateVelocity(StaggeredVectorField2D& velocityField, const Fl
     #pragma omp parallel for
     for (int j = 0; j < height; j++) {
         for (int i = 0; i < width; i++) {
-            SurfaceData current = fluidSurface.getValue(i, j);
-            if (!current.known || m_cellData.getValue(i, j).cellType == CellType::Fluid) continue;
+            const Vec2f* closestSurfacePoint = fluidSurface.getClosestSurfacePoint(i, j);
+            if (!closestSurfacePoint || m_cellData.getValue(i, j).cellType == CellType::Fluid) continue;
 
-            Vec2f vel = velocityField.sampleBilinear(current.closestSurfacePointPos);
+            Vec2f vel = velocityField.sampleBilinear(*closestSurfacePoint);
             m_extrapolatedVelField.setValue(i, j, vel);
         }
     }
@@ -112,12 +112,14 @@ void Domain::extrapolateVelocity(StaggeredVectorField2D& velocityField, const Fl
         #pragma omp parallel for
         for (int j = 0; j < height; j++) {
             for (int i = 0; i < width; i++) {
-                SurfaceData cell0 = (C == VectorComponent::X)
-                    ? fluidSurface.getValue(i - 1, j)
-                    : fluidSurface.getValue(i, j - 1);
-                SurfaceData cell1 = fluidSurface.getValue(i, j);
+                // not very clean... (if one of the velocities adyacent to the current edge
+                // is undefined, don't set the edge's value)
+                const Vec2f* cell0 = (C == VectorComponent::X)
+                    ? fluidSurface.getClosestSurfacePoint(i - 1, j)
+                    : fluidSurface.getClosestSurfacePoint(i, j - 1);
+                const Vec2f* cell1 = fluidSurface.getClosestSurfacePoint(i, j);
 
-                if (!cell0.known || !cell1.known || isFluidEdge(C, i, j)) continue;
+                if (!cell0 || !cell1 || isFluidEdge(C, i, j)) continue;
 
                 float vel0 = (C == VectorComponent::X)
                     ? m_extrapolatedVelField.getValue(i - 1, j).x

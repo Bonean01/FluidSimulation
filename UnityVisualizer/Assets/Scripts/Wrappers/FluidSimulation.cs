@@ -91,7 +91,7 @@ public class FluidSimulation : IDisposable {
     public IEnumerable<float> SurfaceSDFValues() {
         IntPtr ptr = GetSurfaceSDFPtr(m_handle);
         for (int i = 0 ; i < m_cellCount; i++) {
-            yield return GetElementFromPointer<SurfaceData>(ptr, i).estimatedSD;
+            yield return GetElementFromPointer<float>(ptr, i);
         }
     }
 

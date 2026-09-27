@@ -19,14 +19,29 @@ struct SurfaceData {
 };
 
 
-class FluidSurface : public Grid2D<SurfaceData> {
+// Implicitly defines a surface (where f(i, j) = 0)
+class FluidSurface : public ScalarField2D {
 public:
-	FluidSurface(int width, int height) : Grid2D(width, height, 1), m_levelSet(width, height, 1) {
+	FluidSurface(int width, int height) : ScalarField2D(width, height, 1), m_surfaceData(width, height, 1), m_auxScalarField(width, height, 1) {
 			m_container.reserve(m_cellCount * sizeof(QueueEntry));
 			m_unknownsQueue = MinHeapPQ{ std::greater<QueueEntry>(), std::move(m_container) };
 		}
-	void update(const std::vector<MarkerParticle>& markerParticles, unsigned int depth);
 
+	void initializeFromMarkerParticles(const std::vector<MarkerParticle>& markerParticles);
+	void update(const std::vector<MarkerParticle>& markerParticles, unsigned int depth);
+	
+	const Vec2f* getClosestSurfacePoint(int i, int j) const {
+		const SurfaceData& surfaceData = m_surfaceData.getValue(i, j);
+		const Vec2f* res = &surfaceData.closestSurfacePointPos;
+		return surfaceData.known ? res : nullptr;
+	}
+	
+	/*
+		Initialize the fluid surface with an implicit surface delimiting the fluid region
+		Recalculate signed distance if needed
+		Expose closest surface point through a method
+		The fluid surface stores the SDF
+	*/
 
 private:
 	struct QueueEntry {
@@ -39,7 +54,8 @@ private:
 
 	typedef std::priority_queue<QueueEntry, std::vector<QueueEntry>, std::greater<QueueEntry>> MinHeapPQ;
 
-	ScalarField2D m_levelSet;
+	Grid2D<SurfaceData> m_surfaceData;
+	ScalarField2D m_auxScalarField;
 	std::vector<QueueEntry> m_container;
 	MinHeapPQ m_unknownsQueue;
 	std::array<Vec2i, 8> neighbourRelativePositions = {{
@@ -48,7 +64,6 @@ private:
 		{-1, -1}, {0, -1}, {1, -1}
 	}};
 
-	void updateLevelSet(ScalarField2D& levelSet, const std::vector<MarkerParticle>& markerParticles);
 	void smoothLevelSet(ScalarField2D& levelSet);
 	void resetSurfaceData();
 	void setClosestCellsSD();

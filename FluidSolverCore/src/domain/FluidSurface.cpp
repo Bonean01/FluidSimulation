@@ -10,7 +10,7 @@
 void FluidSurface::update(const std::vector<MarkerParticle>& markerParticles, unsigned int depth) {
     ScopeProfiler p{ "Updating Fluid Surface" };
 
-    updateLevelSet(m_levelSet, markerParticles);
+    initializeFromMarkerParticles(markerParticles);
     resetSurfaceData();
     setClosestCellsSD();
     populateWithClosestNeighbours(m_unknownsQueue);
@@ -26,7 +26,7 @@ std::array<SurfaceData*, 8> FluidSurface::getNeighbours(int posX, int posY) {
         int j = posY + neighbourRelativePos.y;
 
         if (0 <= i && i < m_width && 0 <= j && j < m_height) {
-            res[k] = &this->at(i, j);
+            res[k] = &m_surfaceData.at(i, j);
         }
     }
     return res;
@@ -38,12 +38,12 @@ std::array<float, 8> FluidSurface::getNeighbourSignedDistances(int posX, int pos
     for (int i = 0; i < res.size(); i++) { res[i] = std::numeric_limits<float>::infinity(); }
 
     auto neighbours = getNeighbours(posX, posY);
-    float currentLS = m_levelSet.getValue(posX, posY);
+    float currentLS = this->getValue(posX, posY);
 
     for (int k = 0; k < neighbours.size(); k++) {
         auto& neighbour = neighbours[k];
         auto& neighbourRelativePos = neighbourRelativePositions[k];
-        float neighbourLS = m_levelSet.getValue(posX + neighbourRelativePos.x, posY + neighbourRelativePos.y);
+        float neighbourLS = this->getValue(posX + neighbourRelativePos.x, posY + neighbourRelativePos.y);
 
         if (std::signbit(neighbourLS) != std::signbit(currentLS)) {
             float t = currentLS / (currentLS - neighbourLS);
@@ -76,16 +76,16 @@ bool FluidSurface::isInsideFluid(const SurfaceData& current) {
     int posX = current.position.x;
     int posY = current.position.y;
 
-    return m_levelSet.getValue(posX, posY) < 0;
+    return this->getValue(posX, posY) < 0;
 }
 
 
-void FluidSurface::updateLevelSet(ScalarField2D& levelSet, const std::vector<MarkerParticle>& markerParticles) {
+void FluidSurface::initializeFromMarkerParticles(const std::vector<MarkerParticle>& markerParticles) {
     // Set cells with makers to -1 and cells without them to +1
     #pragma omp parallel for
     for (int j = 0; j < m_height; j++) {
         for (int i = 0; i < m_width; i++) {
-            levelSet.setValue(i, j, 1.0f);
+            this->setValue(i, j, 1.0f);
         }
     }
 
@@ -94,7 +94,7 @@ void FluidSurface::updateLevelSet(ScalarField2D& levelSet, const std::vector<Mar
         const MarkerParticle& particle = markerParticles.at(i);
         int cellPosX = static_cast<int>(std::floor(particle.position.x));
         int cellPosY = static_cast<int>(std::floor(particle.position.y));
-        levelSet.setValue(cellPosX, cellPosY, -1.0f);
+        this->setValue(cellPosX, cellPosY, -1.0f);
     }
 
     //smoothLevelSet(levelSet);
@@ -116,7 +116,7 @@ void FluidSurface::smoothLevelSet(ScalarField2D& levelSet) {
     #pragma omp parallel for
     for (int j = 0; j < height; j++) {
         for (int i = 0; i < width; i++) {
-            SurfaceData& current = this->at(i, j);
+            const SurfaceData& current = m_surfaceData.getValue(i, j);
             auto neighbours = getNeighbours(current);
 
             float currentLS = levelSet.getValue(current.position.x, current.position.y);
@@ -142,7 +142,7 @@ void FluidSurface::resetSurfaceData() {
     #pragma omp parallel for
     for (int j = 0; j < m_height; j++) {
         for (int i = 0; i < m_width; i++) {
-            SurfaceData& current = this->at(i, j);
+            SurfaceData& current = m_surfaceData.at(i, j);
             current.known = false;
             current.estimatedSD = std::numeric_limits<float>::infinity();
             current.depth = std::numeric_limits<int>::max();
@@ -172,8 +172,8 @@ void FluidSurface::setClosestCellsSD() {
                 }
             }
 
-            SurfaceData& current = this->at(i, j);
-            float currentLS = m_levelSet.getValue(i, j);
+            SurfaceData& current = m_surfaceData.at(i, j);
+            float currentLS = this->getValue(i, j);
 
             if (minDistance != std::numeric_limits<float>::infinity()) {
                 current.estimatedSD = currentLS < 0 ? -minDistance : minDistance;
@@ -191,7 +191,7 @@ void FluidSurface::populateWithClosestNeighbours(MinHeapPQ& queue) {
     // we need a mutex for controlling access to the queue
     for (int j = 0; j < m_height; j++) {
         for (int i = 0; i < m_width; i++) {
-            const SurfaceData& current = this->getValue(i, j);
+            const SurfaceData& current = m_surfaceData.getValue(i, j);
             if (!current.known) continue;
 
             auto neighbours = getNeighbours(current);
@@ -251,5 +251,14 @@ void FluidSurface::calculateSDF(unsigned int depth) {
         // Determine if current is inside or outside and set it's signed distance
         float signedDistance = isInsideFluid(*current) ? -minDist : minDist;
         current->estimatedSD = signedDistance;
+    }
+
+
+    #pragma omp parallel for
+    for (int j = 0; j < m_height; j++) {
+        for (int i = 0; i < m_width; i++) {
+            const SurfaceData& current = m_surfaceData.getValue(i, j);
+            this->setValue(i, j, current.estimatedSD);
+        }
     }
 }

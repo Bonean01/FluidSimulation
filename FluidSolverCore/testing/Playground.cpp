@@ -61,7 +61,7 @@ static void printSurfaceSDF(FluidSimulation simulation) {
 	int height = surfaceData.height();
 	for (int j = height - 1; j >= 0; j--) {
 		for (int i = 0; i < width; i++) {
-			float value = surfaceData.getValue(i, j).estimatedSD;
+			float value = surfaceData.getValue(i, j);
 			float roundedValue = static_cast<int>(value * 100) / 100.0f;
 			std::cout << "(" << (value == std::numeric_limits<float>::infinity() ? value : roundedValue) << ")\t\t";
 		}
