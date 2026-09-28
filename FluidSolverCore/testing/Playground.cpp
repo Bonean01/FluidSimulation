@@ -119,6 +119,7 @@ int main(int argc, char* argv[]) {
 		simulation.setCell(i, height - 1, staticWall);
 	}
 
+	simulation.createMarkerParticles();
 	for (int k = 0; k < 1; k++) {
 		simulation.step(timestep);
 	}

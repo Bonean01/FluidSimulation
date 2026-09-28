@@ -218,6 +218,7 @@ void FluidSurface::calculateSDF(unsigned int depth) {
         current->inQueue = false;
 
         float minDist = std::numeric_limits<float>::infinity();
+        std::cout << current->estimatedSD << std::endl;
 
         // Iterate over all neighbours (3x3)
         for (SurfaceData* neighbour : getNeighbours(*current)) {
@@ -231,6 +232,9 @@ void FluidSurface::calculateSDF(unsigned int depth) {
                     neighbour->known = false;
                     neighbour->inQueue = true;
                     m_unknownsQueue.emplace(neighbour);
+                    std::cout << "CSP: " << neighbour->closestSurfacePointPos.x << ", " << neighbour->closestSurfacePointPos.y << std::endl;
+                    std::cout << "neighbour: " << neighbour->position.x << ", " << neighbour->position.y << std::endl;
+                    std::cout << "current: " << current->position.x << ", " << current->position.y << std::endl;
                 }
                 // Take the closest point to the surface and its distance
                 if (distance < minDist) {
@@ -242,8 +246,8 @@ void FluidSurface::calculateSDF(unsigned int depth) {
                 // If the max depth hasn't been reached add the unknown neighbours to the queue
                 neighbour->depth = getNeighbourDepth(neighbour);
                 if (neighbour->depth <= depth) {
-                    neighbour->inQueue = true;
-                    m_unknownsQueue.emplace(neighbour);
+                    //neighbour->inQueue = true;
+                    //m_unknownsQueue.emplace(neighbour);
                 }
             }
         }

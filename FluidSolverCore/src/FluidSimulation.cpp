@@ -11,7 +11,7 @@
 void FluidSimulation::step(float timeStep) {
 	ScopeProfiler p{ "============= COMPLETE SIMULATION STEP =============" };
 
-	m_fluidSurface.update(m_markerParticles, 3);
+	m_fluidSurface.update(m_markerParticles, 100000);
 	m_domain.extrapolateVelocity(m_velocityField, m_fluidSurface);
 	m_advection.execute(m_markerParticles, m_velocityField, m_domain, timeStep);
 	m_domain.updateCellData(m_markerParticles);

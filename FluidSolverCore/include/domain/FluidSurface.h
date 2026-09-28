@@ -48,7 +48,7 @@ private:
 		SurfaceData* surfaceData;
 
 		auto operator <=>(const QueueEntry& other) const {
-			return this->surfaceData->estimatedSD <=> other.surfaceData->estimatedSD;
+			return std::abs(this->surfaceData->estimatedSD) <=> std::abs(other.surfaceData->estimatedSD);
 		}
 	};
 
