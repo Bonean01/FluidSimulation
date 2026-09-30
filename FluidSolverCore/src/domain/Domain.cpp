@@ -142,22 +142,25 @@ void Domain::updateCellData(const std::vector<MarkerParticle>& markerParticles) 
     int width = m_cellData.width();
     int height = m_cellData.height();
     
-    #pragma omp parallel for
-    for (int j = 0; j < height; j++) {
-        for (int i = 0; i < width; i++) {
-            CellData& currentCell = m_cellData.at(i, j);
-            if (currentCell.cellType == CellType::Solid) continue;
-            else currentCell.cellType = CellType::Void;
+    #pragma omp parallel
+    {
+        #pragma omp for nowait
+        for (int j = 0; j < height; j++) {
+            for (int i = 0; i < width; i++) {
+                CellData& currentCell = m_cellData.at(i, j);
+                if (currentCell.cellType == CellType::Solid) continue;
+                else currentCell.cellType = CellType::Void;
+            }
         }
-    }
 
-    #pragma omp parallel for
-    for (int i = 0; i < markerParticles.size(); i++) {
-        const MarkerParticle& particle = markerParticles.at(i);
-        int cellPosX = static_cast<int>(std::floor(particle.position.x));
-        int cellPosY = static_cast<int>(std::floor(particle.position.y));
-        CellData& currentCell = m_cellData.at(cellPosX, cellPosY);
-        currentCell.cellType = CellType::Fluid;
+        #pragma omp for
+        for (int i = 0; i < markerParticles.size(); i++) {
+            const MarkerParticle& particle = markerParticles.at(i);
+            int cellPosX = static_cast<int>(std::floor(particle.position.x));
+            int cellPosY = static_cast<int>(std::floor(particle.position.y));
+            CellData& currentCell = m_cellData.at(cellPosX, cellPosY);
+            currentCell.cellType = CellType::Fluid;
+        }
     }
 }
 
@@ -199,10 +202,16 @@ void Domain::createMarkerParticles(std::vector<MarkerParticle>& markerParticles)
             CellType cellType = m_cellData.getValue(i, j).cellType;
             if (cellType != CellType::Fluid) continue;
             Vec2f cellCenter = Vec2f(i + 0.5f, j + 0.5f);
-            markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x + 0.25f, cellCenter.y + 0.25f)));
-            markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x - 0.25f, cellCenter.y - 0.25f)));
-            markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x + 0.25f, cellCenter.y - 0.25f)));
-            markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x - 0.25f, cellCenter.y + 0.25f)));
+
+            // Instantiate 2x2 (for 2D) particles in a jittered arrangement inside the cell
+            for (int k = 0; k < 2; k++) {
+                for (int l = 0; l < 2; l++) {
+                    Vec2f markerRelPos = static_cast<Vec2f>(Vec2i{ k, l }) / 2 - Vec2f{0.5f, 0.5f};
+                    float randomOffsetX = randomFloat(-0.125f, 0.125f);
+                    float randomOffsetY = randomFloat(-0.125f, 0.125f);
+                    markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x + markerRelPos.x + randomOffsetX, cellCenter.y + markerRelPos.y + randomOffsetY)));
+                }
+            }
         }
     }
 }

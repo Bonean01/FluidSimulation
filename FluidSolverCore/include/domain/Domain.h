@@ -50,4 +50,9 @@ private:
 
 	void applyVelocityBCsToComponent(const VectorComponent& C, StaggeredVectorField2D& velocityField, const StaggeredGrid2D<BoundaryData>& boundaryData) const;
 	void applyVelocityBCsToEdge(const VectorComponent& C, int i, int j, StaggeredVectorField2D& velocityField, const BoundaryData& boundaryData) const;
+
+	static float randomFloat(float a, float b) {
+        float t = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+        return (1 - t) * a + t * b;
+    };
 };
