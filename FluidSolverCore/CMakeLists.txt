@@ -37,6 +37,9 @@ set (SOURCE_FILES
 	"include/domain/FluidSurface.h"
 	"include/domain/Domain.h"
 
+	"include/domain/PLIC/FluidInterface.h"
+	"include/domain/PLIC/InterfaceConstructor.h"
+
 	"include/steps/Advection.h"
 	"include/steps/Diffusion.h"
 	"include/steps/Projection.h"
