@@ -8,13 +8,10 @@ struct InterfaceData {
 };
 
 
-class FluidInterface2D {
+class FluidInterface2D : public Grid2D<InterfaceData> {
 public:
-    const InterfaceData& getInterfaceData(int i, int j) { return m_interfaceData.getValue(i, j); }
-    void setInterfaceData(int i, int j, InterfaceData value) { m_interfaceData.setValue(i, j, value); }
+    FluidInterface2D(int width, int height, float cellWidth) 
+        : Grid2D(width, height, cellWidth) {}
 
     float computeFluxAt(int i, int j);
-
-private:
-    Grid2D<InterfaceData> m_interfaceData;
 };

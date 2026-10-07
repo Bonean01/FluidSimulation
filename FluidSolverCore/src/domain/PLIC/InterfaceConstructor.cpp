@@ -54,3 +54,31 @@ Vec2f InterfaceConstructor::computeNormalAt(int i, int j, const VectorComponent&
 
 	return normal;
 }
+
+
+float InterfaceConstructor::computeIntercept(const Vec2f& normal, float volumeFraction) {
+	return 0.0f; // TODO: compute the intercept :)
+}
+
+
+FluidInterface2D InterfaceConstructor::construct(const ScalarField2D& volumeFractionField) {
+	int width = volumeFractionField.width();
+	int height = volumeFractionField.height();
+	float cellWidth = volumeFractionField.cellCount();
+	FluidInterface2D res{width, height, cellWidth};
+
+	#pragma omp parallel for
+	for (int j = 0; j < height; j++) {
+		for (int i = 0; i < width; i++) {
+			VectorComponent majorAxis = getMajorAxisAt(i, j, volumeFractionField);
+			Vec2f normal = computeNormalAt(i, j, majorAxis, volumeFractionField);
+			float volumeFraction = volumeFractionField.getValue(i, j);
+			float intercept = computeIntercept(normal, volumeFraction);
+
+			InterfaceData data{normal, intercept};
+			res.setValue(i, j, data);
+		}
+	}
+
+	return res;
+}
