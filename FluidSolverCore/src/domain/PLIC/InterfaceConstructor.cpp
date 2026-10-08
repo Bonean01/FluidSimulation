@@ -1,5 +1,6 @@
 #include "domain/PLIC/InterfaceConstructor.h"
 
+#include <iostream>
 #include <array>
 
 #include "math/operators/FiniteDifference.h"
@@ -12,7 +13,7 @@ VectorComponent InterfaceConstructor::getMajorAxisAt(int i, int j, const ScalarF
 	Vec2f gradient = FiniteDifference::Central::gradient(i, j, volumeFractionField);
 	float m_x = gradient.x;
 	float m_y = gradient.y;
-	return m_x > m_y ? X : Y;
+	return std::abs(m_x) > std::abs(m_y) ? X : Y;
 }
 
 
@@ -20,8 +21,12 @@ VectorComponent InterfaceConstructor::getMajorAxisAt(int i, int j, const ScalarF
 Vec2f InterfaceConstructor::computeNormalAt(int i, int j, const VectorComponent& majorAxis, const ScalarField2D& volumeFractionField) {
 	using enum VectorComponent;
 	
+	float currentVolumeFraction = volumeFractionField.getValue(i, j);
+	if (currentVolumeFraction == 0.0f || currentVolumeFraction == 1.0f) return { 0.0f, 0.0f };
+	
 	float cellWidth = volumeFractionField.cellWidth();
 	auto aproxLengths = std::array<float, 3>{};
+
 
 	for (int k = -1; k <= 1; k++) {
 		for (int l = -1; l <= 1; l++) {
@@ -50,9 +55,9 @@ Vec2f InterfaceConstructor::computeNormalAt(int i, int j, const VectorComponent&
 	}
 
 	Vec2f normal;
-	if (majorAxis == X) { normal = { 1.0f, diff / cellWidth }; }
-	else { normal = { diff / cellWidth, 1.0f }; }
-	normal.normalize();
+	if (majorAxis == X) { normal = { 1.0f, -diff / cellWidth }; }
+	else { normal = { -diff / cellWidth, 1.0f }; }
+	//normal.normalize();
 
 	return normal;
 }
@@ -83,6 +88,8 @@ float InterfaceConstructor::computeIntercept(float slope, float volumeFraction) 
 float InterfaceConstructor::computeIntercept(const VectorComponent& majorAxis, const Vec2f& normal, float volumeFraction) {
 	using enum VectorComponent;
 
+	if (volumeFraction == 0.0f || volumeFraction == 1.0f) return std::numeric_limits<float>::infinity();
+
 	float slope = normal.get(majorAxis);
 	if (majorAxis == X) {
 		if (slope >= 0) return computeIntercept(slope, volumeFraction) / slope;
@@ -99,7 +106,7 @@ float InterfaceConstructor::computeIntercept(const VectorComponent& majorAxis, c
 FluidInterface2D InterfaceConstructor::construct(const ScalarField2D& volumeFractionField) {
 	int width = volumeFractionField.width();
 	int height = volumeFractionField.height();
-	float cellWidth = volumeFractionField.cellCount();
+	float cellWidth = volumeFractionField.cellWidth();
 	FluidInterface2D res{width, height, cellWidth};
 
 	#pragma omp parallel for

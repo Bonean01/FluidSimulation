@@ -1,8 +1,12 @@
+#pragma once
+
 #include "FluidInterface.h"
 #include "math/dataStructures/ScalarField.h"
 
 class InterfaceConstructor {
 public:
+    InterfaceConstructor() {}
+
     FluidInterface2D construct(const ScalarField2D& volumeFractionField);
 
 private:

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "math/dataStructures/Vector.h"
 #include "math/dataStructures/Grid.h"
 

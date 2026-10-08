@@ -39,7 +39,7 @@ public:
 	
 	void createMarkerParticles(std::vector<MarkerParticle>& markerParticles);
 	void updateCellData(const std::vector<MarkerParticle>& markerParticles);
-	void updateCellData(const FluidInterface2D& fluidInterface);
+	//void updateCellData(const FluidInterface2D& fluidInterface);
 	void flood();
 	void drain();
 
