@@ -5,6 +5,7 @@
 #include "math/operators/FiniteDifference.h"
 
 
+
 VectorComponent InterfaceConstructor::getMajorAxisAt(int i, int j, const ScalarField2D& volumeFractionField) {
 	using enum VectorComponent;
 
@@ -13,6 +14,7 @@ VectorComponent InterfaceConstructor::getMajorAxisAt(int i, int j, const ScalarF
 	float m_y = gradient.y;
 	return m_x > m_y ? X : Y;
 }
+
 
 
 Vec2f InterfaceConstructor::computeNormalAt(int i, int j, const VectorComponent& majorAxis, const ScalarField2D& volumeFractionField) {
@@ -48,17 +50,50 @@ Vec2f InterfaceConstructor::computeNormalAt(int i, int j, const VectorComponent&
 	}
 
 	Vec2f normal;
-	if (majorAxis == X) { normal = { 1, diff / cellWidth }; }
-	else { normal = { diff / cellWidth, 1 }; }
+	if (majorAxis == X) { normal = { 1.0f, diff / cellWidth }; }
+	else { normal = { diff / cellWidth, 1.0f }; }
 	normal.normalize();
 
 	return normal;
 }
 
 
-float InterfaceConstructor::computeIntercept(const Vec2f& normal, float volumeFraction) {
-	return 0.0f; // TODO: compute the intercept :)
+
+/* Computes the intercept for the specific case of a normal with positive components */
+float InterfaceConstructor::computeIntercept(float slope, float volumeFraction) {
+	float triangular = triangularCase(slope, volumeFraction);
+	float trapezoidal = trapezoidalCase(slope, volumeFraction);
+	float pentagonal = pentagonalCase(slope, volumeFraction);
+	float frustum = frustumCase(slope, volumeFraction);
+
+	bool isTriValid = triangular / slope <= 1 && triangular <= 1;
+	bool isTrapValid = trapezoidal / slope > 1 && trapezoidal <= 1;
+	bool isPentValid = pentagonal / slope > 1 && pentagonal > 1;
+	bool isFrustumValid = frustum / slope <= 1 && frustum > 1;
+
+	if (isTriValid) return triangular;
+	else if (isTrapValid) return trapezoidal;
+	else if (isPentValid) return pentagonal;
+	else if (isFrustumValid) return frustum;
+	else return std::numeric_limits<float>::infinity();
 }
+
+
+
+float InterfaceConstructor::computeIntercept(const VectorComponent& majorAxis, const Vec2f& normal, float volumeFraction) {
+	using enum VectorComponent;
+
+	float slope = normal.get(majorAxis);
+	if (majorAxis == X) {
+		if (slope >= 0) return computeIntercept(slope, volumeFraction) / slope;
+		else return 1 + computeIntercept(-slope, volumeFraction) / slope;
+	}
+	else {
+		if (slope >= 0) return computeIntercept(slope, volumeFraction);
+		else return computeIntercept(-slope, volumeFraction) + slope;
+	}
+}
+
 
 
 FluidInterface2D InterfaceConstructor::construct(const ScalarField2D& volumeFractionField) {
@@ -73,7 +108,7 @@ FluidInterface2D InterfaceConstructor::construct(const ScalarField2D& volumeFrac
 			VectorComponent majorAxis = getMajorAxisAt(i, j, volumeFractionField);
 			Vec2f normal = computeNormalAt(i, j, majorAxis, volumeFractionField);
 			float volumeFraction = volumeFractionField.getValue(i, j);
-			float intercept = computeIntercept(normal, volumeFraction);
+			float intercept = computeIntercept(majorAxis, normal, volumeFraction);
 
 			InterfaceData data{normal, intercept};
 			res.setValue(i, j, data);
