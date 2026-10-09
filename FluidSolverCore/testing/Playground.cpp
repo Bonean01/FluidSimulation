@@ -117,15 +117,15 @@ int main(int argc, char* argv[]) {
 
 	volumeFractionField.setValue(0, 0, 1.0f);
 	volumeFractionField.setValue(1, 0, 1.0f);
-	volumeFractionField.setValue(2, 0, 0.95f);
+	volumeFractionField.setValue(2, 0, 1.0f);
 
 	volumeFractionField.setValue(0, 1, 1.0f);
-	volumeFractionField.setValue(1, 1, 0.9f);
-	volumeFractionField.setValue(2, 1, 0.3f);
+	volumeFractionField.setValue(1, 1, 1.0f);
+	volumeFractionField.setValue(2, 1, 1.0f);
 
-	volumeFractionField.setValue(0, 2, 0.7f);
-	volumeFractionField.setValue(1, 2, 0.15f);
-	volumeFractionField.setValue(2, 2, 0.0f);
+	volumeFractionField.setValue(0, 2, 1.0f);
+	volumeFractionField.setValue(1, 2, 1.0f);
+	volumeFractionField.setValue(2, 2, 1.0f);
 
 
 	std::cout << "VOLUME FRACTION FIELD" << std::endl;

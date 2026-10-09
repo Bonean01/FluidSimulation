@@ -22,11 +22,10 @@ Vec2f InterfaceConstructor::computeNormalAt(int i, int j, const VectorComponent&
 	using enum VectorComponent;
 	
 	float currentVolumeFraction = volumeFractionField.getValue(i, j);
-	if (currentVolumeFraction == 0.0f || currentVolumeFraction == 1.0f) return { 0.0f, 0.0f };
+	//if (currentVolumeFraction == 0.0f || currentVolumeFraction == 1.0f) return { 0.0f, 0.0f };
 	
 	float cellWidth = volumeFractionField.cellWidth();
 	auto aproxLengths = std::array<float, 3>{};
-
 
 	for (int k = -1; k <= 1; k++) {
 		for (int l = -1; l <= 1; l++) {
@@ -45,19 +44,18 @@ Vec2f InterfaceConstructor::computeNormalAt(int i, int j, const VectorComponent&
 	}
 
 	float diff;
-	if (aproxLengths[0] < 0.5f * cellWidth || aproxLengths[0] > 2.5f * cellWidth) {
-		// Use center + right (forward diff)
+	if (currentVolumeFraction > 0.5f) {
+		// Use right + center (forward diff)
 		diff = aproxLengths[2] - aproxLengths[1];
 	}
 	else {
-		// Use left + center (backward diff)
+		// Use center + left (backward diff)
 		diff = aproxLengths[1] - aproxLengths[0];
 	}
 
 	Vec2f normal;
 	if (majorAxis == X) { normal = { 1.0f, -diff / cellWidth }; }
 	else { normal = { -diff / cellWidth, 1.0f }; }
-	//normal.normalize();
 
 	return normal;
 }
@@ -66,6 +64,8 @@ Vec2f InterfaceConstructor::computeNormalAt(int i, int j, const VectorComponent&
 
 /* Computes the intercept for the specific case of a normal with positive components */
 float InterfaceConstructor::computeIntercept(float slope, float volumeFraction) {
+	slope = std::abs(slope) + std::numeric_limits<float>::epsilon();
+
 	float triangular = triangularCase(slope, volumeFraction);
 	float trapezoidal = trapezoidalCase(slope, volumeFraction);
 	float pentagonal = pentagonalCase(slope, volumeFraction);
@@ -75,6 +75,11 @@ float InterfaceConstructor::computeIntercept(float slope, float volumeFraction) 
 	bool isTrapValid = trapezoidal / slope > 1 && trapezoidal <= 1;
 	bool isPentValid = pentagonal / slope > 1 && pentagonal > 1;
 	bool isFrustumValid = frustum / slope <= 1 && frustum > 1;
+
+	std::cout << "isTrapValid: " << isTrapValid << std::endl;
+	std::cout << "trapezoidal: " << trapezoidal << std::endl;
+	std::cout << "slope: " << slope << std::endl;
+
 
 	if (isTriValid) return triangular;
 	else if (isTrapValid) return trapezoidal;
@@ -88,9 +93,9 @@ float InterfaceConstructor::computeIntercept(float slope, float volumeFraction) 
 float InterfaceConstructor::computeIntercept(const VectorComponent& majorAxis, const Vec2f& normal, float volumeFraction) {
 	using enum VectorComponent;
 
-	if (volumeFraction == 0.0f || volumeFraction == 1.0f) return std::numeric_limits<float>::infinity();
+	//if (volumeFraction == 0.0f || volumeFraction == 1.0f) return std::numeric_limits<float>::infinity();
 
-	float slope = normal.get(majorAxis);
+	float slope = majorAxis == X ? normal.get(Y) : normal.get(X);
 	if (majorAxis == X) {
 		if (slope >= 0) return computeIntercept(slope, volumeFraction) / slope;
 		else return 1 + computeIntercept(-slope, volumeFraction) / slope;
@@ -109,7 +114,7 @@ FluidInterface2D InterfaceConstructor::construct(const ScalarField2D& volumeFrac
 	float cellWidth = volumeFractionField.cellWidth();
 	FluidInterface2D res{width, height, cellWidth};
 
-	#pragma omp parallel for
+	//#pragma omp parallel for
 	for (int j = 0; j < height; j++) {
 		for (int i = 0; i < width; i++) {
 			VectorComponent majorAxis = getMajorAxisAt(i, j, volumeFractionField);
