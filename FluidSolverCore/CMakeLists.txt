@@ -37,6 +37,9 @@ set (SOURCE_FILES
 	"include/domain/FluidSurface.h"
 	"include/domain/Domain.h"
 
+	"include/domain/PLIC/FluidInterface.h"
+	"include/domain/PLIC/InterfaceConstructor.h"
+
 	"include/steps/Advection.h"
 	"include/steps/Diffusion.h"
 	"include/steps/Projection.h"
@@ -67,6 +70,7 @@ set (SOURCE_FILES
 
 	"src/domain/FluidSurface.cpp"
 	"src/domain/Domain.cpp"
+	"src/domain/PLIC/InterfaceConstructor.cpp"
 
 	"src/steps/Advection.cpp"
 	"src/steps/Diffusion.cpp"

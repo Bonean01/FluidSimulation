@@ -8,6 +8,8 @@
 #include "domain/MarkerParticle.h"
 #include "domain/Domain.h"
 
+#include "domain/PLIC/FluidInterface.h"
+
 class Advection {
 public:
 	Advection(int gridWidth, int gridHeight, float cellWidth) :
@@ -18,6 +20,7 @@ public:
 	void execute(StaggeredVectorField2D& velocityField, const Domain& domain, float timeStep);
 	void execute(ScalarField2D& field, const StaggeredVectorField2D& velocityField, const Domain& domain, float timeStep);
 	void execute(std::vector<MarkerParticle>& markerParticles, const StaggeredVectorField2D& velocityField, const Domain& domain, float timeStep);
+	void execute(FluidInterface2D& fluidInterface, const StaggeredVectorField2D& velocityField, float timeStep);
 
 
 private:
