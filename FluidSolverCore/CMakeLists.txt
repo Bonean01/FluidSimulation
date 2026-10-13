@@ -71,6 +71,7 @@ set (SOURCE_FILES
 	"src/domain/FluidSurface.cpp"
 	"src/domain/Domain.cpp"
 	"src/domain/PLIC/InterfaceConstructor.cpp"
+	"src/domain/PLIC/FluidInterface.cpp"
 
 	"src/steps/Advection.cpp"
 	"src/steps/Diffusion.cpp"

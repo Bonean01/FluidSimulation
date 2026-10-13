@@ -2,6 +2,7 @@
 
 #include "math/dataStructures/Vector.h"
 #include "math/dataStructures/Grid.h"
+#include "math/dataStructures/StaggeredVectorField.h"
 
 
 struct InterfaceData {
@@ -15,5 +16,12 @@ public:
     FluidInterface2D(int width, int height, float cellWidth) 
         : Grid2D(width, height, cellWidth) {}
 
-    float computeFluxAt(int i, int j);
+    float fluxAt(const VectorComponent& C, int i, int j, const StaggeredVectorField2D& velocityField);
+
+private:
+    float flux(float volumeFraction, float scaledSpeed, float intercept, float slope, bool isFluidBellow);
+    bool intersectsVelocity(float scaledSpeed, float intercept, float slope);
+    float lowerBound(float volumeFraction, float scaledSpeed, bool isFluidBellow);
+    float upperBound(float volumeFraction, float scaledSpeed, float intercept, bool isFluidBellow);
+    float excess(float scaledSpeed, float intercept, float slope);
 };
