@@ -1,19 +1,30 @@
 #include "domain/PLIC/FluidInterface.h"
 
 
-float FluidInterface2D::fluxAt(const VectorComponent& C, int i, int j, const StaggeredVectorField2D& velocityField) {
-    float speed = velocityField.getEdgeValue(C, i, j);
-    
-}
+float FluidInterface2D::computeFluxAt(const VectorComponent& C, int i, int j, const StaggeredVectorField2D& velocityField, const ScalarField2D& volumeFractionField, float cellWidth, float timeStep) {
+    using enum VectorComponent;
 
+    float speed = velocityField.getEdgeValue(C, i, j);
+    float scaledSpeed = timeStep / cellWidth * speed;
+    if (speed < 0) {
+        if (C == X) {
+            float volumeFraction = volumeFractionField.getValue(i, j);
+            InterfaceData data = getValue(i, j);
+            //float slope = majorAxis == X ? -data.normal.y : -data.normal.x;
+            bool isFluidBellow = true; // use the normal to determine this
+            //float flux = flux(volumeFraction, scaledSpeed, data.intercept, slope, isFluidBellow);
+        }
+    }
+}
+// Note: Maybe unify InterfaceConstructor into FluidInterface, that way the major axis can be accessed at any time
 
 /* Computes flux for the specific case of a downward velocity 
 * PRECONDITION: speed must be scaled by Δt / Δx
 */
-float FluidInterface2D::flux(float volumeFraction, float scaledSpeed, float intercept, float slope, bool isFluidBellow) {
+float FluidInterface2D::computeFlux(float volumeFraction, float scaledSpeed, float intercept, float slope, bool isFluidBellow) {
     float fluxBellow = intersectsVelocity(scaledSpeed, intercept, slope) 
         ? lowerBound(volumeFraction, scaledSpeed, isFluidBellow)
-        : upperBound(volumeFraction, scaledSpeed, intercept, isFluidBellow) - excess(scaledSpeed, intercept, slope);
+        : upperBound(volumeFraction, scaledSpeed, intercept, isFluidBellow) - computeExcess(scaledSpeed, intercept, slope);
     
     float fluxAbove = scaledSpeed - fluxBellow;
 
@@ -41,7 +52,7 @@ float FluidInterface2D::upperBound(float volumeFraction, float scaledSpeed, floa
 }
 
 
-float FluidInterface2D::excess(float scaledSpeed, float intercept, float slope) {
+float FluidInterface2D::computeExcess(float scaledSpeed, float intercept, float slope) {
     float min = std::min(scaledSpeed, intercept);
     float max = std::max(scaledSpeed, intercept);
     float a = std::max(0.0f, min);

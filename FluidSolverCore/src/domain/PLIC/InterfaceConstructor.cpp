@@ -7,7 +7,7 @@
 
 
 
-VectorComponent InterfaceConstructor::getMajorAxisAt(int i, int j, const ScalarField2D& volumeFractionField) {
+VectorComponent InterfaceConstructor::computeMajorAxisAt(int i, int j, const ScalarField2D& volumeFractionField) {
 	using enum VectorComponent;
 
 	Vec2f gradient = FiniteDifference::Central::gradient(i, j, volumeFractionField);
@@ -22,7 +22,6 @@ Vec2f InterfaceConstructor::computeNormalAt(int i, int j, const VectorComponent&
 	using enum VectorComponent;
 	
 	float currentVolumeFraction = volumeFractionField.getValue(i, j);
-	//if (currentVolumeFraction == 0.0f || currentVolumeFraction == 1.0f) return { 0.0f, 0.0f };
 	
 	float cellWidth = volumeFractionField.cellWidth();
 	auto aproxLengths = std::array<float, 3>{};
@@ -39,7 +38,7 @@ Vec2f InterfaceConstructor::computeNormalAt(int i, int j, const VectorComponent&
 			else { posY += k; }
 
 			float volumeFraction = volumeFractionField.getValue(posX, posY);
-			aproxLengths[k + 1] += volumeFraction * cellWidth;
+			aproxLengths[static_cast<size_t>(k) + 1] += volumeFraction * cellWidth;
 		}
 	}
 
@@ -76,11 +75,6 @@ float InterfaceConstructor::computeIntercept(float slope, float volumeFraction) 
 	bool isPentValid = pentagonal / slope > 1 && pentagonal > 1;
 	bool isFrustumValid = frustum / slope <= 1 && frustum > 1;
 
-	std::cout << "isTrapValid: " << isTrapValid << std::endl;
-	std::cout << "trapezoidal: " << trapezoidal << std::endl;
-	std::cout << "slope: " << slope << std::endl;
-
-
 	if (isTriValid) return triangular;
 	else if (isTrapValid) return trapezoidal;
 	else if (isPentValid) return pentagonal;
@@ -92,8 +86,6 @@ float InterfaceConstructor::computeIntercept(float slope, float volumeFraction) 
 
 float InterfaceConstructor::computeIntercept(const VectorComponent& majorAxis, const Vec2f& normal, float volumeFraction) {
 	using enum VectorComponent;
-
-	//if (volumeFraction == 0.0f || volumeFraction == 1.0f) return std::numeric_limits<float>::infinity();
 
 	float slope = majorAxis == X ? normal.get(Y) : normal.get(X);
 	if (majorAxis == X) {
@@ -114,10 +106,10 @@ FluidInterface2D InterfaceConstructor::construct(const ScalarField2D& volumeFrac
 	float cellWidth = volumeFractionField.cellWidth();
 	FluidInterface2D res{width, height, cellWidth};
 
-	//#pragma omp parallel for
+	#pragma omp parallel for
 	for (int j = 0; j < height; j++) {
 		for (int i = 0; i < width; i++) {
-			VectorComponent majorAxis = getMajorAxisAt(i, j, volumeFractionField);
+			VectorComponent majorAxis = computeMajorAxisAt(i, j, volumeFractionField);
 			Vec2f normal = computeNormalAt(i, j, majorAxis, volumeFractionField);
 			float volumeFraction = volumeFractionField.getValue(i, j);
 			float intercept = computeIntercept(majorAxis, normal, volumeFraction);

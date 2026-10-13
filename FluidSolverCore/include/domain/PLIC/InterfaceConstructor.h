@@ -10,7 +10,7 @@ public:
     FluidInterface2D construct(const ScalarField2D& volumeFractionField);
 
 private:
-    VectorComponent getMajorAxisAt(int i, int j, const ScalarField2D& volumeFractionField);
+    VectorComponent computeMajorAxisAt(int i, int j, const ScalarField2D& volumeFractionField);
     Vec2f computeNormalAt(int i, int j, const VectorComponent& majorAxis, const ScalarField2D& volumeFractionField);
     float computeIntercept(const VectorComponent& majorAxis, const Vec2f& normal, float volumeFraction);
     float computeIntercept(float slope, float volumeFraction);
