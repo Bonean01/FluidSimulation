@@ -4,14 +4,10 @@
 
 
 
-void FluidInterface2D::update(const ScalarField2D& volumeFractionField) {
-	int width = volumeFractionField.width();
-	int height = volumeFractionField.height();
-	float cellWidth = volumeFractionField.cellWidth();
-
+void FluidInterface2D::reconstruct(const ScalarField2D& volumeFractionField) {
 	#pragma omp parallel for
-	for (int j = 0; j < height; j++) {
-		for (int i = 0; i < width; i++) {
+	for (int j = 0; j < m_height; j++) {
+		for (int i = 0; i < m_width; i++) {
 			VectorComponent majorAxis = computeMajorAxisAt(i, j, volumeFractionField);
 			Vec2f normal = computeNormalAt(i, j, majorAxis, volumeFractionField);
 			float volumeFraction = volumeFractionField.getValue(i, j);

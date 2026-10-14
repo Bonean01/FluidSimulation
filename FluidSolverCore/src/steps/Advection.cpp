@@ -103,3 +103,30 @@ void Advection::execute(std::vector<MarkerParticle>& markerParticles, const Stag
 		}
 	}
 }
+
+
+void Advection::execute(ScalarField2D& volumeFractionField, FluidInterface2D& fluidInterface, const StaggeredVectorField2D& velocityField, float timeStep) {
+	using enum VectorComponent;
+	
+	int width = volumeFractionField.width();
+	int height = volumeFractionField.height();
+	float cellWidth = volumeFractionField.cellWidth();
+
+	for (VectorComponent C : {X, Y}) {
+		#pragma omp parallel for
+		for (int j = 0; j < height; j++) {
+			for (int i = 0; i < width; i++) {
+				float flux0 = fluidInterface.computeFluxAt(C, i, j, velocityField, volumeFractionField, cellWidth, timeStep);
+				float flux1 = fluidInterface.computeFluxAt(C, i + 1, j, velocityField, volumeFractionField, cellWidth, timeStep);
+
+				float netFlux = flux0 + flux1;
+				float volumeFraction = volumeFractionField.getValue(i, j);
+				
+				m_auxScalarField.setValue(i, j, volumeFraction + netFlux);
+			}
+		}
+		std::swap(volumeFractionField, m_auxScalarField);
+		// this just has to execute after the first iteration (I think?)
+		fluidInterface.reconstruct(volumeFractionField);
+	}
+}
