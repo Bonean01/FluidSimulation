@@ -72,6 +72,7 @@ static void printSurfaceSDF(const FluidSimulation& simulation) {
 
 
 static void printFluidInterface(const FluidInterface2D& fluidInterface) {
+	std::cout << "\nFLUID NORMALS" << std::endl;
 	int width = fluidInterface.width();
 	int height = fluidInterface.height();
 	for (int j = height - 1; j >= 0; j--) {
@@ -113,29 +114,29 @@ static void printScalarField(const ScalarField2D& scalarField) {
 
 int main(int argc, char* argv[]) {
 	ScalarField2D volumeFractionField{ 3, 3, 1.0f };
+	StaggeredVectorField2D velocityField{ 3, 3, 1.0f };
 
 	volumeFractionField.setValue(0, 0, 1.0f);
-	volumeFractionField.setValue(1, 0, 1.0f);
-	volumeFractionField.setValue(2, 0, 1.0f);
+	volumeFractionField.setValue(1, 0, 0.95f);
+	volumeFractionField.setValue(2, 0, 0.05f);
 
 	volumeFractionField.setValue(0, 1, 1.0f);
-	volumeFractionField.setValue(1, 1, 1.0f);
-	volumeFractionField.setValue(2, 1, 1.0f);
+	volumeFractionField.setValue(1, 1, 0.8f);
+	volumeFractionField.setValue(2, 1, 0.0f);
 
-	volumeFractionField.setValue(0, 2, 1.0f);
-	volumeFractionField.setValue(1, 2, 1.0f);
-	volumeFractionField.setValue(2, 2, 1.0f);
-
+	volumeFractionField.setValue(0, 2, 0.9f);
+	volumeFractionField.setValue(1, 2, 0.3f);
+	volumeFractionField.setValue(2, 2, 0.0f);
 
 	std::cout << "VOLUME FRACTION FIELD" << std::endl;
 	printScalarField(volumeFractionField);
 
-
 	const FluidInterface2D& fluidInterface{volumeFractionField};
-
-	std::cout << "\nFLUID NORMALS" << std::endl;
 	printFluidInterface(fluidInterface);
 
+	velocityField.setEdgeValue(VectorComponent::X, 2, 1, 1.0f);
+	float flux = fluidInterface.computeFluxAt(VectorComponent::X, 2, 1, velocityField, volumeFractionField, 1.0f, 1.0f / 120.0f);
+	std::cout << "\nflux: " << flux << std::endl;
 
 	return 0;
 

@@ -3,6 +3,8 @@
 #include <vector>
 #include <algorithm>
 
+#include "math/dataStructures/Vector.h"
+
 template<typename T>
 class Grid2D {
 public:
