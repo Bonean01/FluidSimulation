@@ -26,7 +26,7 @@ public:
 		m_values[index] = value;
 	}
 
-	
+	const T& getValue(const Vec2i& pos) const { return getValue(pos.x, pos.y); }
 	const T& getValue(int i, int j) const {
 		i = std::clamp(i, 0, m_width - 1);
 		j = std::clamp(j, 0, m_height - 1);

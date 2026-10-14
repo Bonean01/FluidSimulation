@@ -105,7 +105,7 @@ float FluidInterface2D::computeIntercept(float slope, float volumeFraction) {
 float FluidInterface2D::computeIntercept(const VectorComponent& majorAxis, const Vec2f& normal, float volumeFraction) {
 	using enum VectorComponent;
 
-	float slope = majorAxis == X ? normal.get(Y) : normal.get(X);
+	float slope = majorAxis == X ? normal.y : normal.x;
 	if (majorAxis == X) {
 		if (slope >= 0) return computeIntercept(slope, volumeFraction) / slope;
 		else return 1 + computeIntercept(-slope, volumeFraction) / slope;
@@ -118,46 +118,63 @@ float FluidInterface2D::computeIntercept(const VectorComponent& majorAxis, const
 
 
 
+Vec2i FluidInterface2D::getCellPos(const VectorComponent& C, int i, int j, float velocity) {
+    using enum VectorComponent;
+
+    if (velocity < 0)
+        if (C == X) return { i - 1, j };
+        else return { i, j - 1 };
+    else return { i, j };
+}
+
+
+
+bool isFluidBelow(const Vec2f& normal, const ScalarField2D& volumeFractionField) {
+    return true;
+}
+
+
+
 float FluidInterface2D::computeFluxAt(const VectorComponent& C, int i, int j, const StaggeredVectorField2D& velocityField, const ScalarField2D& volumeFractionField, float cellWidth, float timeStep) {
     using enum VectorComponent;
 
-    float speed = velocityField.getEdgeValue(C, i, j);
-    float scaledSpeed = timeStep / cellWidth * speed;
-    if (speed < 0) {
-        if (C == X) {
-            // left
-        }
-        else {
-            // bottom
-        }
-    } 
-    else if (speed > 0) {
-        if (C == X) {
-            // right
-        }
-        else {
-            // top
-        }
+    float velocity = velocityField.getEdgeValue(C, i, j);
+    float scaledSpeed = std::abs(timeStep / cellWidth * velocity);
+
+    Vec2i cellPos = getCellPos(C, i, j, velocity);
+    InterfaceData data = getValue(cellPos);
+    VectorComponent majorAxis = computeMajorAxisAt(cellPos.x, cellPos.y, volumeFractionField);
+    float slope = majorAxis == X ? -data.normal.y : -data.normal.x;
+    float intercept = data.intercept;
+    float volumeFraction = volumeFractionField.getValue(cellPos);
+    bool isFluidBelow = this->isFluidBelow(data.normal, volumeFractionField);
+    
+    // left or bottom
+    if (velocity < 0) {
+        if (C == X) return computeFlux(volumeFraction, scaledSpeed, (intercept - 1) / slope, -1 / slope, slope > 0 ? isFluidBelow : !isFluidBelow);
+        else return computeFlux(volumeFraction, scaledSpeed, intercept, slope, isFluidBelow);
+    }
+    // right and top
+    else if (velocity > 0) {
+        if (C == X) return computeFlux(volumeFraction, scaledSpeed, 1 - intercept / slope, -1 / slope, slope < 0 ? isFluidBelow : !isFluidBelow);
+        else return computeFlux(volumeFraction, scaledSpeed, 1 - intercept, -slope, !isFluidBelow);
     }
     else return 0.0f;
 }
 
 
 
-
-// Note: Maybe unify InterfaceConstructor into FluidInterface, that way the major axis can be accessed at any time
-
 /* Computes flux for the specific case of a downward velocity 
 * PRECONDITION: speed must be scaled by Δt / Δx
 */
-float FluidInterface2D::computeFlux(float volumeFraction, float scaledSpeed, float intercept, float slope, bool isFluidBellow) {
-    float fluxBellow = intersectsVelocity(scaledSpeed, intercept, slope) 
-        ? lowerBound(volumeFraction, scaledSpeed, isFluidBellow)
-        : upperBound(volumeFraction, scaledSpeed, intercept, isFluidBellow) - computeExcess(scaledSpeed, intercept, slope);
+float FluidInterface2D::computeFlux(float volumeFraction, float scaledSpeed, float intercept, float slope, bool isFluidBelow) {
+    float fluxBelow = intersectsVelocity(scaledSpeed, intercept, slope) 
+        ? lowerBound(volumeFraction, scaledSpeed, isFluidBelow)
+        : upperBound(volumeFraction, scaledSpeed, intercept, isFluidBelow) - computeExcess(scaledSpeed, intercept, slope);
     
-    float fluxAbove = scaledSpeed - fluxBellow;
+    float fluxAbove = scaledSpeed - fluxBelow;
 
-    return isFluidBellow ? fluxBellow : fluxAbove;
+    return isFluidBelow ? fluxBelow : fluxAbove;
 }
 
 
@@ -170,17 +187,17 @@ bool FluidInterface2D::intersectsVelocity(float scaledSpeed, float intercept, fl
 
 
 
-float FluidInterface2D::lowerBound(float volumeFraction, float scaledSpeed, bool isFluidBellow) {
-    return std::min(isFluidBellow ? volumeFraction : 1 - volumeFraction, scaledSpeed);
+float FluidInterface2D::lowerBound(float volumeFraction, float scaledSpeed, bool isFluidBelow) {
+    return std::min(isFluidBelow ? volumeFraction : 1 - volumeFraction, scaledSpeed);
 }
 
 
 
-float FluidInterface2D::upperBound(float volumeFraction, float scaledSpeed, float intercept, bool isFluidBellow) {
+float FluidInterface2D::upperBound(float volumeFraction, float scaledSpeed, float intercept, bool isFluidBelow) {
     if (intercept < scaledSpeed)
         return scaledSpeed;
     else
-        return isFluidBellow ? volumeFraction : 1 - volumeFraction;
+        return isFluidBelow ? volumeFraction : 1 - volumeFraction;
 }
 
 

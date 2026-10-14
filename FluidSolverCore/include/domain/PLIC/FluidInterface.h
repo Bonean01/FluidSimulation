@@ -22,8 +22,8 @@ public:
     void update(const ScalarField2D& volumeFractionField);
     float computeFluxAt(const VectorComponent& C, int i, int j, const StaggeredVectorField2D& velocityField, const ScalarField2D& volumeFractionField, float cellWidth, float timeStep);
 
-private:
 
+private:
     VectorComponent computeMajorAxisAt(int i, int j, const ScalarField2D& volumeFractionField);
     Vec2f computeNormalAt(int i, int j, const VectorComponent& majorAxis, const ScalarField2D& volumeFractionField);
     float computeIntercept(const VectorComponent& majorAxis, const Vec2f& normal, float volumeFraction);
@@ -34,9 +34,12 @@ private:
     float pentagonalCase(float m, float f) { return m * (1 - std::sqrt(2 * (1 - f) / m)) + 1; }
     float frustumCase(float m, float f) { return m * f + 0.5f; }
 
-    float computeFlux(float volumeFraction, float scaledSpeed, float intercept, float slope, bool isFluidBellow);
+    Vec2i getCellPos(const VectorComponent& C, int i, int j, float speed);
+    bool isFluidBelow(const Vec2f& normal, const ScalarField2D& volumeFractionField);
+    
+    float computeFlux(float volumeFraction, float scaledSpeed, float intercept, float slope, bool isFluidBelow);
     bool intersectsVelocity(float scaledSpeed, float intercept, float slope);
-    float lowerBound(float volumeFraction, float scaledSpeed, bool isFluidBellow);
-    float upperBound(float volumeFraction, float scaledSpeed, float intercept, bool isFluidBellow);
+    float lowerBound(float volumeFraction, float scaledSpeed, bool isFluidBelow);
+    float upperBound(float volumeFraction, float scaledSpeed, float intercept, bool isFluidBelow);
     float computeExcess(float scaledSpeed, float intercept, float slope);
 };
