@@ -110,7 +110,6 @@ static void printScalarField(const ScalarField2D& scalarField) {
 #include "utils/profiling/ScopeProfiler.h"
 
 #include "domain/PLIC/FluidInterface.h"
-#include "domain/PLIC/InterfaceConstructor.h"
 
 int main(int argc, char* argv[]) {
 	ScalarField2D volumeFractionField{ 3, 3, 1.0f };
@@ -131,9 +130,8 @@ int main(int argc, char* argv[]) {
 	std::cout << "VOLUME FRACTION FIELD" << std::endl;
 	printScalarField(volumeFractionField);
 
-	InterfaceConstructor interfaceConstructor{};
 
-	const FluidInterface2D& fluidInterface = interfaceConstructor.construct(volumeFractionField);
+	const FluidInterface2D& fluidInterface{volumeFractionField};
 
 	std::cout << "\nFLUID NORMALS" << std::endl;
 	printFluidInterface(fluidInterface);
