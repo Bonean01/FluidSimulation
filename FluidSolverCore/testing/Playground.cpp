@@ -134,8 +134,8 @@ int main(int argc, char* argv[]) {
 	const FluidInterface2D& fluidInterface{volumeFractionField};
 	printFluidInterface(fluidInterface);
 
-	velocityField.setEdgeValue(VectorComponent::X, 2, 1, 1.0f);
-	float flux = fluidInterface.computeFluxAt(VectorComponent::X, 2, 1, velocityField, volumeFractionField, 1.0f, 1.0f / 120.0f);
+	velocityField.setEdgeValue(VectorComponent::X, 1, 1, -1.0f);
+	float flux = fluidInterface.computeFluxAt(VectorComponent::X, 1, 1, velocityField, volumeFractionField, 1.0f, 1.0f / 120.0f);
 	std::cout << "\nflux: " << flux << std::endl;
 
 	return 0;

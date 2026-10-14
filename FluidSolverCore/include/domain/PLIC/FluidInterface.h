@@ -35,7 +35,6 @@ private:
     float frustumCase(float m, float f) const { return m * f + 0.5f; }
 
     Vec2i getCellPos(const VectorComponent& C, int i, int j, float speed) const;
-    bool isFluidBelow(const Vec2f& normal, const ScalarField2D& volumeFractionField) const;
 
     float computeFlux(float volumeFraction, float scaledSpeed, float intercept, float slope, bool isFluidBelow) const;
     bool intersectsVelocity(float scaledSpeed, float intercept, float slope) const;

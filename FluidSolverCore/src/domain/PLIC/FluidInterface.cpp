@@ -129,12 +129,6 @@ Vec2i FluidInterface2D::getCellPos(const VectorComponent& C, int i, int j, float
 
 
 
-bool FluidInterface2D::isFluidBelow(const Vec2f& normal, const ScalarField2D& volumeFractionField) const {
-    return true;
-}
-
-
-
 float FluidInterface2D::computeFluxAt(const VectorComponent& C, int i, int j, const StaggeredVectorField2D& velocityField, const ScalarField2D& volumeFractionField, float cellWidth, float timeStep) const {
     using enum VectorComponent;
 
@@ -148,21 +142,12 @@ float FluidInterface2D::computeFluxAt(const VectorComponent& C, int i, int j, co
     float volumeFraction = volumeFractionField.getValue(cellPos);
     float intercept = data.intercept;
     float slope = majorAxis == X ? 1 / data.normal.y : -data.normal.x;
-    bool isFluidBelow = this->isFluidBelow(data.normal, volumeFractionField);
-
-    std::cout << "\nvelocity: " << velocity << "\n";
-    std::cout << "scaledSpeed: " << scaledSpeed << "\n";
-    std::cout << "cellPos: " << cellPos.x << ", " << cellPos.y << "\n";
-    std::cout << "majorAxis: " << (majorAxis == X ? "X" : "Y") << "\n";
-    std::cout << "volumeFraction: " << volumeFraction << "\n";
-    std::cout << "intercept: " << intercept << "\n";
-    std::cout << "slope: " << slope << "\n";
-    std::cout << "isFluidBelow: " << isFluidBelow << "\n";
+    bool isFluidBelow = data.normal.y > 0;
 
     // left or bottom
     if (velocity < 0) {
-        if (C == X) return computeFlux(volumeFraction, scaledSpeed, (intercept - 1) / slope, -1 / slope, slope > 0 ? isFluidBelow : !isFluidBelow);
-        else return computeFlux(volumeFraction, scaledSpeed, intercept, slope, isFluidBelow);
+        if (C == X) return -computeFlux(volumeFraction, scaledSpeed, (intercept - 1) / slope, -1 / slope, slope > 0 ? isFluidBelow : !isFluidBelow);
+        else return -computeFlux(volumeFraction, scaledSpeed, intercept, slope, isFluidBelow);
     }
     // right and top
     else if (velocity > 0) {
