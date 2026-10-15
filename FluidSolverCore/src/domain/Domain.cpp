@@ -166,8 +166,8 @@ void Domain::updateCellData(const std::vector<MarkerParticle>& markerParticles) 
 
 
 void Domain::updateCellData(const ScalarField2D& volumeFractionField) {
-    float width = volumeFractionField.width();
-    float height = volumeFractionField.height();
+    int width = volumeFractionField.width();
+    int height = volumeFractionField.height();
 
     #pragma omp parallel for
     for (int j = 0; j < height; j++) {

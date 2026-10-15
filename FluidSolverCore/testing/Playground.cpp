@@ -131,7 +131,8 @@ int main(int argc, char* argv[]) {
 	std::cout << "VOLUME FRACTION FIELD" << std::endl;
 	printScalarField(volumeFractionField);
 
-	const FluidInterface2D& fluidInterface{volumeFractionField};
+	FluidInterface2D fluidInterface{ 3, 3 };
+	fluidInterface.reconstruct(volumeFractionField);
 	printFluidInterface(fluidInterface);
 
 	velocityField.setEdgeValue(VectorComponent::X, 1, 1, -1.0f);

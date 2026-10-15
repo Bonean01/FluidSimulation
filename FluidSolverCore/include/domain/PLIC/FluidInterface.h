@@ -14,10 +14,8 @@ struct InterfaceData {
 
 class FluidInterface2D : public Grid2D<InterfaceData> {
 public:
-    FluidInterface2D(const ScalarField2D& volumeFractionField) 
-        : Grid2D(volumeFractionField.width(),
-                 volumeFractionField.height(),
-                 volumeFractionField.cellWidth()) { this->reconstruct(volumeFractionField); }
+    FluidInterface2D(int width, int height) 
+        : Grid2D(width, height, 1.0f) {}
 
     void reconstruct(const ScalarField2D& volumeFractionField);
     float computeFluxAt(const VectorComponent& C, int i, int j, const StaggeredVectorField2D& velocityField, const ScalarField2D& volumeFractionField, float cellWidth, float timeStep) const;
