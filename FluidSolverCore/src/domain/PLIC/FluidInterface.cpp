@@ -140,25 +140,29 @@ float FluidInterface2D::computeFluxAt(const VectorComponent& C, int i, int j, co
     float slope = majorAxis == X ? 1 / data.normal.y : -data.normal.x;
     bool isFluidBelow = data.normal.y > 0;
 
+	float normalizedFlux = 0.0f;
+
     // left or bottom
     if (velocity < 0) {
-        if (C == X) return -computeFlux(volumeFraction, scaledSpeed, (intercept - 1) / slope, -1 / slope, slope > 0 ? isFluidBelow : !isFluidBelow);
-        else return -computeFlux(volumeFraction, scaledSpeed, intercept, slope, isFluidBelow);
+        if (C == X) normalizedFlux = -computeNormalizedFlux(volumeFraction, scaledSpeed, (intercept - 1) / slope, -1 / slope, slope > 0 ? isFluidBelow : !isFluidBelow);
+        else normalizedFlux = -computeNormalizedFlux(volumeFraction, scaledSpeed, intercept, slope, isFluidBelow);
     }
     // right and top
     else if (velocity > 0) {
-        if (C == X) return computeFlux(volumeFraction, scaledSpeed, 1 - intercept / slope, -1 / slope, slope < 0 ? isFluidBelow : !isFluidBelow);
-        else return computeFlux(volumeFraction, scaledSpeed, 1 - intercept, -slope, !isFluidBelow);
+        if (C == X) normalizedFlux = computeNormalizedFlux(volumeFraction, scaledSpeed, 1 - intercept / slope, -1 / slope, slope < 0 ? isFluidBelow : !isFluidBelow);
+        else normalizedFlux = computeNormalizedFlux(volumeFraction, scaledSpeed, 1 - intercept, -slope, !isFluidBelow);
     }
-    else return 0.0f;
+
+	float cellVolume = cellWidth * cellWidth;
+	return normalizedFlux * cellVolume / timeStep;
 }
 
 
 
-/* Computes flux for the specific case of a downward velocity 
+/* Computes flux scaled by Δt / ΔΩ for the specific case of a downward velocity
 * PRECONDITION: speed must be scaled by Δt / Δx
 */
-float FluidInterface2D::computeFlux(float volumeFraction, float scaledSpeed, float intercept, float slope, bool isFluidBelow) const {
+float FluidInterface2D::computeNormalizedFlux(float volumeFraction, float scaledSpeed, float intercept, float slope, bool isFluidBelow) const {
     float fluxBelow = intersectsVelocity(scaledSpeed, intercept, slope) 
         ? upperBound(volumeFraction, scaledSpeed, intercept, isFluidBelow) - computeExcess(scaledSpeed, intercept, slope)
         : lowerBound(volumeFraction, scaledSpeed, isFluidBelow);

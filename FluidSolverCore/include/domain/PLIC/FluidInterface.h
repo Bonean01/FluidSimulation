@@ -36,7 +36,7 @@ private:
 
     Vec2i getCellPos(const VectorComponent& C, int i, int j, float speed) const;
 
-    float computeFlux(float volumeFraction, float scaledSpeed, float intercept, float slope, bool isFluidBelow) const;
+    float computeNormalizedFlux(float volumeFraction, float scaledSpeed, float intercept, float slope, bool isFluidBelow) const;
     bool intersectsVelocity(float scaledSpeed, float intercept, float slope) const;
     float lowerBound(float volumeFraction, float scaledSpeed, bool isFluidBelow) const;
     float upperBound(float volumeFraction, float scaledSpeed, float intercept, bool isFluidBelow) const;

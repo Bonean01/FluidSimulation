@@ -14,6 +14,7 @@
 #include "MarkerParticle.h"
 #include "FluidSurface.h"
 #include "CellConfig.h"
+#include "PLIC/FluidInterface.h"
 
 
 class Domain {
@@ -39,7 +40,7 @@ public:
 	
 	void createMarkerParticles(std::vector<MarkerParticle>& markerParticles);
 	void updateCellData(const std::vector<MarkerParticle>& markerParticles);
-	//void updateCellData(const FluidInterface2D& fluidInterface);
+	void updateCellData(const ScalarField2D& volumeFractionField);
 	void flood();
 	void drain();
 

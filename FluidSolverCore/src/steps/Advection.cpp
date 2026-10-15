@@ -114,23 +114,23 @@ void Advection::execute(ScalarField2D& volumeFractionField, FluidInterface2D& fl
 	float cellWidth = volumeFractionField.cellWidth();
 
 	for (VectorComponent C : {X, Y}) {
+		fluidInterface.reconstruct(volumeFractionField);
+
 		#pragma omp parallel for
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width; i++) {
 				float flux0 = fluidInterface.computeFluxAt(C, i, j, velocityField, volumeFractionField, cellWidth, timeStep);
 				float flux1 = fluidInterface.computeFluxAt(C, i + 1, j, velocityField, volumeFractionField, cellWidth, timeStep);
-				// maybe it would be better for computeFluxAt to not return the scaled flux and instead apply the scaling in the volume fraction update
 
 				float cellVolume = cellWidth * cellWidth;
 				float dilatationTerm = domain.getCell(i, j).cellType == CellType::Fluid ? Staggered::divergence(C, i, j, velocityField) * cellVolume: 0;
 				float netFlux = flux0 + flux1;
 				float volumeFraction = volumeFractionField.getValue(i, j);
-				
-				m_auxScalarField.setValue(i, j, volumeFraction + netFlux + dilatationTerm);
+
+				float newVolumeFraction = timeStep / cellVolume * (netFlux + dilatationTerm) + volumeFraction;
+				m_auxScalarField.setValue(i, j, newVolumeFraction);
 			}
 		}
 		std::swap(volumeFractionField, m_auxScalarField);
-		// this just has to execute after the first iteration (I think?)
-		fluidInterface.reconstruct(volumeFractionField);
 	}
 }

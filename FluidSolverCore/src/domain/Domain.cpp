@@ -165,6 +165,24 @@ void Domain::updateCellData(const std::vector<MarkerParticle>& markerParticles) 
 }
 
 
+void Domain::updateCellData(const ScalarField2D& volumeFractionField) {
+    float width = volumeFractionField.width();
+    float height = volumeFractionField.height();
+
+    #pragma omp parallel for
+    for (int j = 0; j < height; j++) {
+        for (int i = 0; i < width; i++) {
+            float volumeFraction = volumeFractionField.getValue(i, j);
+            CellData& currentCell = m_cellData.at(i, j);
+            if (currentCell.cellType != CellType::Solid) continue;
+            
+            if (volumeFraction > 0.5f) currentCell.cellType = CellType::Fluid;
+            else currentCell.cellType = CellType::Void;
+        }
+    }
+}
+
+
 void Domain::flood() {
     int width = m_cellData.width();
     int height = m_cellData.height();

@@ -38,6 +38,7 @@ public:
 		m_domain(m_gridWidth, m_gridHeight),
 		m_markerParticles(),
 		m_fluidSurface(m_gridWidth, m_gridHeight),
+		m_fluidInterface(m_volumeFractionField),
 
 		m_advection(m_gridWidth, m_gridHeight, m_cellWidth),
 		m_diffusion(m_gridWidth, m_gridHeight, m_cellWidth),
@@ -88,6 +89,7 @@ private:
 	Domain m_domain;
 	std::vector<MarkerParticle> m_markerParticles;
 	FluidSurface m_fluidSurface;
+	FluidInterface2D m_fluidInterface;
 
 	Advection m_advection;
 	Projection m_projection;
