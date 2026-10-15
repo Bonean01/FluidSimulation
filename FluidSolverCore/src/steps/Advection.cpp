@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "utils/profiling/ScopeProfiler.h"
+#include "math/operators/Staggered.h"
 #include "domain/Domain.h"
 
 
@@ -105,7 +106,7 @@ void Advection::execute(std::vector<MarkerParticle>& markerParticles, const Stag
 }
 
 
-void Advection::execute(ScalarField2D& volumeFractionField, FluidInterface2D& fluidInterface, const StaggeredVectorField2D& velocityField, float timeStep) {
+void Advection::execute(ScalarField2D& volumeFractionField, FluidInterface2D& fluidInterface, const StaggeredVectorField2D& velocityField, const Domain& domain, float timeStep) {
 	using enum VectorComponent;
 	
 	int width = volumeFractionField.width();
@@ -118,11 +119,14 @@ void Advection::execute(ScalarField2D& volumeFractionField, FluidInterface2D& fl
 			for (int i = 0; i < width; i++) {
 				float flux0 = fluidInterface.computeFluxAt(C, i, j, velocityField, volumeFractionField, cellWidth, timeStep);
 				float flux1 = fluidInterface.computeFluxAt(C, i + 1, j, velocityField, volumeFractionField, cellWidth, timeStep);
+				// maybe it would be better for computeFluxAt to not return the scaled flux and instead apply the scaling in the volume fraction update
 
+				float cellVolume = cellWidth * cellWidth;
+				float dilatationTerm = domain.getCell(i, j).cellType == CellType::Fluid ? Staggered::divergence(C, i, j, velocityField) * cellVolume: 0;
 				float netFlux = flux0 + flux1;
 				float volumeFraction = volumeFractionField.getValue(i, j);
 				
-				m_auxScalarField.setValue(i, j, volumeFraction + netFlux);
+				m_auxScalarField.setValue(i, j, volumeFraction + netFlux + dilatationTerm);
 			}
 		}
 		std::swap(volumeFractionField, m_auxScalarField);
