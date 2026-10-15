@@ -57,6 +57,7 @@ public:
 	const ScalarField2D& getPressureField() const { return m_pressureField; }
 	const ScalarField2D& getDivergenceField() const { return m_divergenceField; }
 	const ScalarField2D& getSmokeField() const { return m_smokeField; }
+	const ScalarField2D& getVolumeFractionField() const { return m_volumeFractionField; }
 	const Grid2D<CellData>& getCellData() const { return m_domain.getCellData(); }
 	const std::vector<MarkerParticle>& getMarkerParticles() const { return m_markerParticles; }
 	const FluidSurface& getSurfaceSDF() const { return m_fluidSurface; }

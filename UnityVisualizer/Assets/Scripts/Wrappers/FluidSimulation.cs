@@ -20,6 +20,7 @@ public class FluidSimulation : IDisposable {
     [DllImport("FluidSolver")] private extern static IntPtr GetPressureFieldPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static IntPtr GetDivergenceFieldPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static IntPtr GetSmokeFieldPtr(IntPtr handle);
+    [DllImport("FluidSolver")] private extern static IntPtr GetVolumeFractionFieldPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static IntPtr GetCellDataPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static IntPtr GetMarkerParticlesPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static int MarkerParticleCount(IntPtr handle);
@@ -71,6 +72,12 @@ public class FluidSimulation : IDisposable {
 
     public IEnumerable<float> SmokeValues() {
         IntPtr ptr = GetSmokeFieldPtr(m_handle); 
+        for (int i = 0; i < m_cellCount; i++)
+            yield return GetElementFromPointer<float>(ptr, i);
+    }
+
+    public IEnumerable<float> VolumeFractionValues() {
+        IntPtr ptr = GetVolumeFractionFieldPtr(m_handle); 
         for (int i = 0; i < m_cellCount; i++)
             yield return GetElementFromPointer<float>(ptr, i);
     }

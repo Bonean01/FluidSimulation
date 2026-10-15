@@ -7,7 +7,8 @@ enum FluidProperty {
     CellData,
     Divergence,
     Smoke,
-    SurfaceSDF
+    SurfaceSDF,
+    VolumeFraction
 }
 
 
@@ -18,7 +19,7 @@ public class FluidVisualizer : MonoBehaviour {
     [SerializeField] private Gradient speedGradient;
     [SerializeField] private float maxSpeed;
     private FluidSimulationAdapter m_simulationAdapter;
-    private Texture2D m_velocityTexture, m_pressureTexture, m_divergenceTexture, m_smokeTexture, m_cellDataTexture, m_surfaceSDFTexture;
+    private Texture2D m_velocityTexture, m_pressureTexture, m_divergenceTexture, m_smokeTexture, m_cellDataTexture, m_surfaceSDFTexture, m_volumeFractionTexture;
     private Texture2D m_speedGradientTexture;
     private SpriteRenderer m_spriteRenderer;
     
@@ -45,6 +46,7 @@ public class FluidVisualizer : MonoBehaviour {
         m_smokeTexture = m_simulationAdapter.CreateTexture();
         m_cellDataTexture = m_simulationAdapter.CreateTexture();
         m_surfaceSDFTexture = m_simulationAdapter.CreateTexture();
+        m_volumeFractionTexture = m_simulationAdapter.CreateTexture();
 
         //m_simulationAdapter.UpdateSolidMapCellTexture(ref m_solidCellMapTexture);
         //m_spriteRenderer.material.SetTexture("_SolidCellMapTexture", m_solidCellMapTexture);
@@ -86,6 +88,7 @@ public class FluidVisualizer : MonoBehaviour {
 
 
     private void OnStateUpdated() {
+        float total = 0;
         switch (displayedProperty) {
             case FluidProperty.Velocity:
             case FluidProperty.Speed:
@@ -110,9 +113,15 @@ public class FluidVisualizer : MonoBehaviour {
                 break;
 
             case FluidProperty.Smoke:
-                float total = m_simulationAdapter.UpdateSmokeTexture(ref m_smokeTexture);
+                total = m_simulationAdapter.UpdateSmokeTexture(ref m_smokeTexture);
                 m_spriteRenderer.material.SetTexture("_SmokeTexture", m_smokeTexture);
                 print($"total smoke: {total}");  
+                break;
+            
+            case FluidProperty.VolumeFraction:
+                total = m_simulationAdapter.UpdateVolumeFractionTexture(ref m_volumeFractionTexture);
+                m_spriteRenderer.material.SetTexture("_VolumeFractionTexture", m_volumeFractionTexture);
+                print($"total volume: {total}");
                 break;
 
             case FluidProperty.CellData:
