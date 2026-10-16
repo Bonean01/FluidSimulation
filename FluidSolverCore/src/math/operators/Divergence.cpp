@@ -77,6 +77,16 @@ namespace Staggered {
 		return (right - left + top - bottom) / dx;
 	}
 
+	float divergence(const VectorComponent& C, int i, int j, const StaggeredVectorField2D& vectorField) {
+		using enum VectorComponent;
+		float right = C == X ? vectorField.getEdgeValue(X, i + 1, j) : 0;
+		float left = C == X ? vectorField.getEdgeValue(X, i, j) : 0;
+		float top = C == Y ? vectorField.getEdgeValue(Y, i, j + 1) : 0;
+		float bottom = C == Y ? vectorField.getEdgeValue(Y, i, j) : 0;
+		float dx = vectorField.cellWidth();
+		return (right - left + top - bottom) / dx;
+	}
+
 	void divergence(ScalarField2D& result, const StaggeredVectorField2D& vectorField) {
 		int width = vectorField.width();
 		int height = vectorField.height();

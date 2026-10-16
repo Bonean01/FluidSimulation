@@ -2,6 +2,9 @@
 
 #include <vector>
 #include <algorithm>
+#include <iostream>
+
+#include "math/dataStructures/Vector.h"
 
 template<typename T>
 class Grid2D {
@@ -26,7 +29,7 @@ public:
 		m_values[index] = value;
 	}
 
-	
+	const T& getValue(const Vec2i& pos) const { return getValue(pos.x, pos.y); }
 	const T& getValue(int i, int j) const {
 		i = std::clamp(i, 0, m_width - 1);
 		j = std::clamp(j, 0, m_height - 1);
@@ -47,6 +50,17 @@ public:
 
 	const T* getValuesPtr() const {
 		return m_values.data();
+	}
+
+	friend std::ostream& operator <<(std::ostream& os, const Grid2D<T>& grid) {
+		for (int j = grid.height() - 1; j >= 0; j--) {
+			for (int i = 0; i < grid.width(); i++) {
+				float value = grid.getValue(i, j);
+				std::printf("(%.2f)\t", value);
+			}
+			std::cout << "\n";
+		}
+		return os;
 	}
 
 

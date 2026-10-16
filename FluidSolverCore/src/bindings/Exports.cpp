@@ -40,6 +40,10 @@ extern "C" INTERFACE_EXPORT const float* GetSmokeFieldPtr(FluidSimulation* handl
 	return handle->getSmokeField().getValuesPtr();
 }
 
+extern "C" INTERFACE_EXPORT const float* GetVolumeFractionFieldPtr(FluidSimulation* handle) {
+	return handle->getVolumeFractionField().getValuesPtr();
+}
+
 extern "C" INTERFACE_EXPORT const CellData* GetCellDataPtr(FluidSimulation* handle) {
 	return handle->getCellData().getValuesPtr();
 }
