@@ -137,7 +137,7 @@ float FluidInterface2D::computeFluxAt(const VectorComponent& C, int i, int j, co
     
     float volumeFraction = volumeFractionField.getValue(cellPos);
     float intercept = data.intercept;
-    float slope = majorAxis == X ? 1 / data.normal.y : -data.normal.x;
+    float slope = majorAxis == X ? 1 / data.normal.y : data.normal.x;
     bool isFluidBelow = data.normal.y > 0;
 
 	float normalizedFlux = 0.0f;

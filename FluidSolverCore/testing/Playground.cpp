@@ -93,7 +93,7 @@ int main(int argc, char* argv[]) {
 	float cellWidth = 1.0f;
 	float density = 1.0f;
 	float kinematicViscosity = 0.0001f;
-	float timestep = 1.0f / 120.0f;
+	float timestep = 1.0f;
 
 	Domain domain{ width, height };
 
@@ -122,7 +122,7 @@ int main(int argc, char* argv[]) {
 
 	for (int i = 1; i < width - 1; i++) {
 		for (int j = 1; j < height; j++) {
-			velocityField.setEdgeValue(VectorComponent::Y, i, j, -9.8f);
+			velocityField.setEdgeValue(VectorComponent::Y, i, j, -0.125f);
 		}
 	}
 	std::cout << "\n======================== VELOCITIES ========================\n" << velocityField;

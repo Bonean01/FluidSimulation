@@ -115,7 +115,7 @@ void Advection::execute(ScalarField2D& volumeFractionField, FluidInterface2D& fl
 
 	
 	for (VectorComponent C : {X, Y}) {
-		fluidInterface.reconstruct(volumeFractionField);
+		//fluidInterface.reconstruct(volumeFractionField);
 		// would only want to do this for the current component though
 		computeFluxes(m_fluxes, fluidInterface, velocityField, volumeFractionField, timeStep);
 		
@@ -127,7 +127,7 @@ void Advection::execute(ScalarField2D& volumeFractionField, FluidInterface2D& fl
 
 				float cellVolume = cellWidth * cellWidth;
 				float dilatationTerm = domain.getCell(i, j).cellType == CellType::Fluid ? Staggered::divergence(C, i, j, velocityField) * cellVolume : 0;
-				float netFlux = flux1 - flux0;
+				float netFlux = flux0 - flux1;
 				float volumeFraction = volumeFractionField.getValue(i, j);
 
 				float newVolumeFraction = timeStep / cellVolume * (netFlux + dilatationTerm) + volumeFraction;
