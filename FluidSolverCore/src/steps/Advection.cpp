@@ -113,12 +113,12 @@ void Advection::execute(ScalarField2D& volumeFractionField, FluidInterface2D& fl
 	int height = volumeFractionField.height();
 	float cellWidth = volumeFractionField.cellWidth();
 
-
+	
 	for (VectorComponent C : {X, Y}) {
 		fluidInterface.reconstruct(volumeFractionField);
 		// would only want to do this for the current component though
 		computeFluxes(m_fluxes, fluidInterface, velocityField, volumeFractionField, timeStep);
-
+		
 		#pragma omp parallel for
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width; i++) {
@@ -131,10 +131,9 @@ void Advection::execute(ScalarField2D& volumeFractionField, FluidInterface2D& fl
 				float volumeFraction = volumeFractionField.getValue(i, j);
 
 				float newVolumeFraction = timeStep / cellVolume * (netFlux + dilatationTerm) + volumeFraction;
-				m_auxScalarField.setValue(i, j, newVolumeFraction);
+				volumeFractionField.setValue(i, j, newVolumeFraction);
 			}
 		}
-		std::swap(volumeFractionField, m_auxScalarField);
 	}
 }
 

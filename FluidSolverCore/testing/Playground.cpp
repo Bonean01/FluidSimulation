@@ -30,19 +30,6 @@ static void printSimulationState(const FluidSimulation& simulation) {
 }
 
 
-static void printPressureField(const FluidSimulation& simulation) {
-	ScalarField2D pressureField = simulation.getPressureField();
-	int width = pressureField.width();
-	int height = pressureField.height();
-	for (int j = height - 1; j >= 0; j--) {
-		for (int i = 0; i < width; i++) {
-			std::cout << "(" << pressureField.getValue(i, j) << ")\t\t";
-		}
-		std::cout << std::endl;
-	}
-}
-
-
 static void printDivergenceField(const FluidSimulation& simulation) {
 	ScalarField2D divergenceField = simulation.getDivergenceField();
 	int width = divergenceField.width();
@@ -72,7 +59,7 @@ static void printSurfaceSDF(const FluidSimulation& simulation) {
 
 
 static void printFluidInterface(const FluidInterface2D& fluidInterface) {
-	std::cout << "\nFLUID NORMALS" << std::endl;
+	std::cout << "\n======================== FLUID NORMALS ========================" << std::endl;
 	int width = fluidInterface.width();
 	int height = fluidInterface.height();
 	for (int j = height - 1; j >= 0; j--) {
@@ -83,7 +70,7 @@ static void printFluidInterface(const FluidInterface2D& fluidInterface) {
 		std::cout << std::endl;
 	}
 
-	std::cout << "\nINTERCEPTS" << std::endl;
+	std::cout << "\n======================== INTERCEPTS ========================\n";
 	for (int j = height - 1; j >= 0; j--) {
 		for (int i = 0; i < width; i++) {
 			float intercept = fluidInterface.getValue(i, j).intercept;
@@ -101,46 +88,51 @@ static void printFluidInterface(const FluidInterface2D& fluidInterface) {
 #include "domain/PLIC/FluidInterface.h"
 
 int main(int argc, char* argv[]) {
-	int width = 3;
-	int height = 3;
+	int width = 5;
+	int height = 5;
 	float cellWidth = 1.0f;
 	float density = 1.0f;
 	float kinematicViscosity = 0.0001f;
 	float timestep = 1.0f / 120.0f;
+
+	Domain domain{ width, height };
 
 	ScalarField2D volumeFractionField{ width, height, cellWidth };
 	StaggeredVectorField2D velocityField{ width, height, cellWidth };
 	StaggeredGrid2D<float> fluxes{ width, height, cellWidth }; 
 	Advection advection{ width, height, cellWidth };
 
-	volumeFractionField.setValue(0, 0, 1.0f);
-	volumeFractionField.setValue(1, 0, 0.95f);
-	volumeFractionField.setValue(2, 0, 0.05f);
+	volumeFractionField.setValue(1, 1, 1.0f);
+	volumeFractionField.setValue(2, 1, 0.95f);
+	volumeFractionField.setValue(3, 1, 0.05f);
 
-	volumeFractionField.setValue(0, 1, 1.0f);
-	volumeFractionField.setValue(1, 1, 0.8f);
-	volumeFractionField.setValue(2, 1, 0.0f);
+	volumeFractionField.setValue(1, 2, 1.0f);
+	volumeFractionField.setValue(2, 2, 0.8f);
+	volumeFractionField.setValue(3, 2, 0.0f);
 
-	volumeFractionField.setValue(0, 2, 0.9f);
-	volumeFractionField.setValue(1, 2, 0.3f);
-	volumeFractionField.setValue(2, 2, 0.0f);
+	volumeFractionField.setValue(1, 3, 0.9f);
+	volumeFractionField.setValue(2, 3, 0.3f);
+	volumeFractionField.setValue(3, 3, 0.0f);
 
-	std::cout << "VOLUME FRACTION FIELD\n" << volumeFractionField;
+	std::cout << "======================== VOLUME FRACTION FIELD ========================\n" << volumeFractionField;
 
-	FluidInterface2D fluidInterface{ 3, 3 };
+	FluidInterface2D fluidInterface{ width, height };
 	fluidInterface.reconstruct(volumeFractionField);
 	printFluidInterface(fluidInterface);
 
-	for (int i = 0; i < width; i++) {
-		for (int j = 0; j < height + 1; j++) {
-			velocityField.setEdgeValue(VectorComponent::Y, i, j, 1.0f);
+	for (int i = 1; i < width - 1; i++) {
+		for (int j = 1; j < height; j++) {
+			velocityField.setEdgeValue(VectorComponent::Y, i, j, -9.8f);
 		}
 	}
+	std::cout << "\n======================== VELOCITIES ========================\n" << velocityField;
 
 	advection.computeFluxes(fluxes, fluidInterface, velocityField, volumeFractionField, timestep);
 
-
-	std::cout << "\nFLUXES: \n" << fluxes;
+	std::cout << "\n======================== FLUXES ========================\n" << fluxes;
+	domain.updateCellData(volumeFractionField);
+	advection.execute(volumeFractionField, fluidInterface, velocityField, domain, timestep);
+	std::cout << "\n======================== UPDATED VOLUME FRACTION FIELD ========================\n" << volumeFractionField;
 
 	return 0;
 
