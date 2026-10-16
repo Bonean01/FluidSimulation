@@ -25,11 +25,11 @@ public:
 	void execute(ScalarField2D& volumeFractionField, FluidInterface2D& fluidInterface, const StaggeredVectorField2D& velocityField, const Domain& domain, float timeStep);
 
 
+	void computeFluxes(StaggeredGrid2D<float>& result, const FluidInterface2D& fluidInterface, const StaggeredVectorField2D& velocityField, const ScalarField2D& volumeFractionField, float timeStep) const;
 private:
 	StaggeredVectorField2D m_auxStaggeredVectorField;
 	StaggeredGrid2D<float> m_fluxes;
 	ScalarField2D m_auxScalarField;
 
 	void advectComponent(const VectorComponent& C, StaggeredVectorField2D& velocityField, const Domain& domain, float timeStep);
-	void computeFluxes(StaggeredGrid2D<float>& result, const FluidInterface2D& fluidInterface, const StaggeredVectorField2D& velocityField, const ScalarField2D& volumeFractionField, float timeStep);
 };

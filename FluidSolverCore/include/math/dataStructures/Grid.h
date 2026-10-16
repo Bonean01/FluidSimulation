@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <iostream>
 
 #include "math/dataStructures/Vector.h"
 
@@ -49,6 +50,17 @@ public:
 
 	const T* getValuesPtr() const {
 		return m_values.data();
+	}
+
+	friend std::ostream& operator <<(std::ostream& os, const Grid2D<T>& grid) {
+		for (int j = grid.height() - 1; j >= 0; j--) {
+			for (int i = 0; i < grid.width(); i++) {
+				float value = grid.getValue(i, j);
+				std::printf("(%.2f)\t", value);
+			}
+			std::cout << "\n";
+		}
+		return os;
 	}
 
 

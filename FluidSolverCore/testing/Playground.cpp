@@ -94,18 +94,6 @@ static void printFluidInterface(const FluidInterface2D& fluidInterface) {
 }
 
 
-static void printScalarField(const ScalarField2D& scalarField) {
-	int width = scalarField.width();
-	int height = scalarField.height();
-	for (int j = height - 1; j >= 0; j--) {
-		for (int i = 0; i < width; i++) {
-			float value = scalarField.getValue(i, j);
-			std::printf("(%.2f)\t", value);
-		}
-		std::cout << std::endl;
-	}
-}
-
 
 #include "utils/profiling/Profiler.h"
 #include "utils/profiling/ScopeProfiler.h"
@@ -113,8 +101,17 @@ static void printScalarField(const ScalarField2D& scalarField) {
 #include "domain/PLIC/FluidInterface.h"
 
 int main(int argc, char* argv[]) {
-	ScalarField2D volumeFractionField{ 3, 3, 1.0f };
-	StaggeredVectorField2D velocityField{ 3, 3, 1.0f };
+	int width = 3;
+	int height = 3;
+	float cellWidth = 1.0f;
+	float density = 1.0f;
+	float kinematicViscosity = 0.0001f;
+	float timestep = 1.0f / 120.0f;
+
+	ScalarField2D volumeFractionField{ width, height, cellWidth };
+	StaggeredVectorField2D velocityField{ width, height, cellWidth };
+	StaggeredGrid2D<float> fluxes{ width, height, cellWidth }; 
+	Advection advection{ width, height, cellWidth };
 
 	volumeFractionField.setValue(0, 0, 1.0f);
 	volumeFractionField.setValue(1, 0, 0.95f);
@@ -128,30 +125,25 @@ int main(int argc, char* argv[]) {
 	volumeFractionField.setValue(1, 2, 0.3f);
 	volumeFractionField.setValue(2, 2, 0.0f);
 
-	std::cout << "VOLUME FRACTION FIELD" << std::endl;
-	printScalarField(volumeFractionField);
+	std::cout << "VOLUME FRACTION FIELD\n" << volumeFractionField;
 
 	FluidInterface2D fluidInterface{ 3, 3 };
 	fluidInterface.reconstruct(volumeFractionField);
 	printFluidInterface(fluidInterface);
 
-	velocityField.setEdgeValue(VectorComponent::X, 1, 1, -1.0f);
-	float flux = fluidInterface.computeFluxAt(VectorComponent::X, 1, 1, velocityField, volumeFractionField, 1.0f, 1.0f / 120.0f);
-	std::cout << "\nflux: " << flux << std::endl;
+	for (int i = 0; i < width; i++) {
+		for (int j = 0; j < height + 1; j++) {
+			velocityField.setEdgeValue(VectorComponent::Y, i, j, 1.0f);
+		}
+	}
+
+	advection.computeFluxes(fluxes, fluidInterface, velocityField, volumeFractionField, timestep);
+
+
+	std::cout << "\nFLUXES: \n" << fluxes;
 
 	return 0;
 
-
-
-
-
-
-	int width = 88;
-	int height = 44;
-	float cellWidth = 0.75f; //1.0f / width;
-	float density = 1.0f;
-	float kinematicViscosity = 0.0001f;
-	float timestep = 1.0f / 30.0f;
 
 	FluidSimulation simulation{ 
 		FluidSimulationConfig{ 

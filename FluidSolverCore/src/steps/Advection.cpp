@@ -113,7 +113,7 @@ void Advection::execute(ScalarField2D& volumeFractionField, FluidInterface2D& fl
 	int height = volumeFractionField.height();
 	float cellWidth = volumeFractionField.cellWidth();
 
-	
+
 	for (VectorComponent C : {X, Y}) {
 		fluidInterface.reconstruct(volumeFractionField);
 		// would only want to do this for the current component though
@@ -139,7 +139,7 @@ void Advection::execute(ScalarField2D& volumeFractionField, FluidInterface2D& fl
 }
 
 
-void Advection::computeFluxes(StaggeredGrid2D<float>& result, const FluidInterface2D& fluidInterface, const StaggeredVectorField2D& velocityField, const ScalarField2D& volumeFractionField, float timeStep) {
+void Advection::computeFluxes(StaggeredGrid2D<float>& result, const FluidInterface2D& fluidInterface, const StaggeredVectorField2D& velocityField, const ScalarField2D& volumeFractionField, float timeStep) const {
 	using enum VectorComponent;
 
 	int width = velocityField.width();
