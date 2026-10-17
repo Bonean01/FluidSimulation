@@ -94,7 +94,7 @@ int main(int argc, char* argv[]) {
 	float cellWidth = 1.0f;
 	float density = 1.0f;
 	float kinematicViscosity = 0.0001f;
-	float timestep = 1.0f / 120.0f;
+	float timestep = 1.0f / 20.0f;
 
 	Domain domain{ width, height };
 
@@ -119,7 +119,6 @@ int main(int argc, char* argv[]) {
 
 	FluidInterface2D fluidInterface{ width, height };
 	fluidInterface.reconstruct(volumeFractionField);
-	printFluidInterface(fluidInterface);
 
 
 	for (int k = 0; k < 20; k++) {
@@ -134,6 +133,7 @@ int main(int argc, char* argv[]) {
 		advection.execute(velocityField, domain, timestep);
 	}
 	
+	printFluidInterface(fluidInterface);
 	std::cout << "\n======================== VELOCITIES ========================\n" << velocityField;
 	std::cout << "\n======================== FLUXES ========================\n" << fluxes;
 	std::cout << "\n======================== UPDATED VOLUME FRACTION FIELD ========================\n" << volumeFractionField;

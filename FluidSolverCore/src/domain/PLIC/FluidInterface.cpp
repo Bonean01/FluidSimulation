@@ -67,8 +67,8 @@ Vec2f FluidInterface2D::computeNormalAt(int i, int j, const VectorComponent& maj
 	}
 
 	Vec2f normal;
-	if (majorAxis == X) { normal = { 1.0f, -diff / cellWidth }; }
-	else { normal = { -diff / cellWidth, 1.0f }; }
+	if (majorAxis == X) { normal = { 1.0f * FiniteDifference::Central::gradient(i, j, volumeFractionField).x < 0 ? 1.0f : -1.0f, -diff / cellWidth }; }
+	else { normal = { -diff / cellWidth, 1.0f * FiniteDifference::Central::gradient(i, j, volumeFractionField).y < 0 ? 1.0f : -1.0f }; }
 
 	return normal;
 }
@@ -137,7 +137,7 @@ float FluidInterface2D::computeFluxAt(const VectorComponent& C, int i, int j, co
     
     float volumeFraction = volumeFractionField.getValue(cellPos);
     float intercept = data.intercept;
-    float slope = majorAxis == X ? 1 / data.normal.y : data.normal.x;
+	float slope = majorAxis == X ? 1 / data.normal.y : data.normal.x;
     bool isFluidBelow = data.normal.y > 0;
 
 	float normalizedFlux = 0.0f;

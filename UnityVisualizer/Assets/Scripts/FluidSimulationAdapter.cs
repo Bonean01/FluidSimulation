@@ -36,7 +36,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
         CellConfig fluid = new(new(CellType.Fluid), new(BoundaryCondition.None));
 
 
-        for (int j = 25; j < m_height - 10; j++) {
+        for (int j = 10; j < m_height - 10; j++) {
             for (int i = 10; i < m_width - 10; i++) {
                 //if (i < 10 && j < 10) continue;
                 m_simulation.SetCell(i, j, ref fluid);
