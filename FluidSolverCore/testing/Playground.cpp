@@ -86,14 +86,15 @@ static void printFluidInterface(const FluidInterface2D& fluidInterface) {
 #include "utils/profiling/ScopeProfiler.h"
 
 #include "domain/PLIC/FluidInterface.h"
+#include "steps/ExternalForces.h"
 
 int main(int argc, char* argv[]) {
 	int width = 5;
-	int height = 5;
+	int height = 10;
 	float cellWidth = 1.0f;
 	float density = 1.0f;
 	float kinematicViscosity = 0.0001f;
-	float timestep = 1.0f;
+	float timestep = 1.0f / 120.0f;
 
 	Domain domain{ width, height };
 
@@ -102,17 +103,17 @@ int main(int argc, char* argv[]) {
 	StaggeredGrid2D<float> fluxes{ width, height, cellWidth }; 
 	Advection advection{ width, height, cellWidth };
 
-	volumeFractionField.setValue(1, 1, 1.0f);
-	volumeFractionField.setValue(2, 1, 0.95f);
-	volumeFractionField.setValue(3, 1, 0.05f);
-
-	volumeFractionField.setValue(1, 2, 1.0f);
-	volumeFractionField.setValue(2, 2, 0.8f);
-	volumeFractionField.setValue(3, 2, 0.0f);
-
-	volumeFractionField.setValue(1, 3, 0.9f);
-	volumeFractionField.setValue(2, 3, 0.3f);
-	volumeFractionField.setValue(3, 3, 0.0f);
+	volumeFractionField.setValue(1, 5+1, 1.0f);
+	volumeFractionField.setValue(2, 5+1, 1.0f);
+	volumeFractionField.setValue(3, 5+1, 1.0f);
+									
+	volumeFractionField.setValue(1, 5+2, 1.0f);
+	volumeFractionField.setValue(2, 5+2, 1.0f);
+	volumeFractionField.setValue(3, 5+2, 1.0f);
+									
+	volumeFractionField.setValue(1, 5+3, 1.0f);
+	volumeFractionField.setValue(2, 5+3, 1.0f);
+	volumeFractionField.setValue(3, 5+3, 1.0f);
 
 	std::cout << "======================== VOLUME FRACTION FIELD ========================\n" << volumeFractionField;
 
@@ -120,18 +121,21 @@ int main(int argc, char* argv[]) {
 	fluidInterface.reconstruct(volumeFractionField);
 	printFluidInterface(fluidInterface);
 
-	for (int i = 1; i < width - 1; i++) {
-		for (int j = 1; j < height; j++) {
-			velocityField.setEdgeValue(VectorComponent::Y, i, j, -0.125f);
-		}
+
+	for (int k = 0; k < 20; k++) {
+		advection.computeFluxes(fluxes, fluidInterface, velocityField, volumeFractionField, timestep);
+		advection.execute(volumeFractionField, fluidInterface, velocityField, domain, timestep);
+		domain.updateCellData(volumeFractionField);
+
+		ExternalForces::applyGravity(velocityField, domain, timestep);
+
+		domain.applyVelocityBoundaryConditions(velocityField);
+
+		advection.execute(velocityField, domain, timestep);
 	}
+	
 	std::cout << "\n======================== VELOCITIES ========================\n" << velocityField;
-
-	advection.computeFluxes(fluxes, fluidInterface, velocityField, volumeFractionField, timestep);
-
 	std::cout << "\n======================== FLUXES ========================\n" << fluxes;
-	domain.updateCellData(volumeFractionField);
-	advection.execute(volumeFractionField, fluidInterface, velocityField, domain, timestep);
 	std::cout << "\n======================== UPDATED VOLUME FRACTION FIELD ========================\n" << volumeFractionField;
 
 	return 0;

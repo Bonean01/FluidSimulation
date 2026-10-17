@@ -33,7 +33,7 @@ void Advection::advectComponent(const VectorComponent& C, StaggeredVectorField2D
 		for (int i = 0; i < width; i++) {
 			const BoundaryData& currentBoundary = domain.getBoundary(C, i, j);
 			if (domain.hasEdgePrescribedVelocity(C, i, j)) continue;
-			if (not domain.isFluidEdge(C, i, j)) continue;
+			//if (not domain.isFluidEdge(C, i, j)) continue;
 
 			Vec2f position = velocityField.getEdgePosition(C, i, j);
 			Vec2f currentVel = velocityField.sampleBilinear(position);
@@ -115,7 +115,7 @@ void Advection::execute(ScalarField2D& volumeFractionField, FluidInterface2D& fl
 
 	
 	for (VectorComponent C : {X, Y}) {
-		//fluidInterface.reconstruct(volumeFractionField);
+		fluidInterface.reconstruct(volumeFractionField);
 		// would only want to do this for the current component though
 		computeFluxes(m_fluxes, fluidInterface, velocityField, volumeFractionField, timeStep);
 		
