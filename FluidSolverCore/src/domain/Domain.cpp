@@ -206,7 +206,7 @@ void Domain::createMarkerParticles(std::vector<MarkerParticle>& markerParticles)
             // Instantiate 2x2 (for 2D) particles in a jittered arrangement inside the cell
             for (int k = 0; k < 2; k++) {
                 for (int l = 0; l < 2; l++) {
-                    Vec2f markerRelPos = static_cast<Vec2f>(Vec2i{ k, l }) / 2 - Vec2f{0.5f, 0.5f};
+                    Vec2f markerRelPos = static_cast<Vec2f>(Vec2i{ k, l }) / 2 - Vec2f{0.25f, 0.25f};
                     float randomOffsetX = randomFloat(-0.125f, 0.125f);
                     float randomOffsetY = randomFloat(-0.125f, 0.125f);
                     markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x + markerRelPos.x + randomOffsetX, cellCenter.y + markerRelPos.y + randomOffsetY)));

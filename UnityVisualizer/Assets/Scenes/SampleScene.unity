@@ -806,7 +806,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FluidSimulationPlayer
   fixedFrameRate: 30
-  startPaused: 0
+  startPaused: 1
 --- !u!114 &1486929794
 MonoBehaviour:
   m_ObjectHideFlags: 0
