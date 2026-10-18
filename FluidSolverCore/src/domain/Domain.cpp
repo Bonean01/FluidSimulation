@@ -144,7 +144,7 @@ void Domain::updateCellData(const std::vector<MarkerParticle>& markerParticles) 
     
     #pragma omp parallel
     {
-        #pragma omp for nowait
+        #pragma omp for
         for (int j = 0; j < height; j++) {
             for (int i = 0; i < width; i++) {
                 CellData& currentCell = m_cellData.at(i, j);
