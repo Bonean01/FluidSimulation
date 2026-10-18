@@ -64,7 +64,7 @@ private:
 		{-1, -1}, {0, -1}, {1, -1}
 	}};
 
-	void smoothLevelSet(ScalarField2D& levelSet);
+	void smoothLevelSet();
 	void resetSurfaceData();
 	void setClosestCellsSD();
 	void populateWithClosestNeighbours(MinHeapPQ& queue);

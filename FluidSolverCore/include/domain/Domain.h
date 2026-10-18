@@ -38,7 +38,7 @@ public:
 	void setCell(int i, int j, const CellData&, const BoundaryData&);
 	
 	void createMarkerParticles(std::vector<MarkerParticle>& markerParticles);
-	void updateCellData(const std::vector<MarkerParticle>& markerParticles);
+	void updateCellData(const std::vector<MarkerParticle>& markerParticles, const FluidSurface& fluidSurface);
 	void flood();
 	void drain();
 
