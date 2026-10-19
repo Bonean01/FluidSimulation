@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 
 public class FluidSimulationAdapter : MonoBehaviour {
     [SerializeField] private int width, height;
@@ -235,11 +234,56 @@ public class FluidSimulationAdapter : MonoBehaviour {
 
     private void OnDrawGizmosSelected() {
         if (m_simulation == null) return;
+
         Gizmos.color = Color.antiqueWhite;
         Vector2 origin = transform.position - transform.localScale / 2;
         foreach (MarkerParticle particle in m_simulation.MarkerParticles()) {
             Vector2 position = new(particle.position.x / m_width * transform.localScale.x, particle.position.y / m_height * transform.localScale.y);
             Gizmos.DrawSphere(origin + position, 0.05f);
+        }
+
+        IEnumerator<InterfaceData> enumerator = m_simulation.InterfaceValues().GetEnumerator();
+        float worldCellWidth = transform.localScale.x / m_width;
+        for (int j = 0; j < m_height; j++) {
+            for (int i = 0; i < m_width; i++) {
+                enumerator.MoveNext();
+                InterfaceData data = enumerator.Current;
+
+                Vector2 right = new(1, data.intercept - data.normal.x / data.normal.y);
+                Vector2 left = new(0, data.intercept);
+                Vector2 top = new((data.intercept - 1) * data.normal.y / data.normal.x, 1);
+                Vector2 bottom = new(data.intercept * data.normal.y / data.normal.x, 0);
+
+                bool rightValid = 0 <= right.y && right.y < 1;
+                bool leftValid = 0 <= left.y && left.y < 1;
+                bool topValid = 0 <= top.x && top.x < 1;
+                bool bottomValid = 0 <= bottom.x && bottom.x < 1;
+
+                Vector2? p1 = null;
+                Vector2? p2 = null;
+                if (rightValid) p1 = right;
+                if (leftValid) {
+                    if (p1 == null) p1 = left;
+                    else p2 = left;
+                }
+                if (topValid) {
+                    if (p1 == null) p1 = top;
+                    else p2 = top;
+                }
+                if (bottomValid) p2 = bottom;
+
+                Vector2 position = new(i, j);
+                Gizmos.color = Color.darkGreen;
+                Gizmos.DrawLine(origin + (position + Vector2.one * 0.5f) * worldCellWidth, origin + (position + Vector2.one * 0.5f + new Vector2(data.normal.x, data.normal.y) * 0.333f) * worldCellWidth);
+                
+                if (p1 != null && p2 != null) {
+                    Vector2 worldP1 = origin + ((Vector2)p1 + position) * worldCellWidth;
+                    Vector2 worldP2 = origin + ((Vector2)p2 + position) * worldCellWidth;
+                    
+                    Gizmos.color = Color.red;
+                    Gizmos.DrawLine(worldP1, worldP2);
+                }
+            }
         }
     }
 }

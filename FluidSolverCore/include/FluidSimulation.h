@@ -61,6 +61,7 @@ public:
 	const Grid2D<CellData>& getCellData() const { return m_domain.getCellData(); }
 	const std::vector<MarkerParticle>& getMarkerParticles() const { return m_markerParticles; }
 	const FluidSurface& getSurfaceSDF() const { return m_fluidSurface; }
+	const FluidInterface2D& getFluidInterface() const { return m_fluidInterface; }
 
 	const int getGridWidth() const { return m_gridWidth; }
 	const int getGridHeight() const { return m_gridHeight; }

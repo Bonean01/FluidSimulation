@@ -60,6 +60,10 @@ extern "C" INTERFACE_EXPORT const float* GetSurfaceSDFPtr(FluidSimulation* handl
 	return handle->getSurfaceSDF().getValuesPtr();
 }
 
+extern "C" INTERFACE_EXPORT const InterfaceData* GetFluidInterfacePtr(FluidSimulation* handle) {
+	return handle->getFluidInterface().getValuesPtr();
+}
+
 
 extern "C" INTERFACE_EXPORT void SetVelocity(FluidSimulation* handle, int i, int j, Vec2f velocity) {
 	handle->setVelocity(i, j, velocity);

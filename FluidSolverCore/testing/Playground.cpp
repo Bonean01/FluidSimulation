@@ -89,7 +89,7 @@ static void printFluidInterface(const FluidInterface2D& fluidInterface) {
 #include "steps/ExternalForces.h"
 
 int main(int argc, char* argv[]) {
-	int width = 5;
+	int width = 7;
 	int height = 10;
 	float cellWidth = 1.0f;
 	float density = 1.0f;
@@ -103,17 +103,11 @@ int main(int argc, char* argv[]) {
 	StaggeredGrid2D<float> fluxes{ width, height, cellWidth }; 
 	Advection advection{ width, height, cellWidth };
 
-	volumeFractionField.setValue(1, 5+1, 1.0f);
-	volumeFractionField.setValue(2, 5+1, 1.0f);
-	volumeFractionField.setValue(3, 5+1, 1.0f);
-									
-	volumeFractionField.setValue(1, 5+2, 1.0f);
-	volumeFractionField.setValue(2, 5+2, 1.0f);
-	volumeFractionField.setValue(3, 5+2, 1.0f);
-									
-	volumeFractionField.setValue(1, 5+3, 1.0f);
-	volumeFractionField.setValue(2, 5+3, 1.0f);
-	volumeFractionField.setValue(3, 5+3, 1.0f);
+	for (int j = 5; j < height - 1; j++) {
+		for (int i = 1; i < width - 1; i++) {
+			volumeFractionField.setValue(i, j, 1.0f);
+		}
+	}
 
 	std::cout << "======================== VOLUME FRACTION FIELD ========================\n" << volumeFractionField;
 
@@ -121,7 +115,7 @@ int main(int argc, char* argv[]) {
 	fluidInterface.reconstruct(volumeFractionField);
 
 
-	for (int k = 0; k < 20; k++) {
+	for (int k = 0; k < 1; k++) {
 		advection.computeFluxes(fluxes, fluidInterface, velocityField, volumeFractionField, timestep);
 		advection.execute(volumeFractionField, fluidInterface, velocityField, domain, timestep);
 		domain.updateCellData(volumeFractionField);
@@ -138,7 +132,37 @@ int main(int argc, char* argv[]) {
 	std::cout << "\n======================== FLUXES ========================\n" << fluxes;
 	std::cout << "\n======================== UPDATED VOLUME FRACTION FIELD ========================\n" << volumeFractionField;
 
-	return 0;
+	return 0; 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 	FluidSimulation simulation{ 
