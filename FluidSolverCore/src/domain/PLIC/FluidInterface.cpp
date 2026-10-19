@@ -58,7 +58,7 @@ Vec2f FluidInterface2D::computeNormalAt(int i, int j, const VectorComponent& maj
 	}
 
 	float diff;
-	if (currentVolumeFraction > 0.5f) {
+	if (aproxLengths[0] < aproxLengths[2]) {
 		// Use right + center (forward diff)
 		diff = aproxLengths[2] - aproxLengths[1];
 	}
@@ -107,7 +107,7 @@ float FluidInterface2D::computeIntercept(const VectorComponent& majorAxis, const
 
 	float slope = majorAxis == X ? normal.y : normal.x;
 	if (majorAxis == X) {
-		if (slope >= 0) return computeIntercept(slope, volumeFraction) / slope;
+		if (slope >= 0) return computeIntercept(slope, volumeFraction) / (slope + std::numeric_limits<float>::epsilon());
 		else return 1 + computeIntercept(-slope, volumeFraction) / slope;
 	}
 	else {

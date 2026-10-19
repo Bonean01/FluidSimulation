@@ -108,6 +108,7 @@ int main(int argc, char* argv[]) {
 			volumeFractionField.setValue(i, j, 1.0f);
 		}
 	}
+	domain.updateCellData(volumeFractionField);
 
 	std::cout << "======================== VOLUME FRACTION FIELD ========================\n" << volumeFractionField;
 
@@ -115,7 +116,7 @@ int main(int argc, char* argv[]) {
 	fluidInterface.reconstruct(volumeFractionField);
 
 
-	for (int k = 0; k < 1; k++) {
+	for (int k = 0; k < 3; k++) {
 		advection.computeFluxes(fluxes, fluidInterface, velocityField, volumeFractionField, timestep);
 		advection.execute(volumeFractionField, fluidInterface, velocityField, domain, timestep);
 		domain.updateCellData(volumeFractionField);
@@ -132,7 +133,7 @@ int main(int argc, char* argv[]) {
 	std::cout << "\n======================== FLUXES ========================\n" << fluxes;
 	std::cout << "\n======================== UPDATED VOLUME FRACTION FIELD ========================\n" << volumeFractionField;
 
-	return 0; 
+	return 0;
 
 
 
