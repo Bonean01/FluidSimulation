@@ -11,7 +11,7 @@ void FluidInterface2D::reconstruct(const ScalarField2D& volumeFractionField) {
 			VectorComponent majorAxis = computeMajorAxisAt(i, j, volumeFractionField);
 			Vec2f normal = computeNormalAt(i, j, majorAxis, volumeFractionField);
 			float volumeFraction = volumeFractionField.getValue(i, j);
-			float intercept = computeIntercept(majorAxis, normal, volumeFraction);
+			float intercept = computeIntercept(normal, volumeFraction);
 
 			InterfaceData data{normal, intercept};
 			this->setValue(i, j, data);
@@ -102,18 +102,16 @@ float FluidInterface2D::computeIntercept(float slope, float volumeFraction) cons
 
 
 
-float FluidInterface2D::computeIntercept(const VectorComponent& majorAxis, const Vec2f& normal, float volumeFraction) const {
+float FluidInterface2D::computeIntercept(const Vec2f& normal, float volumeFraction) const {
 	using enum VectorComponent;
 
-	float slope = majorAxis == X ? normal.y : normal.x;
-	if (majorAxis == X) {
-		if (slope >= 0) return computeIntercept(slope, volumeFraction) / (slope + std::numeric_limits<float>::epsilon());
-		else return 1 + computeIntercept(-slope, volumeFraction) / slope;
-	}
-	else {
-		if (slope >= 0) return computeIntercept(slope, volumeFraction);
-		else return computeIntercept(-slope, volumeFraction) + slope;
-	}
+	float normalY = normal.y;
+	if (normalY == 0.0f) normalY = 0.000001f;
+
+	float slope = normal.x / normalY;
+	float effectiveVolumeFraction = normal.y > 0 ? volumeFraction : 1 - volumeFraction;
+	if (slope >= 0) return computeIntercept(slope, effectiveVolumeFraction);
+	else return computeIntercept(-slope, effectiveVolumeFraction) + slope;
 }
 
 

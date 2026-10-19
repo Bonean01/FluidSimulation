@@ -24,7 +24,7 @@ public:
 private:
     VectorComponent computeMajorAxisAt(int i, int j, const ScalarField2D& volumeFractionField) const;
     Vec2f computeNormalAt(int i, int j, const VectorComponent& majorAxis, const ScalarField2D& volumeFractionField) const;
-    float computeIntercept(const VectorComponent& majorAxis, const Vec2f& normal, float volumeFraction) const;
+    float computeIntercept(const Vec2f& normal, float volumeFraction) const;
     float computeIntercept(float slope, float volumeFraction) const;
 
     float triangularCase(float m, float f) const { return std::sqrt(2.0f * m * f); }
