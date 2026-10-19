@@ -36,6 +36,7 @@ Vec2f FluidInterface2D::computeNormalAt(int i, int j, const VectorComponent& maj
 	using enum VectorComponent;
 	
 	float currentVolumeFraction = volumeFractionField.getValue(i, j);
+	if (currentVolumeFraction == 0.0f || currentVolumeFraction == 1.0f) return { 0.0f, 0.0f };
 	
 	float cellWidth = volumeFractionField.cellWidth();
 	auto aproxLengths = std::array<float, 3>{};
@@ -67,8 +68,9 @@ Vec2f FluidInterface2D::computeNormalAt(int i, int j, const VectorComponent& maj
 	}
 
 	Vec2f normal;
-	if (majorAxis == X) { normal = { 1.0f * FiniteDifference::Central::gradient(i, j, volumeFractionField).x < 0 ? 1.0f : -1.0f, -diff / cellWidth }; }
-	else { normal = { -diff / cellWidth, 1.0f * FiniteDifference::Central::gradient(i, j, volumeFractionField).y < 0 ? 1.0f : -1.0f }; }
+	Vec2f gradient = FiniteDifference::Central::gradient(i, j, volumeFractionField);
+	if (majorAxis == X) { normal = { 1.0f * gradient.x < 0 ? 1.0f : -1.0f, -diff / cellWidth }; }
+	else { normal = { -diff / cellWidth, 1.0f * gradient.y < 0 ? 1.0f : -1.0f }; }
 
 	return normal;
 }
@@ -77,6 +79,8 @@ Vec2f FluidInterface2D::computeNormalAt(int i, int j, const VectorComponent& maj
 
 /* Computes the intercept for the specific case of a normal with positive components */
 float FluidInterface2D::computeIntercept(float slope, float volumeFraction) const {
+	if (volumeFraction == 0 || volumeFraction == 1) return 0.0f;
+
 	slope = std::abs(slope) + std::numeric_limits<float>::epsilon();
 
 	float triangular = triangularCase(slope, volumeFraction);
@@ -163,6 +167,9 @@ float FluidInterface2D::computeFluxAt(const VectorComponent& C, int i, int j, co
 * PRECONDITION: speed must be scaled by Δt / Δx
 */
 float FluidInterface2D::computeNormalizedFlux(float volumeFraction, float scaledSpeed, float intercept, float slope, bool isFluidBelow) const {
+	if (volumeFraction == 0.0f) return 0.0f;
+	if (volumeFraction == 1.0f) return scaledSpeed;
+
     float fluxBelow = intersectsVelocity(scaledSpeed, intercept, slope) 
         ? upperBound(volumeFraction, scaledSpeed, intercept, isFluidBelow) - computeExcess(scaledSpeed, intercept, slope)
         : lowerBound(volumeFraction, scaledSpeed, isFluidBelow);

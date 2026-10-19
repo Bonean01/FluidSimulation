@@ -273,8 +273,9 @@ public class FluidSimulationAdapter : MonoBehaviour {
                 if (bottomValid) p2 = bottom;
 
                 Vector2 position = new(i, j);
+                Vector2 normalizedNormal = new Vector2(data.normal.x, data.normal.y).normalized;
                 Gizmos.color = Color.darkGreen;
-                Gizmos.DrawLine(origin + (position + Vector2.one * 0.5f) * worldCellWidth, origin + (position + Vector2.one * 0.5f + new Vector2(data.normal.x, data.normal.y) * 0.333f) * worldCellWidth);
+                Gizmos.DrawLine(origin + (position + Vector2.one * 0.5f) * worldCellWidth, origin + (position + Vector2.one * 0.5f + normalizedNormal * 0.333f) * worldCellWidth);
                 
                 if (p1 != null && p2 != null) {
                     Vector2 worldP1 = origin + ((Vector2)p1 + position) * worldCellWidth;
