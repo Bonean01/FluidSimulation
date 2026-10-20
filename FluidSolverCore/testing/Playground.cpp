@@ -117,7 +117,9 @@ int main(int argc, char* argv[]) {
 
 
 	for (int k = 0; k < 41; k++) {
-		advection.computeFluxes(fluxes, fluidInterface, velocityField, volumeFractionField, timestep);
+		advection.computeFluxes(VectorComponent::X, fluxes, fluidInterface, velocityField, volumeFractionField, timestep);
+		advection.computeFluxes(VectorComponent::Y, fluxes, fluidInterface, velocityField, volumeFractionField, timestep);
+		
 		advection.execute(volumeFractionField, fluidInterface, velocityField, domain, timestep);
 		domain.updateCellData(volumeFractionField);
 

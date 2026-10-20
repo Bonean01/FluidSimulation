@@ -116,8 +116,7 @@ void Advection::execute(ScalarField2D& volumeFractionField, FluidInterface2D& fl
 	
 	for (VectorComponent C : {X, Y}) {
 		fluidInterface.reconstruct(volumeFractionField);
-		// would only want to do this for the current component though
-		computeFluxes(m_fluxes, fluidInterface, velocityField, volumeFractionField, timeStep);
+		computeFluxes(C, m_fluxes, fluidInterface, velocityField, volumeFractionField, timeStep);
 		
 		#pragma omp parallel for
 		for (int j = 0; j < height; j++) {
@@ -126,9 +125,11 @@ void Advection::execute(ScalarField2D& volumeFractionField, FluidInterface2D& fl
 				float flux1 = m_fluxes.getEdgeValue(C, i + (C == X ? 1 : 0), j + (C == Y ? 1 : 0));
 
 				float cellVolume = cellWidth * cellWidth;
-				float dilatationTerm = domain.getCell(i, j).cellType == CellType::Fluid ? Staggered::divergence(C, i, j, velocityField) * cellVolume : 0;
-				float netFlux = flux0 - flux1;
 				float volumeFraction = volumeFractionField.getValue(i, j);
+				float dilatationTerm = volumeFraction > 0.5f
+					? Staggered::divergence(C, i, j, velocityField) * cellVolume
+					: 0;
+				float netFlux = flux0 - flux1;
 
 				float newVolumeFraction = timeStep / cellVolume * (netFlux + dilatationTerm) + volumeFraction;
 				volumeFractionField.setValue(i, j, newVolumeFraction);
@@ -138,20 +139,18 @@ void Advection::execute(ScalarField2D& volumeFractionField, FluidInterface2D& fl
 }
 
 
-void Advection::computeFluxes(StaggeredGrid2D<float>& result, const FluidInterface2D& fluidInterface, const StaggeredVectorField2D& velocityField, const ScalarField2D& volumeFractionField, float timeStep) const {
+void Advection::computeFluxes(VectorComponent C, StaggeredGrid2D<float>& result, const FluidInterface2D& fluidInterface, const StaggeredVectorField2D& velocityField, const ScalarField2D& volumeFractionField, float timeStep) const {
 	using enum VectorComponent;
 
 	int width = velocityField.width();
 	int height = velocityField.height();
 	float cellWidth = velocityField.cellWidth();
 
-	for (VectorComponent C : {X, Y}) {
-		#pragma omp parallel for
-		for (int j = 0; j < height; j++) {
-			for (int i = 0; i < width; i++) {
-				float flux = fluidInterface.computeFluxAt(C, i, j, velocityField, volumeFractionField, cellWidth, timeStep);
-				result.setEdgeValue(C, i, j, flux);
-			}
+	#pragma omp parallel for
+	for (int j = 0; j < height; j++) {
+		for (int i = 0; i < width; i++) {
+			float flux = fluidInterface.computeFluxAt(C, i, j, velocityField, volumeFractionField, cellWidth, timeStep);
+			result.setEdgeValue(C, i, j, flux);
 		}
 	}
 }
