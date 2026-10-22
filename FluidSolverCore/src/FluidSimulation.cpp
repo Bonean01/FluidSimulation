@@ -17,7 +17,7 @@ void FluidSimulation::step(float timeStep) {
 	m_domain.updateCellData(m_volumeFractionField);
 	m_advection.execute(m_volumeFractionField, m_fluidInterface, m_velocityField, m_domain, timeStep);
 
-	if (m_applyGravity) ExternalForces::applyGravity(m_velocityField, m_domain, timeStep);
+	if (m_applyGravity) ExternalForces::applyGravity(m_velocityField, m_domain, m_volumeFractionField, timeStep);
 	
 	m_advection.execute(m_smokeField, m_velocityField, m_domain, timeStep);
 	

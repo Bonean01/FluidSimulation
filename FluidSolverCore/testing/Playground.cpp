@@ -123,7 +123,7 @@ int main(int argc, char* argv[]) {
 		advection.execute(volumeFractionField, fluidInterface, velocityField, domain, timestep);
 		domain.updateCellData(volumeFractionField);
 
-		ExternalForces::applyGravity(velocityField, domain, timestep);
+		ExternalForces::applyGravity(velocityField, domain, volumeFractionField, timestep);
 
 		domain.applyVelocityBoundaryConditions(velocityField);
 
