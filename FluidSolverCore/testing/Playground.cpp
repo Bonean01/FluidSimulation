@@ -94,7 +94,7 @@ int main(int argc, char* argv[]) {
 	float cellWidth = 1.0f;
 	float density = 1.0f;
 	float kinematicViscosity = 0.0001f;
-	float timestep = 1.0f / 60.0f;
+	float timestep = 1.0f / 20.0f;
 
 	Domain domain{ width, height };
 
@@ -116,7 +116,7 @@ int main(int argc, char* argv[]) {
 	fluidInterface.reconstruct(volumeFractionField);
 
 
-	for (int k = 0; k < 41; k++) {
+	for (int k = 0; k < 2; k++) {
 		advection.computeFluxes(VectorComponent::X, fluxes, fluidInterface, velocityField, volumeFractionField, timestep);
 		advection.computeFluxes(VectorComponent::Y, fluxes, fluidInterface, velocityField, volumeFractionField, timestep);
 		

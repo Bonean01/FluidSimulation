@@ -11,7 +11,7 @@ namespace ExternalForces {
 		#pragma omp parallel for
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width; i++) {
-				if (volumeFractionField.getValue(i, j) <= 0.0f && volumeFractionField.getValue(i, j - 1) <= 0.0f) continue;
+				if (volumeFractionField.getValue(i, j) == 0.0f && volumeFractionField.getValue(i, j - 1) == 0.0f) continue;
 				if (domain.hasEdgePrescribedVelocity(VectorComponent::Y, i, j)) continue;
 				float currentVel = velocityField.getEdgeValue(VectorComponent::Y, i, j);
 				velocityField.setEdgeValue(VectorComponent::Y, i, j, currentVel + gravity * timeStep);

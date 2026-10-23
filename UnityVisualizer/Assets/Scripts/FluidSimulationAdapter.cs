@@ -135,6 +135,9 @@ public class FluidSimulationAdapter : MonoBehaviour {
     }
 
 
+    public CellInfo GetCellInfo(int i, int j, float timeStep) => m_simulation.GetCellInfo(i, j, timeStep);
+
+
 
 
 

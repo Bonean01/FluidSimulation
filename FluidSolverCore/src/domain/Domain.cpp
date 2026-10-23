@@ -176,7 +176,7 @@ void Domain::updateCellData(const ScalarField2D& volumeFractionField) {
             CellData& currentCell = m_cellData.at(i, j);
             if (currentCell.cellType == CellType::Solid) continue;
             
-            if (volumeFraction > 0.5f) currentCell.cellType = CellType::Fluid;
+            if (volumeFraction > 0.0f) currentCell.cellType = CellType::Fluid;
             else currentCell.cellType = CellType::Void;
         }
     }

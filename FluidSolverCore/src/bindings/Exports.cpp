@@ -65,6 +65,37 @@ extern "C" INTERFACE_EXPORT const InterfaceData* GetFluidInterfacePtr(FluidSimul
 }
 
 
+struct CellInfo {
+	float velRight, velLeft, velTop, velBottom;
+	Vec2f normal;
+	float intercept, fluxRight, fluxLeft, fluxTop, fluxBottom;
+};
+extern "C" INTERFACE_EXPORT const CellInfo GetCellInfo(FluidSimulation* handle, int i, int j, float timeStep) {
+	using enum VectorComponent;
+	CellInfo info{};
+
+	const StaggeredVectorField2D& velocityField = handle->getVelocityField();
+	info.velRight = velocityField.getEdgeValue(X, i, j);
+	info.velLeft = velocityField.getEdgeValue(X, i - 1, j);
+	info.velTop = velocityField.getEdgeValue(Y, i, j);
+	info.velBottom = velocityField.getEdgeValue(Y, i, j - 1);
+
+	const FluidInterface2D& fluidInterface = handle->getFluidInterface();
+	InterfaceData interfaceData = fluidInterface.getValue(i, j);
+	info.normal = interfaceData.normal;
+	info.intercept = interfaceData.intercept;
+
+	const ScalarField2D& volumeFractionField = handle->getVolumeFractionField();
+	float cellWidth = handle->getCellWidth();
+	info.fluxRight = fluidInterface.computeFluxAt(X, i, j, velocityField, volumeFractionField, cellWidth, timeStep);
+	info.fluxLeft = fluidInterface.computeFluxAt(X, i - 1, j, velocityField, volumeFractionField, cellWidth, timeStep);
+	info.fluxTop = fluidInterface.computeFluxAt(X, i, j, velocityField, volumeFractionField, cellWidth, timeStep);
+	info.fluxBottom = fluidInterface.computeFluxAt(X, i, j - 1, velocityField, volumeFractionField, cellWidth, timeStep);
+	
+	return info;
+}
+
+
 extern "C" INTERFACE_EXPORT void SetVelocity(FluidSimulation* handle, int i, int j, Vec2f velocity) {
 	handle->setVelocity(i, j, velocity);
 }
