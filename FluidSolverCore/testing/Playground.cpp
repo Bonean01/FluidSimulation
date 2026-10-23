@@ -116,9 +116,6 @@ int main(int argc, char* argv[]) {
 	fluidInterface.reconstruct(volumeFractionField);
 
 	for (int k = 0; k < 2; k++) {
-		advection.computeFluxes(VectorComponent::X, fluxes, fluidInterface, velocityField, volumeFractionField, timestep);
-		advection.computeFluxes(VectorComponent::Y, fluxes, fluidInterface, velocityField, volumeFractionField, timestep);
-		
 		advection.execute(volumeFractionField, fluidInterface, velocityField, domain, timestep);
 		domain.updateCellData(volumeFractionField);
 

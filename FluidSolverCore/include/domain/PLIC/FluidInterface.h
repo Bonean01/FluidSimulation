@@ -21,12 +21,12 @@ public:
     float computeFluxAt(const VectorComponent& C, int i, int j, const StaggeredVectorField2D& velocityField, const ScalarField2D& volumeFractionField, float cellWidth, float timeStep) const;
 
 
-    float computeIntercept(const Vec2f& normal, float volumeFraction) const;
-    float computeNormalizedFlux(float volumeFraction, float scaledSpeed, float intercept, float slope, bool isFluidBelow) const;
 private:
     VectorComponent computeMajorAxisAt(int i, int j, const ScalarField2D& volumeFractionField) const;
     Vec2f computeNormalAt(int i, int j, const VectorComponent& majorAxis, const ScalarField2D& volumeFractionField) const;
     float computeIntercept(float slope, float volumeFraction) const;
+    float computeIntercept(const Vec2f& normal, float volumeFraction) const;
+    float computeNormalizedFlux(float volumeFraction, float scaledSpeed, float intercept, float slope, bool isFluidBelow) const;
 
     float triangularCase(float m, float f) const { return std::sqrt(2.0f * m * f); }
     float trapezoidalCase(float m, float f) const { return f + m / 2.0f; }
