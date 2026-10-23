@@ -68,7 +68,7 @@ extern "C" INTERFACE_EXPORT const InterfaceData* GetFluidInterfacePtr(FluidSimul
 struct CellInfo {
 	float velRight, velLeft, velTop, velBottom;
 	Vec2f normal;
-	float intercept, fluxRight, fluxLeft, fluxTop, fluxBottom;
+	float intercept, volumeFraction, fluxRight, fluxLeft, fluxTop, fluxBottom;
 };
 extern "C" INTERFACE_EXPORT const CellInfo GetCellInfo(FluidSimulation* handle, int i, int j, float timeStep) {
 	using enum VectorComponent;
@@ -86,11 +86,12 @@ extern "C" INTERFACE_EXPORT const CellInfo GetCellInfo(FluidSimulation* handle, 
 	info.intercept = interfaceData.intercept;
 
 	const ScalarField2D& volumeFractionField = handle->getVolumeFractionField();
+	info.volumeFraction = volumeFractionField.getValue(i, j);
 	float cellWidth = handle->getCellWidth();
 	info.fluxRight = fluidInterface.computeFluxAt(X, i, j, velocityField, volumeFractionField, cellWidth, timeStep);
 	info.fluxLeft = fluidInterface.computeFluxAt(X, i - 1, j, velocityField, volumeFractionField, cellWidth, timeStep);
-	info.fluxTop = fluidInterface.computeFluxAt(X, i, j, velocityField, volumeFractionField, cellWidth, timeStep);
-	info.fluxBottom = fluidInterface.computeFluxAt(X, i, j - 1, velocityField, volumeFractionField, cellWidth, timeStep);
+	info.fluxTop = fluidInterface.computeFluxAt(Y, i, j, velocityField, volumeFractionField, cellWidth, timeStep);
+	info.fluxBottom = fluidInterface.computeFluxAt(Y, i, j - 1, velocityField, volumeFractionField, cellWidth, timeStep);
 	
 	return info;
 }

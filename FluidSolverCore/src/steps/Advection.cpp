@@ -115,7 +115,6 @@ void Advection::execute(ScalarField2D& volumeFractionField, FluidInterface2D& fl
 
 	
 	for (VectorComponent C : {X, Y}) {
-		fluidInterface.reconstruct(volumeFractionField);
 		computeFluxes(C, m_fluxes, fluidInterface, velocityField, volumeFractionField, timeStep);
 		
 		#pragma omp parallel for
@@ -135,6 +134,7 @@ void Advection::execute(ScalarField2D& volumeFractionField, FluidInterface2D& fl
 				volumeFractionField.setValue(i, j, newVolumeFraction);
 			}
 		}
+		fluidInterface.reconstruct(volumeFractionField);
 	}
 }
 

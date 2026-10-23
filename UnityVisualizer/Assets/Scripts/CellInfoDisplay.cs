@@ -30,6 +30,7 @@ public class CellInfoDisplay : MonoBehaviour {
                 $"VelBottom: {info.velBottom}\n" +
                 $"Normal: ({info.normal.x}, {info.normal.y})\n" +
                 $"Intercept: {info.intercept}\n" +
+                $"Volume Fraction: {info.volumeFraction}\n" +
                 $"Flux Right: {info.fluxRight}\n" +
                 $"Flux Left: {info.fluxLeft}\n" +
                 $"Flux Top: {info.fluxTop}\n" +

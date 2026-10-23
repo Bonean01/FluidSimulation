@@ -27,7 +27,7 @@ public class FluidPainter : MonoBehaviour {
 
         Vector2 mousePosWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-        if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
+        if (!Input.GetKey(KeyCode.LeftControl) && Input.GetMouseButton(0) || Input.GetMouseButton(1))
             Paint(mousePosWorld);
         
         m_prevMousePosWorld = mousePosWorld;

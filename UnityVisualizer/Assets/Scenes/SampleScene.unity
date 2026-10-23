@@ -846,7 +846,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PropertyDisplay
   m_simulationAdapter: {fileID: 1486929792}
-  timeStep: 0
+  timeStep: 0.016666668
 --- !u!1 &1486929788
 GameObject:
   m_ObjectHideFlags: 0
