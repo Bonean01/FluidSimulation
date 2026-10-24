@@ -82,10 +82,13 @@ void Advection::execute(std::vector<MarkerParticle>& markerParticles, const Stag
 			Vec2f& currentPos = particle.position;
 			Vec2f currentVel = velocityField.sampleBilinear(currentPos);
 
-			Vec2f finalPos = particle.position + currentVel / dx * timeStep;
-			Vec2f finalVel = velocityField.sampleBilinear(finalPos);
+			Vec2f firstPos = particle.position + currentVel / dx * timeStep;
+			Vec2f firstVel = velocityField.sampleBilinear(firstPos);
 
-			Vec2f averageVel = (currentVel + finalVel) / 2;
+			Vec2f secondPos = firstPos + firstVel / dx * timeStep;
+			Vec2f secondVel = velocityField.sampleBilinear(secondPos);
+
+			Vec2f averageVel = (currentVel + firstVel + secondVel) / 3;
 			Vec2f newPos = particle.position + averageVel / dx * timeStep;
 
 

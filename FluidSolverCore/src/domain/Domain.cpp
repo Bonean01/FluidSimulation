@@ -34,8 +34,6 @@ void Domain::applyVelocityBCsToComponent(const VectorComponent& C, StaggeredVect
 
 
 void Domain::applyVelocityBCsToEdge(const VectorComponent& C, int i, int j, StaggeredVectorField2D& velocityField, const BoundaryData& boundaryData) const {
-    using enum VectorComponent;
-
     switch (boundaryData.velocityBoundaryCondition) {
         using enum BoundaryCondition;
 
@@ -88,7 +86,7 @@ void Domain::extrapolateVelocity(StaggeredVectorField2D& velocityField, const Fl
     // Force that taking the directional derivative of the extrapolated velocity in the direction of
     // the gradient of the SDF returns 0 (all the points between a point and the closest known
     // velocity should contain the same extrapolated velocity)
-    ScopeProfiler p{"Velocity Extrapolation"};
+    ScopeProfiler p{ "Velocity Extrapolation" };
 
     int width = fluidSurface.width();
     int height = fluidSurface.height();
@@ -104,9 +102,8 @@ void Domain::extrapolateVelocity(StaggeredVectorField2D& velocityField, const Fl
         }
     }
 
-
-    std::array<VectorComponent, 2> components = { VectorComponent::X, VectorComponent::Y };
-    for (VectorComponent C : components) {
+    using enum VectorComponent;
+    for (VectorComponent C : {X, Y}) {
         int width = velocityField.getValuesWidth(C);
         int height = velocityField.getValuesHeight(C);
         #pragma omp parallel for
@@ -114,17 +111,17 @@ void Domain::extrapolateVelocity(StaggeredVectorField2D& velocityField, const Fl
             for (int i = 0; i < width; i++) {
                 // not very clean... (if one of the velocities adyacent to the current edge
                 // is undefined, don't set the edge's value)
-                const Vec2f* cell0 = (C == VectorComponent::X)
+                const Vec2f* cell0 = (C == X)
                     ? fluidSurface.getClosestSurfacePoint(i - 1, j)
                     : fluidSurface.getClosestSurfacePoint(i, j - 1);
                 const Vec2f* cell1 = fluidSurface.getClosestSurfacePoint(i, j);
 
                 if (!cell0 || !cell1 || isFluidEdge(C, i, j)) continue;
 
-                float vel0 = (C == VectorComponent::X)
+                float vel0 = (C == X)
                     ? m_extrapolatedVelField.getValue(i - 1, j).x
                     : m_extrapolatedVelField.getValue(i, j - 1).y;
-                float vel1 = (C == VectorComponent::X) 
+                float vel1 = (C == X) 
                     ? m_extrapolatedVelField.getValue(i, j).x 
                     : m_extrapolatedVelField.getValue(i, j).y;
 
@@ -136,7 +133,7 @@ void Domain::extrapolateVelocity(StaggeredVectorField2D& velocityField, const Fl
 }
 
 
-void Domain::updateCellData(const std::vector<MarkerParticle>& markerParticles) {
+void Domain::updateCellData(const std::vector<MarkerParticle>& markerParticles, const FluidSurface& fluidSurface) {
     if (markerParticles.empty()) return;
 
     int width = m_cellData.width();
@@ -144,12 +141,21 @@ void Domain::updateCellData(const std::vector<MarkerParticle>& markerParticles) 
     
     #pragma omp parallel
     {
-        #pragma omp for nowait
+        #pragma omp for
         for (int j = 0; j < height; j++) {
             for (int i = 0; i < width; i++) {
                 CellData& currentCell = m_cellData.at(i, j);
                 if (currentCell.cellType == CellType::Solid) continue;
                 else currentCell.cellType = CellType::Void;
+            }
+        }
+
+        #pragma omp for nowait
+        for (int j = 0; j < height; j++) {
+            for (int i = 0; i < width; i++) {
+                CellData& currentCell = m_cellData.at(i, j);
+                if (currentCell.cellType == CellType::Solid) continue;
+                else if (fluidSurface.getValue(i, j) < 0) currentCell.cellType = CellType::Fluid;
             }
         }
 
@@ -224,7 +230,7 @@ void Domain::createMarkerParticles(std::vector<MarkerParticle>& markerParticles)
             // Instantiate 2x2 (for 2D) particles in a jittered arrangement inside the cell
             for (int k = 0; k < 2; k++) {
                 for (int l = 0; l < 2; l++) {
-                    Vec2f markerRelPos = static_cast<Vec2f>(Vec2i{ k, l }) / 2 - Vec2f{0.5f, 0.5f};
+                    Vec2f markerRelPos = static_cast<Vec2f>(Vec2i{ k, l }) / 2 - Vec2f{0.25f, 0.25f};
                     float randomOffsetX = randomFloat(-0.125f, 0.125f);
                     float randomOffsetY = randomFloat(-0.125f, 0.125f);
                     markerParticles.emplace_back(MarkerParticle(Vec2f(cellCenter.x + markerRelPos.x + randomOffsetX, cellCenter.y + markerRelPos.y + randomOffsetY)));
