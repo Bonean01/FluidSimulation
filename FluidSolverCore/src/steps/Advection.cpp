@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "utils/profiling/ScopeProfiler.h"
+#include "math/operators/Staggered.h"
 #include "domain/Domain.h"
 
 
@@ -32,7 +33,7 @@ void Advection::advectComponent(const VectorComponent& C, StaggeredVectorField2D
 		for (int i = 0; i < width; i++) {
 			const BoundaryData& currentBoundary = domain.getBoundary(C, i, j);
 			if (domain.hasEdgePrescribedVelocity(C, i, j)) continue;
-			if (not domain.isFluidEdge(C, i, j)) continue;
+			if (not domain.isFluidEdge(C, i, j)) velocityField.setEdgeValue(C, i, j, 0.0f); // this doesn't currently work for velocity extrapolation
 
 			Vec2f position = velocityField.getEdgePosition(C, i, j);
 			Vec2f currentVel = velocityField.sampleBilinear(position);
@@ -104,5 +105,38 @@ void Advection::execute(std::vector<MarkerParticle>& markerParticles, const Stag
 			if (not domain.isPointInsideSolidCell(correctedPos))
 				particle.position = correctedPos;
 		}
+	}
+}
+
+
+void Advection::execute(ScalarField2D& volumeFractionField, FluidInterface2D& fluidInterface, const StaggeredVectorField2D& velocityField, const Domain& domain, float timeStep) {
+	using enum VectorComponent;
+	
+	int width = volumeFractionField.width();
+	int height = volumeFractionField.height();
+	float cellWidth = volumeFractionField.cellWidth();
+
+	
+	for (VectorComponent C : {X, Y}) {
+		fluidInterface.computeFluxes(C, m_fluxes, velocityField, volumeFractionField, timeStep);
+		
+		#pragma omp parallel for
+		for (int j = 0; j < height; j++) {
+			for (int i = 0; i < width; i++) {
+				float flux0 = m_fluxes.getEdgeValue(C, i, j);
+				float flux1 = m_fluxes.getEdgeValue(C, i + (C == X ? 1 : 0), j + (C == Y ? 1 : 0));
+
+				float cellVolume = cellWidth * cellWidth;
+				float volumeFraction = volumeFractionField.getValue(i, j);
+				float dilatationTerm = volumeFraction > 0.5f
+					? Staggered::divergence(C, i, j, velocityField) * cellVolume
+					: 0;
+				float netFlux = flux0 - flux1;
+
+				float newVolumeFraction = timeStep / cellVolume * (netFlux + dilatationTerm) + volumeFraction;
+				volumeFractionField.setValue(i, j, newVolumeFraction);
+			}
+		}
+		fluidInterface.reconstruct(volumeFractionField);
 	}
 }

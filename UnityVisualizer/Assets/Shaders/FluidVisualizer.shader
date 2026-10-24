@@ -9,6 +9,7 @@ Shader "Custom/FluidVisualizer" {
         _SmokeTexture("Smoke Texture", 2D) = "white" {} 
         _CellDataTexture("Solid Cell Map Texture", 2D) = "white" {}
         _SurfaceSDFTexture("Surface SDF Texture", 2D) = "white" {}
+        _VolumeFractionTexture("Volume Fraction Texture", 2D) = "white" {}
 
         _DisplayedField("Displayed Field", int) = 0
 
@@ -61,6 +62,9 @@ Shader "Custom/FluidVisualizer" {
 
             TEXTURE2D(_SurfaceSDFTexture);
             SAMPLER(sampler_SurfaceSDFTexture);
+
+            TEXTURE2D(_VolumeFractionTexture);
+            SAMPLER(sampler_VolumeFractionTexture);
 
             struct Attributes {
                 float4 positionOS : POSITION;
@@ -125,6 +129,11 @@ Shader "Custom/FluidVisualizer" {
                     case 6:  // SURFACE SDF
                         float sdf = SAMPLE_TEXTURE2D(_SurfaceSDFTexture, sampler_SurfaceSDFTexture, uv).x;
                         color = float4(sdf.xxx / 10, 1.0f);
+                        break;
+
+                    case 7:  // VOLUME FRACTION
+                        float volumeFraction = SAMPLE_TEXTURE2D(_VolumeFractionTexture, sampler_VolumeFractionTexture, uv).x;
+                        color = float4(0.0f, volumeFraction.xx, 1.0f);
                         break;
                 }
                 return color;

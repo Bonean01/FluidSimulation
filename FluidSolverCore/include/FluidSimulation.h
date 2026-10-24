@@ -33,10 +33,12 @@ public:
 		m_pressureField(m_gridWidth, m_gridHeight, m_cellWidth),
 		m_divergenceField(m_gridWidth, m_gridHeight, m_cellWidth),
 		m_smokeField(m_gridWidth, m_gridHeight, m_cellWidth),
+		m_volumeFractionField(m_gridWidth, m_gridHeight, m_cellWidth),
 
 		m_domain(m_gridWidth, m_gridHeight),
 		m_markerParticles(),
 		m_fluidSurface(m_gridWidth, m_gridHeight),
+		m_fluidInterface(m_gridWidth, m_gridHeight),
 
 		m_advection(m_gridWidth, m_gridHeight, m_cellWidth),
 		m_diffusion(m_gridWidth, m_gridHeight, m_cellWidth),
@@ -55,9 +57,11 @@ public:
 	const ScalarField2D& getPressureField() const { return m_pressureField; }
 	const ScalarField2D& getDivergenceField() const { return m_divergenceField; }
 	const ScalarField2D& getSmokeField() const { return m_smokeField; }
+	const ScalarField2D& getVolumeFractionField() const { return m_volumeFractionField; }
 	const Grid2D<CellData>& getCellData() const { return m_domain.getCellData(); }
 	const std::vector<MarkerParticle>& getMarkerParticles() const { return m_markerParticles; }
 	const FluidSurface& getSurfaceSDF() const { return m_fluidSurface; }
+	const FluidInterface2D& getFluidInterface() const { return m_fluidInterface; }
 
 	const int getGridWidth() const { return m_gridWidth; }
 	const int getGridHeight() const { return m_gridHeight; }
@@ -71,7 +75,10 @@ public:
 
 	void addSmoke(int i, int j, float deltaSmoke) { m_smokeField.setValue(i, j, m_smokeField.getValue(i, j) + deltaSmoke); }
 
-	void setCell(int i, int j, const CellConfig& config) { m_domain.setCell(i, j, config); }
+	void setCell(int i, int j, const CellConfig& config) {
+		m_domain.setCell(i, j, config);
+		if (config.cellData.cellType == CellType::Fluid) m_volumeFractionField.setValue(i, j, 1.0f);
+	}
 	void floodDomain() { m_domain.flood(); }
 	void drainDomain() { m_domain.drain(); }
 	void createMarkerParticles() { m_domain.createMarkerParticles(m_markerParticles); }
@@ -82,11 +89,12 @@ private:
 	float m_density, m_kinematicViscosity, m_cellWidth;
 
 	StaggeredVectorField2D m_velocityField;
-	ScalarField2D m_pressureField, m_divergenceField, m_smokeField;
+	ScalarField2D m_pressureField, m_divergenceField, m_smokeField, m_volumeFractionField;
 
 	Domain m_domain;
 	std::vector<MarkerParticle> m_markerParticles;
 	FluidSurface m_fluidSurface;
+	FluidInterface2D m_fluidInterface;
 
 	Advection m_advection;
 	Projection m_projection;

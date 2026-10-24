@@ -20,10 +20,14 @@ public class FluidSimulation : IDisposable {
     [DllImport("FluidSolver")] private extern static IntPtr GetPressureFieldPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static IntPtr GetDivergenceFieldPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static IntPtr GetSmokeFieldPtr(IntPtr handle);
+    [DllImport("FluidSolver")] private extern static IntPtr GetVolumeFractionFieldPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static IntPtr GetCellDataPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static IntPtr GetMarkerParticlesPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static int MarkerParticleCount(IntPtr handle);
     [DllImport("FluidSolver")] private extern static IntPtr GetSurfaceSDFPtr(IntPtr handle);
+    [DllImport("FluidSolver")] private extern static IntPtr GetFluidInterfacePtr(IntPtr handle);
+
+    [DllImport("FluidSolver")] private extern static CellInfo GetCellInfo(IntPtr handle, int i, int j, float timeStep);
 
     [DllImport("FluidSolver")] private extern static void SetVelocity(IntPtr handle, int i, int j, Vec2f velocity);
     [DllImport("FluidSolver")] private extern static Vec2f GetVelocity(IntPtr handle, int i, int j);
@@ -75,6 +79,12 @@ public class FluidSimulation : IDisposable {
             yield return GetElementFromPointer<float>(ptr, i);
     }
 
+    public IEnumerable<float> VolumeFractionValues() {
+        IntPtr ptr = GetVolumeFractionFieldPtr(m_handle); 
+        for (int i = 0; i < m_cellCount; i++)
+            yield return GetElementFromPointer<float>(ptr, i);
+    }
+
     public IEnumerable<CellData> CellDataValues() {
         IntPtr ptr = GetCellDataPtr(m_handle);
         for (int i = 0; i < m_cellCount; i++)
@@ -90,8 +100,15 @@ public class FluidSimulation : IDisposable {
 
     public IEnumerable<float> SurfaceSDFValues() {
         IntPtr ptr = GetSurfaceSDFPtr(m_handle);
-        for (int i = 0 ; i < m_cellCount; i++) {
+        for (int i = 0; i < m_cellCount; i++) {
             yield return GetElementFromPointer<float>(ptr, i);
+        }
+    }
+
+    public IEnumerable<InterfaceData> InterfaceValues() {
+        IntPtr ptr = GetFluidInterfacePtr(m_handle);
+        for (int i = 0; i < m_cellCount; i++) {
+            yield return GetElementFromPointer<InterfaceData>(ptr, i);
         }
     }
 
@@ -100,6 +117,8 @@ public class FluidSimulation : IDisposable {
     public Vec2f GetVelocity(int i, int j) => GetVelocity(m_handle, i, j);
     public void AddVelocity(int i, int j, Vec2f deltaVel) => AddVelocity(m_handle, i, j, deltaVel);
     public void AddSmoke(int i, int j, float deltaSmoke) => AddSmoke(m_handle, i, j, deltaSmoke);
+
+    public CellInfo GetCellInfo(int i, int j, float timeStep) => GetCellInfo(m_handle, i, j, timeStep);
 
     public void SetCell(int i, int j, ref CellConfig cellProperties) => SetCell(m_handle, i, j, ref cellProperties);
     public void FloodDomain() => FloodDomain(m_handle);

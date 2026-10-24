@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstdio>
 
 #include "TestUtils.h"
 
@@ -29,20 +30,7 @@ static void printSimulationState(const FluidSimulation& simulation) {
 }
 
 
-static void printPressureField(FluidSimulation simulation) {
-	ScalarField2D pressureField = simulation.getPressureField();
-	int width = pressureField.width();
-	int height = pressureField.height();
-	for (int j = height - 1; j >= 0; j--) {
-		for (int i = 0; i < width; i++) {
-			std::cout << "(" << pressureField.getValue(i, j) << ")\t\t";
-		}
-		std::cout << std::endl;
-	}
-}
-
-
-static void printDivergenceField(FluidSimulation simulation) {
+static void printDivergenceField(const FluidSimulation& simulation) {
 	ScalarField2D divergenceField = simulation.getDivergenceField();
 	int width = divergenceField.width();
 	int height = divergenceField.height();
@@ -55,7 +43,7 @@ static void printDivergenceField(FluidSimulation simulation) {
 }
 
 
-static void printSurfaceSDF(FluidSimulation simulation) {
+static void printSurfaceSDF(const FluidSimulation& simulation) {
 	FluidSurface surfaceData = simulation.getSurfaceSDF();
 	int width = surfaceData.width();
 	int height = surfaceData.height();
@@ -70,16 +58,111 @@ static void printSurfaceSDF(FluidSimulation simulation) {
 }
 
 
+static void printFluidInterface(const FluidInterface2D& fluidInterface) {
+	std::cout << "\n======================== FLUID NORMALS ========================" << std::endl;
+	int width = fluidInterface.width();
+	int height = fluidInterface.height();
+	for (int j = height - 1; j >= 0; j--) {
+		for (int i = 0; i < width; i++) {
+			Vec2f vec = fluidInterface.getValue(i, j).normal;
+			std::printf("(%.2f, %.2f)\t", vec.x, vec.y);
+		}
+		std::cout << std::endl;
+	}
+
+	std::cout << "\n======================== INTERCEPTS ========================\n";
+	for (int j = height - 1; j >= 0; j--) {
+		for (int i = 0; i < width; i++) {
+			float intercept = fluidInterface.getValue(i, j).intercept;
+			std::printf("(%.2f)\t", intercept);
+		}
+		std::cout << std::endl;
+	}
+}
+
+
+
 #include "utils/profiling/Profiler.h"
 #include "utils/profiling/ScopeProfiler.h"
 
+#include "domain/PLIC/FluidInterface.h"
+#include "steps/ExternalForces.h"
+
 int main(int argc, char* argv[]) {
-	int width = 88;
-	int height = 44;
-	float cellWidth = 0.75f; //1.0f / width;
+	int width = 7;
+	int height = 10;
+	float cellWidth = 1.0f;
 	float density = 1.0f;
 	float kinematicViscosity = 0.0001f;
-	float timestep = 1.0f / 30.0f;
+	float timestep = 1.0f / 20.0f;
+
+	Domain domain{ width, height };
+
+	ScalarField2D volumeFractionField{ width, height, cellWidth };
+	StaggeredVectorField2D velocityField{ width, height, cellWidth };
+	StaggeredGrid2D<float> fluxes{ width, height, cellWidth }; 
+	Advection advection{ width, height, cellWidth };
+
+	for (int j = 5; j < height - 1; j++) {
+		for (int i = 1; i < width - 1; i++) {
+			volumeFractionField.setValue(i, j, 1.0f);
+		}
+	}
+	domain.updateCellData(volumeFractionField);
+
+	std::cout << "======================== VOLUME FRACTION FIELD ========================\n" << volumeFractionField;
+
+	FluidInterface2D fluidInterface{ width, height };
+	fluidInterface.reconstruct(volumeFractionField);
+
+	for (int k = 0; k < 2; k++) {
+		advection.execute(volumeFractionField, fluidInterface, velocityField, domain, timestep);
+		domain.updateCellData(volumeFractionField);
+
+		ExternalForces::applyGravity(velocityField, domain, volumeFractionField, timestep);
+
+		domain.applyVelocityBoundaryConditions(velocityField);
+
+		advection.execute(velocityField, domain, timestep);
+	}
+	
+	printFluidInterface(fluidInterface);
+	std::cout << "\n======================== VELOCITIES ========================\n" << velocityField;
+	std::cout << "\n======================== FLUXES ========================\n" << fluxes;
+	std::cout << "\n======================== UPDATED VOLUME FRACTION FIELD ========================\n" << volumeFractionField;
+
+	return 0;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	FluidSimulation simulation{ 
 		FluidSimulationConfig{ 

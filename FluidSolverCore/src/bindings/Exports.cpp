@@ -40,6 +40,10 @@ extern "C" INTERFACE_EXPORT const float* GetSmokeFieldPtr(FluidSimulation* handl
 	return handle->getSmokeField().getValuesPtr();
 }
 
+extern "C" INTERFACE_EXPORT const float* GetVolumeFractionFieldPtr(FluidSimulation* handle) {
+	return handle->getVolumeFractionField().getValuesPtr();
+}
+
 extern "C" INTERFACE_EXPORT const CellData* GetCellDataPtr(FluidSimulation* handle) {
 	return handle->getCellData().getValuesPtr();
 }
@@ -54,6 +58,42 @@ extern "C" INTERFACE_EXPORT const int MarkerParticleCount(FluidSimulation* handl
 
 extern "C" INTERFACE_EXPORT const float* GetSurfaceSDFPtr(FluidSimulation* handle) {
 	return handle->getSurfaceSDF().getValuesPtr();
+}
+
+extern "C" INTERFACE_EXPORT const InterfaceData* GetFluidInterfacePtr(FluidSimulation* handle) {
+	return handle->getFluidInterface().getValuesPtr();
+}
+
+
+struct CellInfo {
+	float velRight, velLeft, velTop, velBottom;
+	Vec2f normal;
+	float intercept, volumeFraction, fluxRight, fluxLeft, fluxTop, fluxBottom;
+};
+extern "C" INTERFACE_EXPORT const CellInfo GetCellInfo(FluidSimulation* handle, int i, int j, float timeStep) {
+	using enum VectorComponent;
+	CellInfo info{};
+
+	const StaggeredVectorField2D& velocityField = handle->getVelocityField();
+	info.velRight = velocityField.getEdgeValue(X, i, j);
+	info.velLeft = velocityField.getEdgeValue(X, i - 1, j);
+	info.velTop = velocityField.getEdgeValue(Y, i, j);
+	info.velBottom = velocityField.getEdgeValue(Y, i, j - 1);
+
+	const FluidInterface2D& fluidInterface = handle->getFluidInterface();
+	InterfaceData interfaceData = fluidInterface.getValue(i, j);
+	info.normal = interfaceData.normal;
+	info.intercept = interfaceData.intercept;
+
+	const ScalarField2D& volumeFractionField = handle->getVolumeFractionField();
+	info.volumeFraction = volumeFractionField.getValue(i, j);
+	float cellWidth = handle->getCellWidth();
+	info.fluxRight = fluidInterface.computeFluxAt(X, i, j, velocityField, volumeFractionField, cellWidth, timeStep);
+	info.fluxLeft = fluidInterface.computeFluxAt(X, i - 1, j, velocityField, volumeFractionField, cellWidth, timeStep);
+	info.fluxTop = fluidInterface.computeFluxAt(Y, i, j, velocityField, volumeFractionField, cellWidth, timeStep);
+	info.fluxBottom = fluidInterface.computeFluxAt(Y, i, j - 1, velocityField, volumeFractionField, cellWidth, timeStep);
+	
+	return info;
 }
 
 

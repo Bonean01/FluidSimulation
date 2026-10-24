@@ -60,6 +60,10 @@ UnityVisualizer/*.suo
 UnityVisualizer/*.user
 UnityVisualizer/*.userprefs
 
+# Unity packages and plugins
+UnityVisualizer/Assets/Plugins/*
+UnityVisualizer/Assets/TextMesh Pro/
+
 # =========================
 # Unity IDE Files
 # =========================
