@@ -115,7 +115,7 @@ public class FluidVisualizer : MonoBehaviour {
             case FluidProperty.Smoke:
                 total = m_simulationAdapter.UpdateSmokeTexture(ref m_smokeTexture);
                 m_spriteRenderer.material.SetTexture("_SmokeTexture", m_smokeTexture);
-                print($"total smoke: {totalSmoke}");  
+                print($"total smoke: {total}");  
                 break;
             
             case FluidProperty.VolumeFraction:
