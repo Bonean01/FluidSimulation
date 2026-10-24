@@ -33,7 +33,7 @@ void Advection::advectComponent(const VectorComponent& C, StaggeredVectorField2D
 		for (int i = 0; i < width; i++) {
 			const BoundaryData& currentBoundary = domain.getBoundary(C, i, j);
 			if (domain.hasEdgePrescribedVelocity(C, i, j)) continue;
-			if (not domain.isFluidEdge(C, i, j)) continue;
+			if (not domain.isFluidEdge(C, i, j)) velocityField.setEdgeValue(C, i, j, 0.0f); // this doesn't currently work for velocity extrapolation
 
 			Vec2f position = velocityField.getEdgePosition(C, i, j);
 			Vec2f currentVel = velocityField.sampleBilinear(position);
@@ -115,7 +115,7 @@ void Advection::execute(ScalarField2D& volumeFractionField, FluidInterface2D& fl
 
 	
 	for (VectorComponent C : {X, Y}) {
-		computeFluxes(C, m_fluxes, fluidInterface, velocityField, volumeFractionField, timeStep);
+		fluidInterface.computeFluxes(C, m_fluxes, velocityField, volumeFractionField, timeStep);
 		
 		#pragma omp parallel for
 		for (int j = 0; j < height; j++) {
@@ -135,22 +135,5 @@ void Advection::execute(ScalarField2D& volumeFractionField, FluidInterface2D& fl
 			}
 		}
 		fluidInterface.reconstruct(volumeFractionField);
-	}
-}
-
-
-void Advection::computeFluxes(VectorComponent C, StaggeredGrid2D<float>& result, const FluidInterface2D& fluidInterface, const StaggeredVectorField2D& velocityField, const ScalarField2D& volumeFractionField, float timeStep) const {
-	using enum VectorComponent;
-
-	int width = velocityField.width();
-	int height = velocityField.height();
-	float cellWidth = velocityField.cellWidth();
-
-	#pragma omp parallel for
-	for (int j = 0; j < height; j++) {
-		for (int i = 0; i < width; i++) {
-			float flux = fluidInterface.computeFluxAt(C, i, j, velocityField, volumeFractionField, cellWidth, timeStep);
-			result.setEdgeValue(C, i, j, flux);
-		}
 	}
 }

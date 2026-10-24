@@ -8,8 +8,7 @@ void FluidInterface2D::reconstruct(const ScalarField2D& volumeFractionField) {
 	#pragma omp parallel for
 	for (int j = 0; j < m_height; j++) {
 		for (int i = 0; i < m_width; i++) {
-			VectorComponent majorAxis = computeMajorAxisAt(i, j, volumeFractionField);
-			Vec2f normal = computeNormalAt(i, j, majorAxis, volumeFractionField);
+			Vec2f normal = computeNormalAt(i, j, volumeFractionField);
 			float volumeFraction = volumeFractionField.getValue(i, j);
 			float intercept = computeIntercept(normal, volumeFraction);
 
@@ -32,8 +31,10 @@ VectorComponent FluidInterface2D::computeMajorAxisAt(int i, int j, const ScalarF
 
 
 
-Vec2f FluidInterface2D::computeNormalAt(int i, int j, const VectorComponent& majorAxis, const ScalarField2D& volumeFractionField) const {
+Vec2f FluidInterface2D::computeNormalAt(int i, int j, const ScalarField2D& volumeFractionField) const {
 	using enum VectorComponent;
+
+	VectorComponent majorAxis = computeMajorAxisAt(i, j, volumeFractionField);
 	
 	float currentVolumeFraction = volumeFractionField.getValue(i, j);
 	if (currentVolumeFraction == 0.0f || currentVolumeFraction == 1.0f) return { 0.0f, 0.0f };
@@ -67,12 +68,13 @@ Vec2f FluidInterface2D::computeNormalAt(int i, int j, const VectorComponent& maj
 		diff = aproxLengths[1] - aproxLengths[0];
 	}
 
-	Vec2f normal;
 	Vec2f gradient = FiniteDifference::Central::gradient(i, j, volumeFractionField);
-	if (majorAxis == X) { normal = { 1.0f * gradient.x < 0 ? 1.0f : -1.0f, -diff / cellWidth }; }
-	else { normal = { -diff / cellWidth, 1.0f * gradient.y < 0 ? 1.0f : -1.0f }; }
-
-	return normal;
+	Vec2f gradientSign = { gradient.x < 0 ? -1.0f : 1.0f, 
+						   gradient.y < 0 ? -1.0f : 1.0f };
+	if (majorAxis == X) 
+		return { -gradientSign.x, -diff / cellWidth };
+	else 
+		return { -diff / cellWidth, -gradientSign.y };
 }
 
 
@@ -106,7 +108,7 @@ float FluidInterface2D::computeIntercept(const Vec2f& normal, float volumeFracti
 	using enum VectorComponent;
 
 	float normalY = normal.y;
-	if (normalY == 0.0f) normalY = 0.000001f;
+	if (normalY == 0.0f) normalY = std::numeric_limits<float>::epsilon();
 
 	float slope = normal.x / normalY;
 	float effectiveVolumeFraction = normal.y > 0 ? volumeFraction : 1 - volumeFraction;
@@ -156,6 +158,24 @@ float FluidInterface2D::computeFluxAt(const VectorComponent& C, int i, int j, co
 
 	float cellVolume = cellWidth * cellWidth;
 	return normalizedFlux * cellVolume / timeStep;
+}
+
+
+
+void FluidInterface2D::computeFluxes(VectorComponent C, StaggeredGrid2D<float>& result, const StaggeredVectorField2D& velocityField, const ScalarField2D& volumeFractionField, float timeStep) const {
+	using enum VectorComponent;
+
+	int width = velocityField.width();
+	int height = velocityField.height();
+	float cellWidth = velocityField.cellWidth();
+
+	#pragma omp parallel for
+	for (int j = 0; j < height; j++) {
+		for (int i = 0; i < width; i++) {
+			float flux = computeFluxAt(C, i, j, velocityField, volumeFractionField, cellWidth, timeStep);
+			result.setEdgeValue(C, i, j, flux);
+		}
+	}
 }
 
 
