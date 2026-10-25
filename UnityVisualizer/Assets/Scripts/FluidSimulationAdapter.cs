@@ -70,7 +70,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
         //    }
         //}
         //m_simulation.FloodDomain();
-        //m_simulation.CreateMarkerParticles();
+        m_simulation.CreateMarkerParticles();
     }
 
 
@@ -194,9 +194,8 @@ public class FluidSimulationAdapter : MonoBehaviour {
     }
     
 
-    public float UpdateCellDataTexture(ref Texture2D cellDataTexture) {
+    public void UpdateCellDataTexture(ref Texture2D cellDataTexture) {
         int x = 0, y = 0;
-        float totalVolume = 0;
 
         // Traverse the collection such that it gets arranged in a grid that aligns with the texture
         foreach (CellData value in m_simulation.CellDataValues()) {
@@ -205,13 +204,10 @@ public class FluidSimulationAdapter : MonoBehaviour {
 
             Color color = new ((byte)value.cellType, 0.0f, 0.0f, 1.0f);
             cellDataTexture.SetPixel(x, y, color);
-            if (value.cellType == CellType.Fluid) totalVolume++;
 
             if (++x >= m_width) { x = 0; y++; }
         }
         cellDataTexture.Apply();
-        
-        return totalVolume * m_cellWidth;
     }
 
 

@@ -88,7 +88,7 @@ public class FluidVisualizer : MonoBehaviour {
 
 
     private void OnStateUpdated() {
-        float total = 0;
+        float total;
         switch (displayedProperty) {
             case FluidProperty.Velocity:
             case FluidProperty.Speed:
@@ -125,9 +125,8 @@ public class FluidVisualizer : MonoBehaviour {
                 break;
 
             case FluidProperty.CellData:
-                float totalVolume = m_simulationAdapter.UpdateCellDataTexture(ref m_cellDataTexture);
+                m_simulationAdapter.UpdateCellDataTexture(ref m_cellDataTexture);
                 m_spriteRenderer.material.SetTexture("_CellDataTexture", m_cellDataTexture);
-                print($"total smoke: {totalVolume}"); 
                 break;
 
             case FluidProperty.SurfaceSDF:

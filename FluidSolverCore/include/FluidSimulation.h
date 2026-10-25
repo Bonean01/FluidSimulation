@@ -60,7 +60,7 @@ public:
 	const ScalarField2D& getVolumeFractionField() const { return m_volumeFractionField; }
 	const Grid2D<CellData>& getCellData() const { return m_domain.getCellData(); }
 	const std::vector<MarkerParticle>& getMarkerParticles() const { return m_markerParticles; }
-	const FluidSurface& getSurfaceSDF() const { return m_fluidSurface; }
+	const LevelSet& getSurfaceSDF() const { return m_fluidSurface; }
 	const FluidInterface2D& getFluidInterface() const { return m_fluidInterface; }
 
 	const int getGridWidth() const { return m_gridWidth; }
@@ -93,7 +93,7 @@ private:
 
 	Domain m_domain;
 	std::vector<MarkerParticle> m_markerParticles;
-	FluidSurface m_fluidSurface;
+	LevelSet m_fluidSurface;
 	FluidInterface2D m_fluidInterface;
 
 	Advection m_advection;

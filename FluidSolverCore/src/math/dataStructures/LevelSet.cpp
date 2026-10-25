@@ -1,17 +1,17 @@
 #include <cmath>
 #include <limits>
 
-#include "domain/FluidSurface.h"
+#include "math/dataStructures/LevelSet.h"
 #include "utils/profiling/ScopeProfiler.h"
 
 #include <iostream>
 
 
-void FluidSurface::update(const std::vector<MarkerParticle>& markerParticles, unsigned int depth) {
+void LevelSet::update(const std::vector<MarkerParticle>& markerParticles, unsigned int depth) {
     ScopeProfiler p{ "Updating Fluid Surface" };
 
     initializeFromMarkerParticles(markerParticles);
-    smoothLevelSet();
+    smooth();
     resetSurfaceData();
     setClosestCellsSD();
     populateWithClosestNeighbours(m_unknownsQueue);
@@ -19,7 +19,14 @@ void FluidSurface::update(const std::vector<MarkerParticle>& markerParticles, un
 }
 
 
-std::array<SurfaceData*, 8> FluidSurface::getNeighbours(int posX, int posY) {
+const Vec2f* LevelSet::getClosestSurfacePoint(int i, int j) const {
+    const SurfaceData& surfaceData = m_surfaceData.getValue(i, j);
+    const Vec2f* res = &surfaceData.closestSurfacePointPos;
+    return surfaceData.known ? res : nullptr;
+}
+
+
+std::array<SurfaceData*, 8> LevelSet::getNeighbours(int posX, int posY) {
     auto res = std::array<SurfaceData*, 8>{};
     for (int k = 0; k < neighbourRelativePositions.size(); k++) {
         auto& neighbourRelativePos = neighbourRelativePositions[k];
@@ -34,7 +41,7 @@ std::array<SurfaceData*, 8> FluidSurface::getNeighbours(int posX, int posY) {
 }
 
 
-std::array<float, 8> FluidSurface::getNeighbourSignedDistances(int posX, int posY) {
+std::array<float, 8> LevelSet::getNeighbourSignedDistances(int posX, int posY) {
     auto res = std::array<float, 8>{};
     for (int i = 0; i < res.size(); i++) { res[i] = std::numeric_limits<float>::infinity(); }
 
@@ -57,7 +64,7 @@ std::array<float, 8> FluidSurface::getNeighbourSignedDistances(int posX, int pos
 }
 
 
-unsigned int FluidSurface::getNeighbourDepth(SurfaceData* neighbour) {
+unsigned int LevelSet::getNeighbourDepth(SurfaceData* neighbour) {
     unsigned int minDepth = std::numeric_limits<int>::max();
     for (auto* ady : getNeighbours(*neighbour)) {
         if (ady != nullptr && ady->depth < minDepth) minDepth = ady->depth;
@@ -66,14 +73,14 @@ unsigned int FluidSurface::getNeighbourDepth(SurfaceData* neighbour) {
 }
 
 
-SurfaceData* FluidSurface::extractNext(MinHeapPQ& queue) {
+SurfaceData* LevelSet::extractNext(MinHeapPQ& queue) {
     SurfaceData* next = queue.top().surfaceData;
     queue.pop();
     return next;
 }
 
 
-bool FluidSurface::isInsideFluid(const SurfaceData& current) {
+bool LevelSet::isInsideFluid(const SurfaceData& current) {
     int posX = current.position.x;
     int posY = current.position.y;
 
@@ -81,7 +88,7 @@ bool FluidSurface::isInsideFluid(const SurfaceData& current) {
 }
 
 
-void FluidSurface::initializeFromMarkerParticles(const std::vector<MarkerParticle>& markerParticles) {
+void LevelSet::initializeFromMarkerParticles(const std::vector<MarkerParticle>& markerParticles) {
     // Set cells with makers to -1 and cells without them to +1
     #pragma omp parallel for
     for (int j = 0; j < m_height; j++) {
@@ -102,7 +109,7 @@ void FluidSurface::initializeFromMarkerParticles(const std::vector<MarkerParticl
 
 typedef std::array<std::array<float, 3>, 3> Matrix3x3;
 
-void FluidSurface::smoothLevelSet() {
+void LevelSet::smooth() {
     constexpr Matrix3x3 weights = {{
 		{1.0f, 2.0f, 1.0f},
 		{2.0f, 4.0f, 2.0f},
@@ -134,7 +141,7 @@ void FluidSurface::smoothLevelSet() {
 }
 
 
-void FluidSurface::resetSurfaceData() {
+void LevelSet::resetSurfaceData() {
     #pragma omp parallel for
     for (int j = 0; j < m_height; j++) {
         for (int i = 0; i < m_width; i++) {
@@ -148,7 +155,7 @@ void FluidSurface::resetSurfaceData() {
 }
 
 
-void FluidSurface::setClosestCellsSD() {
+void LevelSet::setClosestCellsSD() {
     // Calculate where the linear interpolant becomes 0 (between neighbouring cells where the sign changes),
     // calculate the distances and set the current cell to the minimum of them
     #pragma omp parallel for
@@ -182,7 +189,7 @@ void FluidSurface::setClosestCellsSD() {
 }
 
 
-void FluidSurface::populateWithClosestNeighbours(MinHeapPQ& queue) {
+void LevelSet::populateWithClosestNeighbours(MinHeapPQ& queue) {
     // Append neighbouring cells to a priority queue keyed by known distance
     // we need a mutex for controlling access to the queue
     for (int j = 0; j < m_height; j++) {
@@ -205,7 +212,7 @@ void FluidSurface::populateWithClosestNeighbours(MinHeapPQ& queue) {
 }
 
 
-void FluidSurface::calculateSDF(unsigned int depth) {  
+void LevelSet::calculateSDF(unsigned int depth) {
     while (!m_unknownsQueue.empty()) {
         SurfaceData* current = extractNext(m_unknownsQueue);
         if (current == nullptr) continue;

@@ -34,7 +34,6 @@ set (SOURCE_FILES
 	"include/domain/BoundaryCondition.h"
 	"include/domain/BoundaryData.h"
 	"include/domain/MarkerParticle.h"
-	"include/domain/FluidSurface.h"
 	"include/domain/Domain.h"
 
 	"include/domain/PLIC/FluidInterface.h"
@@ -51,6 +50,7 @@ set (SOURCE_FILES
 	"include/math/dataStructures/ScalarField.h"
 	"include/math/dataStructures/VectorField.h"
 	"include/math/dataStructures/StaggeredVectorField.h"
+	"include/math/dataStructures/LevelSet.h"
 
 	"include/math/operators/FiniteDifference.h"
 	"include/math/operators/Staggered.h"
@@ -67,7 +67,6 @@ set (SOURCE_FILES
 	
 	"src/FluidSimulation.cpp"
 
-	"src/domain/FluidSurface.cpp"
 	"src/domain/Domain.cpp"
 	"src/domain/PLIC/FluidInterface.cpp"
 
@@ -80,6 +79,7 @@ set (SOURCE_FILES
 	"src/math/dataStructures/ScalarField.cpp"
 	"src/math/dataStructures/VectorField.cpp"
 	"src/math/dataStructures/StaggeredVectorField.cpp"
+	"src/math/dataStructures/LevelSet.cpp"
 	
 	"src/math/operators/Gradient.cpp"
 	"src/math/operators/Divergence.cpp"
