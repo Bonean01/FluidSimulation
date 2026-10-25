@@ -82,7 +82,7 @@ void Domain::setCell(int i, int j, const CellData& cellData, const BoundaryData&
 }
 
 
-void Domain::extrapolateVelocity(StaggeredVectorField2D& velocityField, const LevelSet& fluidSurface) {
+void Domain::extrapolateVelocity(StaggeredVectorField2D& velocityField, const LevelSet2D& fluidSurface) {
     // Force that taking the directional derivative of the extrapolated velocity in the direction of
     // the gradient of the SDF returns 0 (all the points between a point and the closest known
     // velocity should contain the same extrapolated velocity)
@@ -133,7 +133,7 @@ void Domain::extrapolateVelocity(StaggeredVectorField2D& velocityField, const Le
 }
 
 
-void Domain::updateCellData(const std::vector<MarkerParticle>& markerParticles, const LevelSet& fluidSurface) {
+void Domain::updateCellData(const std::vector<MarkerParticle>& markerParticles, const LevelSet2D& fluidSurface) {
     if (markerParticles.empty()) return;
 
     int width = m_cellData.width();

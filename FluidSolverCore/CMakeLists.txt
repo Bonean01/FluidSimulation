@@ -29,6 +29,8 @@ set (SOURCE_FILES
 	"include/FluidSimulation.h"
 	"include/FluidSimulationConfig.h"
 
+	"include/simulations/SmokeSimulation.h"
+
 	"include/domain/CellType.h"
 	"include/domain/CellData.h"
 	"include/domain/BoundaryCondition.h"

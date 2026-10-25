@@ -7,7 +7,7 @@
 #include <iostream>
 
 
-void LevelSet::update(const std::vector<MarkerParticle>& markerParticles, unsigned int depth) {
+void LevelSet2D::update(const std::vector<MarkerParticle>& markerParticles, unsigned int depth) {
     ScopeProfiler p{ "Updating Fluid Surface" };
 
     initializeFromMarkerParticles(markerParticles);
@@ -19,14 +19,14 @@ void LevelSet::update(const std::vector<MarkerParticle>& markerParticles, unsign
 }
 
 
-const Vec2f* LevelSet::getClosestSurfacePoint(int i, int j) const {
+const Vec2f* LevelSet2D::getClosestSurfacePoint(int i, int j) const {
     const SurfaceData& surfaceData = m_surfaceData.getValue(i, j);
     const Vec2f* res = &surfaceData.closestSurfacePointPos;
     return surfaceData.known ? res : nullptr;
 }
 
 
-std::array<SurfaceData*, 8> LevelSet::getNeighbours(int posX, int posY) {
+std::array<SurfaceData*, 8> LevelSet2D::getNeighbours(int posX, int posY) {
     auto res = std::array<SurfaceData*, 8>{};
     for (int k = 0; k < neighbourRelativePositions.size(); k++) {
         auto& neighbourRelativePos = neighbourRelativePositions[k];
@@ -41,7 +41,7 @@ std::array<SurfaceData*, 8> LevelSet::getNeighbours(int posX, int posY) {
 }
 
 
-std::array<float, 8> LevelSet::getNeighbourSignedDistances(int posX, int posY) {
+std::array<float, 8> LevelSet2D::getNeighbourSignedDistances(int posX, int posY) {
     auto res = std::array<float, 8>{};
     for (int i = 0; i < res.size(); i++) { res[i] = std::numeric_limits<float>::infinity(); }
 
@@ -64,7 +64,7 @@ std::array<float, 8> LevelSet::getNeighbourSignedDistances(int posX, int posY) {
 }
 
 
-unsigned int LevelSet::getNeighbourDepth(SurfaceData* neighbour) {
+unsigned int LevelSet2D::getNeighbourDepth(SurfaceData* neighbour) {
     unsigned int minDepth = std::numeric_limits<int>::max();
     for (auto* ady : getNeighbours(*neighbour)) {
         if (ady != nullptr && ady->depth < minDepth) minDepth = ady->depth;
@@ -73,14 +73,14 @@ unsigned int LevelSet::getNeighbourDepth(SurfaceData* neighbour) {
 }
 
 
-SurfaceData* LevelSet::extractNext(MinHeapPQ& queue) {
+SurfaceData* LevelSet2D::extractNext(MinHeapPQ& queue) {
     SurfaceData* next = queue.top().surfaceData;
     queue.pop();
     return next;
 }
 
 
-bool LevelSet::isInsideFluid(const SurfaceData& current) {
+bool LevelSet2D::isInsideFluid(const SurfaceData& current) {
     int posX = current.position.x;
     int posY = current.position.y;
 
@@ -88,7 +88,7 @@ bool LevelSet::isInsideFluid(const SurfaceData& current) {
 }
 
 
-void LevelSet::initializeFromMarkerParticles(const std::vector<MarkerParticle>& markerParticles) {
+void LevelSet2D::initializeFromMarkerParticles(const std::vector<MarkerParticle>& markerParticles) {
     // Set cells with makers to -1 and cells without them to +1
     #pragma omp parallel for
     for (int j = 0; j < m_height; j++) {
@@ -109,7 +109,7 @@ void LevelSet::initializeFromMarkerParticles(const std::vector<MarkerParticle>& 
 
 typedef std::array<std::array<float, 3>, 3> Matrix3x3;
 
-void LevelSet::smooth() {
+void LevelSet2D::smooth() {
     constexpr Matrix3x3 weights = {{
 		{1.0f, 2.0f, 1.0f},
 		{2.0f, 4.0f, 2.0f},
@@ -141,7 +141,7 @@ void LevelSet::smooth() {
 }
 
 
-void LevelSet::resetSurfaceData() {
+void LevelSet2D::resetSurfaceData() {
     #pragma omp parallel for
     for (int j = 0; j < m_height; j++) {
         for (int i = 0; i < m_width; i++) {
@@ -155,7 +155,7 @@ void LevelSet::resetSurfaceData() {
 }
 
 
-void LevelSet::setClosestCellsSD() {
+void LevelSet2D::setClosestCellsSD() {
     // Calculate where the linear interpolant becomes 0 (between neighbouring cells where the sign changes),
     // calculate the distances and set the current cell to the minimum of them
     #pragma omp parallel for
@@ -189,7 +189,7 @@ void LevelSet::setClosestCellsSD() {
 }
 
 
-void LevelSet::populateWithClosestNeighbours(MinHeapPQ& queue) {
+void LevelSet2D::populateWithClosestNeighbours(MinHeapPQ& queue) {
     // Append neighbouring cells to a priority queue keyed by known distance
     // we need a mutex for controlling access to the queue
     for (int j = 0; j < m_height; j++) {
@@ -212,7 +212,7 @@ void LevelSet::populateWithClosestNeighbours(MinHeapPQ& queue) {
 }
 
 
-void LevelSet::calculateSDF(unsigned int depth) {
+void LevelSet2D::calculateSDF(unsigned int depth) {
     while (!m_unknownsQueue.empty()) {
         SurfaceData* current = extractNext(m_unknownsQueue);
         if (current == nullptr) continue;

@@ -19,10 +19,10 @@ struct SurfaceData {
 };
 
 
-// Implicitly defines a surface (where f(i, j) = 0)
-class LevelSet : public ScalarField2D {
+// Implicitly defines a surface in the form f(x, y) = 0
+class LevelSet2D : public ScalarField2D {
 public:
-	LevelSet(int width, int height) : ScalarField2D(width, height, 1), m_surfaceData(width, height, 1), m_auxScalarField(width, height, 1) {
+	LevelSet2D(int width, int height) : ScalarField2D(width, height, 1), m_surfaceData(width, height, 1), m_auxScalarField(width, height, 1) {
 			m_container.reserve(m_cellCount * sizeof(QueueEntry));
 			m_unknownsQueue = MinHeapPQ{ std::greater<QueueEntry>(), std::move(m_container) };
 		}

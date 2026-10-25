@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class FluidSimulationAdapter : MonoBehaviour {
+    [SerializeField] private SimulationType simulationType;
     [SerializeField] private int width, height;
     [SerializeField] private float cellWidth, density, kinematicViscosity;
     [SerializeField] private uint solverIterationCount;
@@ -22,7 +23,15 @@ public class FluidSimulationAdapter : MonoBehaviour {
         m_width = width;
         m_height = height;
         m_cellWidth = cellWidth;
-        m_simulation = new(new(m_width, m_height, m_cellWidth, density, kinematicViscosity, new(iterationCount: solverIterationCount), applyGravity: applyGravity));
+        FluidSimulationConfig config = new(m_width, m_height, m_cellWidth, density, kinematicViscosity, new(iterationCount: solverIterationCount), applyGravity: applyGravity);
+        
+        m_simulation = simulationType switch {
+            SimulationType.Fluid => new FluidSimulation(config),
+            SimulationType.Smoke => new SmokeSimulation(config),
+            //SimulationType.FreeSurface => new FreeSurfaceSimulation(config),
+            _ => throw new NotImplementedException()
+        };
+
         SetUpDomain();
     }
 
@@ -70,7 +79,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
         //    }
         //}
         //m_simulation.FloodDomain();
-        m_simulation.CreateMarkerParticles();
+        //m_simulation.CreateMarkerParticles();
     }
 
 
@@ -104,6 +113,8 @@ public class FluidSimulationAdapter : MonoBehaviour {
 
 
     public void ApplySmokeCircle(Vector2 position, float smokeValue, float radius) {
+        if (simulationType != SimulationType.Smoke) return;
+
         for (int i = 0; i < m_width; i++) {
             for (int j = 0; j < m_height; j++) {
                 if (Mathf.Abs(i - position.x) > radius) continue;
@@ -118,7 +129,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
                 float t = 1 - dst / radius;
                 float res = Mathf.SmoothStep(0, smokeValue, t);
 
-                m_simulation.AddSmoke(i, j, res);
+                ((SmokeSimulation)m_simulation).AddSmoke(i, j, res);
             }
         }
         OnStateUpdated?.Invoke();
@@ -222,7 +233,8 @@ public class FluidSimulationAdapter : MonoBehaviour {
     }
 
     public float UpdateSmokeTexture(ref Texture2D smokeTexture) {
-        return UpdateScalarFieldTexture(ref smokeTexture, m_simulation.SmokeValues()).total;
+        if (simulationType != SimulationType.Smoke) return 0.0f;
+        return UpdateScalarFieldTexture(ref smokeTexture, ((SmokeSimulation)m_simulation).SmokeValues()).total;
     }
 
     public float UpdateVolumeFractionTexture(ref Texture2D volumeFractionTexture) {

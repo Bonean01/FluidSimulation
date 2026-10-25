@@ -44,7 +44,7 @@ static void printDivergenceField(const FluidSimulation& simulation) {
 
 
 static void printSurfaceSDF(const FluidSimulation& simulation) {
-	LevelSet surfaceData = simulation.getSurfaceSDF();
+	LevelSet2D surfaceData = simulation.getSurfaceSDF();
 	int width = surfaceData.width();
 	int height = surfaceData.height();
 	for (int j = height - 1; j >= 0; j--) {

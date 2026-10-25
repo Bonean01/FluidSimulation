@@ -32,7 +32,6 @@ public:
 		m_velocityField(m_gridWidth, m_gridHeight, m_cellWidth),
 		m_pressureField(m_gridWidth, m_gridHeight, m_cellWidth),
 		m_divergenceField(m_gridWidth, m_gridHeight, m_cellWidth),
-		m_smokeField(m_gridWidth, m_gridHeight, m_cellWidth),
 		m_volumeFractionField(m_gridWidth, m_gridHeight, m_cellWidth),
 
 		m_domain(m_gridWidth, m_gridHeight),
@@ -51,16 +50,15 @@ public:
 			if (config.threadCount > 0) omp_set_num_threads(config.threadCount);
 		}
 
-	void step(float timeStep);
+	virtual void step(float timeStep);
 
 	const StaggeredVectorField2D getVelocityField() const { return m_velocityField; }
 	const ScalarField2D& getPressureField() const { return m_pressureField; }
 	const ScalarField2D& getDivergenceField() const { return m_divergenceField; }
-	const ScalarField2D& getSmokeField() const { return m_smokeField; }
 	const ScalarField2D& getVolumeFractionField() const { return m_volumeFractionField; }
 	const Grid2D<CellData>& getCellData() const { return m_domain.getCellData(); }
 	const std::vector<MarkerParticle>& getMarkerParticles() const { return m_markerParticles; }
-	const LevelSet& getSurfaceSDF() const { return m_fluidSurface; }
+	const LevelSet2D& getSurfaceSDF() const { return m_fluidSurface; }
 	const FluidInterface2D& getFluidInterface() const { return m_fluidInterface; }
 
 	const int getGridWidth() const { return m_gridWidth; }
@@ -73,8 +71,6 @@ public:
 	Vec2f getVelocity(int i, int j) const { return m_velocityField.getCellValue(i, j); }
 	void addVelocity(int i, int j, Vec2f deltaVel) { setVelocity(i, j, getVelocity(i, j) + deltaVel); }
 
-	void addSmoke(int i, int j, float deltaSmoke) { m_smokeField.setValue(i, j, m_smokeField.getValue(i, j) + deltaSmoke); }
-
 	void setCell(int i, int j, const CellConfig& config) {
 		m_domain.setCell(i, j, config);
 		if (config.cellData.cellType == CellType::Fluid) m_volumeFractionField.setValue(i, j, 1.0f);
@@ -84,16 +80,16 @@ public:
 	void createMarkerParticles() { m_domain.createMarkerParticles(m_markerParticles); }
 
 
-private:
+protected:
 	int m_gridWidth, m_gridHeight;
-	float m_density, m_kinematicViscosity, m_cellWidth;
+	float m_cellWidth, m_density, m_kinematicViscosity;
 
 	StaggeredVectorField2D m_velocityField;
-	ScalarField2D m_pressureField, m_divergenceField, m_smokeField, m_volumeFractionField;
+	ScalarField2D m_pressureField, m_divergenceField, m_volumeFractionField;
 
 	Domain m_domain;
 	std::vector<MarkerParticle> m_markerParticles;
-	LevelSet m_fluidSurface;
+	LevelSet2D m_fluidSurface;
 	FluidInterface2D m_fluidInterface;
 
 	Advection m_advection;

@@ -2,9 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
+
+public enum SimulationType : byte { Fluid, Smoke, FreeSurface }
+
 public class FluidSimulation : IDisposable {
-    readonly IntPtr m_handle;
-    readonly int m_width, m_height, m_cellCount;
+    protected IntPtr m_handle;
+    protected int m_width, m_height, m_cellCount;
 
 
     public int GetWidth() => m_width;
@@ -12,14 +15,13 @@ public class FluidSimulation : IDisposable {
     public int GetCellCount() => m_cellCount;
 
 
-    [DllImport("FluidSolver")] private extern static IntPtr CreateSimulation(FluidSimulationConfig config);
+    [DllImport("FluidSolver")] private extern static IntPtr CreateSimulation(FluidSimulationConfig config, SimulationType type);
     [DllImport("FluidSolver")] private extern static void DestroySimulation(IntPtr handle);
 
     [DllImport("FluidSolver")] private extern static void Step(IntPtr handle, float dt);
 
     [DllImport("FluidSolver")] private extern static IntPtr GetPressureFieldPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static IntPtr GetDivergenceFieldPtr(IntPtr handle);
-    [DllImport("FluidSolver")] private extern static IntPtr GetSmokeFieldPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static IntPtr GetVolumeFractionFieldPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static IntPtr GetCellDataPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static IntPtr GetMarkerParticlesPtr(IntPtr handle);
@@ -32,7 +34,6 @@ public class FluidSimulation : IDisposable {
     [DllImport("FluidSolver")] private extern static void SetVelocity(IntPtr handle, int i, int j, Vec2f velocity);
     [DllImport("FluidSolver")] private extern static Vec2f GetVelocity(IntPtr handle, int i, int j);
     [DllImport("FluidSolver")] private extern static void AddVelocity(IntPtr handle, int i, int j, Vec2f deltaVel);
-    [DllImport("FluidSolver")] private extern static void AddSmoke(IntPtr handle, int i, int j, float deltaSmoke);
 
     [DllImport("FluidSolver")] private extern static void SetCell(IntPtr handle, int i, int j, ref CellConfig cellProperties);
     [DllImport("FluidSolver")] private extern static void FloodDomain(IntPtr handle);
@@ -40,8 +41,8 @@ public class FluidSimulation : IDisposable {
     [DllImport("FluidSolver")] private extern static void CreateMarkerParticles(IntPtr handle);
 
 
-    public FluidSimulation(FluidSimulationConfig config) {
-        m_handle = CreateSimulation(config);
+    public FluidSimulation(FluidSimulationConfig config, SimulationType type = SimulationType.Fluid) {
+        m_handle = CreateSimulation(config, type);
         m_width = config.gridWidth;
         m_height = config.gridHeight;
         m_cellCount = m_width * m_height;
@@ -57,7 +58,7 @@ public class FluidSimulation : IDisposable {
     }
 
 
-    unsafe private T GetElementFromPointer<T>(IntPtr ptr, int index) where T : unmanaged {
+    unsafe static protected T GetElementFromPointer<T>(IntPtr ptr, int index) where T : unmanaged {
         return ((T*)ptr)[index];
     }
 
@@ -69,12 +70,6 @@ public class FluidSimulation : IDisposable {
 
     public IEnumerable<float> DivergenceValues() {
         IntPtr ptr = GetDivergenceFieldPtr(m_handle);
-        for (int i = 0; i < m_cellCount; i++)
-            yield return GetElementFromPointer<float>(ptr, i);
-    }
-
-    public IEnumerable<float> SmokeValues() {
-        IntPtr ptr = GetSmokeFieldPtr(m_handle); 
         for (int i = 0; i < m_cellCount; i++)
             yield return GetElementFromPointer<float>(ptr, i);
     }
@@ -116,7 +111,6 @@ public class FluidSimulation : IDisposable {
     public void SetVelocity(int i, int j, Vec2f velocity) => SetVelocity(m_handle, i, j, velocity);
     public Vec2f GetVelocity(int i, int j) => GetVelocity(m_handle, i, j);
     public void AddVelocity(int i, int j, Vec2f deltaVel) => AddVelocity(m_handle, i, j, deltaVel);
-    public void AddSmoke(int i, int j, float deltaSmoke) => AddSmoke(m_handle, i, j, deltaSmoke);
 
     public CellInfo GetCellInfo(int i, int j, float timeStep) => GetCellInfo(m_handle, i, j, timeStep);
 

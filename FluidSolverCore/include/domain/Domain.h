@@ -28,7 +28,7 @@ public:
 	const StaggeredGrid2D<BoundaryData>& getBoundaryData() const  { return m_boundaryData; }
 
 	void applyVelocityBoundaryConditions(StaggeredVectorField2D& velocityField) const;
-	void extrapolateVelocity(StaggeredVectorField2D& velocityField, const LevelSet& fluidSurface);
+	void extrapolateVelocity(StaggeredVectorField2D& velocityField, const LevelSet2D& fluidSurface);
 	bool hasEdgePrescribedVelocity(const VectorComponent& C, int i, int j) const;
 	bool isFluidEdge(const VectorComponent& C, int i, int j) const;
 	bool isPointInsideSolidCell(const Vec2f&) const;
@@ -39,7 +39,7 @@ public:
 	void setCell(int i, int j, const CellData&, const BoundaryData&);
 	
 	void createMarkerParticles(std::vector<MarkerParticle>& markerParticles);
-	void updateCellData(const std::vector<MarkerParticle>& markerParticles, const LevelSet& fluidSurface);
+	void updateCellData(const std::vector<MarkerParticle>& markerParticles, const LevelSet2D& fluidSurface);
 	void updateCellData(const ScalarField2D& volumeFractionField);
 	void flood();
 	void drain();

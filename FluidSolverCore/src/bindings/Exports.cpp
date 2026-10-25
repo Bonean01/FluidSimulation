@@ -1,4 +1,6 @@
 #include "FluidSimulation.h"
+#include "simulations/SmokeSimulation.h"
+
 #include "utils/profiling/Profiler.h"
 #include <omp.h>
 
@@ -13,9 +15,13 @@
 	#define INTERFACE_EXPORT
 #endif
 
-
-extern "C" INTERFACE_EXPORT FluidSimulation* CreateSimulation(FluidSimulationConfig simulationConfig) {
-	return new FluidSimulation(FluidSimulationConfig(simulationConfig));
+enum SimulationType : uint8_t { Fluid, Smoke, FreeSurface };
+extern "C" INTERFACE_EXPORT FluidSimulation* CreateSimulation(FluidSimulationConfig simulationConfig, SimulationType type) {
+	switch (type) {
+		case Fluid: return new FluidSimulation(simulationConfig); break;
+		case Smoke: return new SmokeSimulation(simulationConfig); break;
+		default: throw std::runtime_error("Provided a non implemented simulation type");
+	}
 }
 
 extern "C" INTERFACE_EXPORT void DestroySimulation(FluidSimulation* handle) {
@@ -36,7 +42,7 @@ extern "C" INTERFACE_EXPORT const float* GetDivergenceFieldPtr(FluidSimulation* 
 	return handle->getDivergenceField().getValuesPtr();
 }
 
-extern "C" INTERFACE_EXPORT const float* GetSmokeFieldPtr(FluidSimulation* handle) {
+extern "C" INTERFACE_EXPORT const float* GetSmokeFieldPtr(SmokeSimulation* handle) {
 	return handle->getSmokeField().getValuesPtr();
 }
 
@@ -112,7 +118,7 @@ extern "C" INTERFACE_EXPORT void AddVelocity(FluidSimulation* handle, int i, int
 }
 
 
-extern "C" INTERFACE_EXPORT void AddSmoke(FluidSimulation* handle, int i, int j, float deltaSmoke) {
+extern "C" INTERFACE_EXPORT void AddSmoke(SmokeSimulation* handle, int i, int j, float deltaSmoke) {
 	handle->addSmoke(i, j, deltaSmoke);
 }
 
@@ -131,9 +137,4 @@ extern "C" INTERFACE_EXPORT void DrainDomain(FluidSimulation* handle) {
 
 extern "C" INTERFACE_EXPORT void CreateMarkerParticles(FluidSimulation* handle) {
 	handle->createMarkerParticles();
-}
-
-
-extern "C" INTERFACE_EXPORT void SetNumThreads(int n) {
-	omp_set_num_threads(n);
 }
