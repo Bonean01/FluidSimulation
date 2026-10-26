@@ -1,5 +1,7 @@
 #include "FluidSimulation.h"
+#include "simulations/SinglePhaseFluidSimulation.h"
 #include "simulations/SmokeSimulation.h"
+#include "simulations/FreeSurfaceFluidSimulation.h"
 
 #include "utils/profiling/Profiler.h"
 #include <omp.h>
@@ -15,11 +17,12 @@
 	#define INTERFACE_EXPORT
 #endif
 
-enum SimulationType : uint8_t { Fluid, Smoke, FreeSurface };
+enum SimulationType : uint8_t { SinglePhase, Smoke, FreeSurface };
 extern "C" INTERFACE_EXPORT FluidSimulation* CreateSimulation(FluidSimulationConfig simulationConfig, SimulationType type) {
 	switch (type) {
-		case Fluid: return new FluidSimulation(simulationConfig); break;
+		case SinglePhase: return new SinglePhaseFluidSimulation(simulationConfig); break;
 		case Smoke: return new SmokeSimulation(simulationConfig); break;
+		case FreeSurface: return new FreeSurfaceFluidSimulation(simulationConfig); break;
 		default: throw std::runtime_error("Provided a non implemented simulation type");
 	}
 }
@@ -46,7 +49,7 @@ extern "C" INTERFACE_EXPORT const float* GetSmokeFieldPtr(SmokeSimulation* handl
 	return handle->getSmokeField().getValuesPtr();
 }
 
-extern "C" INTERFACE_EXPORT const float* GetVolumeFractionFieldPtr(FluidSimulation* handle) {
+extern "C" INTERFACE_EXPORT const float* GetVolumeFractionFieldPtr(FreeSurfaceFluidSimulation* handle) {
 	return handle->getVolumeFractionField().getValuesPtr();
 }
 
@@ -62,11 +65,11 @@ extern "C" INTERFACE_EXPORT const int MarkerParticleCount(FluidSimulation* handl
 	return static_cast<int>(handle->getMarkerParticles().size());
 }
 
-extern "C" INTERFACE_EXPORT const float* GetSurfaceSDFPtr(FluidSimulation* handle) {
-	return handle->getSurfaceSDF().getValuesPtr();
+extern "C" INTERFACE_EXPORT const float* GetLevelSetPtr(FreeSurfaceFluidSimulation* handle) {
+	return handle->getLevelSet().getValuesPtr();
 }
 
-extern "C" INTERFACE_EXPORT const InterfaceData* GetFluidInterfacePtr(FluidSimulation* handle) {
+extern "C" INTERFACE_EXPORT const InterfaceData* GetFluidInterfacePtr(FreeSurfaceFluidSimulation* handle) {
 	return handle->getFluidInterface().getValuesPtr();
 }
 
@@ -76,7 +79,7 @@ struct CellInfo {
 	Vec2f normal;
 	float intercept, volumeFraction, fluxRight, fluxLeft, fluxTop, fluxBottom;
 };
-extern "C" INTERFACE_EXPORT const CellInfo GetCellInfo(FluidSimulation* handle, int i, int j, float timeStep) {
+extern "C" INTERFACE_EXPORT const CellInfo GetCellInfo(FreeSurfaceFluidSimulation* handle, int i, int j, float timeStep) {
 	using enum VectorComponent;
 	CellInfo info{};
 

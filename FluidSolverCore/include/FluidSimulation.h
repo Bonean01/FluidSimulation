@@ -22,44 +22,13 @@
 
 class FluidSimulation {
 public:
-	FluidSimulation(const FluidSimulationConfig& config) :
-		m_gridWidth(config.gridWidth),
-		m_gridHeight(config.gridHeight),
-		m_cellWidth(config.cellWidth),
-		m_density(config.density),
-		m_kinematicViscosity(config.kinematicViscosity),
-
-		m_velocityField(m_gridWidth, m_gridHeight, m_cellWidth),
-		m_pressureField(m_gridWidth, m_gridHeight, m_cellWidth),
-		m_divergenceField(m_gridWidth, m_gridHeight, m_cellWidth),
-		m_volumeFractionField(m_gridWidth, m_gridHeight, m_cellWidth),
-
-		m_domain(m_gridWidth, m_gridHeight),
-		m_markerParticles(),
-		m_fluidSurface(m_gridWidth, m_gridHeight),
-		m_fluidInterface(m_gridWidth, m_gridHeight),
-
-		m_advection(m_gridWidth, m_gridHeight, m_cellWidth),
-		m_diffusion(m_gridWidth, m_gridHeight, m_cellWidth),
-		m_projection(),
-
-		m_pressureSolver(m_gridWidth, m_gridHeight, m_cellWidth),
-		m_iterationCount(config.linearSolverConfig.iterationCount),
-
-		m_applyGravity(config.applyGravity) { 
-			if (config.threadCount > 0) omp_set_num_threads(config.threadCount);
-		}
-
 	virtual void step(float timeStep);
 
 	const StaggeredVectorField2D getVelocityField() const { return m_velocityField; }
 	const ScalarField2D& getPressureField() const { return m_pressureField; }
 	const ScalarField2D& getDivergenceField() const { return m_divergenceField; }
-	const ScalarField2D& getVolumeFractionField() const { return m_volumeFractionField; }
 	const Grid2D<CellData>& getCellData() const { return m_domain.getCellData(); }
 	const std::vector<MarkerParticle>& getMarkerParticles() const { return m_markerParticles; }
-	const LevelSet2D& getSurfaceSDF() const { return m_fluidSurface; }
-	const FluidInterface2D& getFluidInterface() const { return m_fluidInterface; }
 
 	const int getGridWidth() const { return m_gridWidth; }
 	const int getGridHeight() const { return m_gridHeight; }
@@ -71,26 +40,47 @@ public:
 	Vec2f getVelocity(int i, int j) const { return m_velocityField.getCellValue(i, j); }
 	void addVelocity(int i, int j, Vec2f deltaVel) { setVelocity(i, j, getVelocity(i, j) + deltaVel); }
 
-	void setCell(int i, int j, const CellConfig& config) {
-		m_domain.setCell(i, j, config);
-		if (config.cellData.cellType == CellType::Fluid) m_volumeFractionField.setValue(i, j, 1.0f);
-	}
+	virtual void setCell(int i, int j, const CellConfig& config) { m_domain.setCell(i, j, config); }
 	void floodDomain() { m_domain.flood(); }
 	void drainDomain() { m_domain.drain(); }
 	void createMarkerParticles() { m_domain.createMarkerParticles(m_markerParticles); }
 
 
 protected:
+	FluidSimulation(const FluidSimulationConfig& config) :
+		m_gridWidth(config.gridWidth),
+		m_gridHeight(config.gridHeight),
+		m_cellWidth(config.cellWidth),
+		m_density(config.density),
+		m_kinematicViscosity(config.kinematicViscosity),
+
+		m_velocityField(m_gridWidth, m_gridHeight, m_cellWidth),
+		m_pressureField(m_gridWidth, m_gridHeight, m_cellWidth),
+		m_divergenceField(m_gridWidth, m_gridHeight, m_cellWidth),
+
+		m_domain(m_gridWidth, m_gridHeight),
+		m_markerParticles(),
+
+		m_advection(m_gridWidth, m_gridHeight, m_cellWidth),
+		m_diffusion(m_gridWidth, m_gridHeight, m_cellWidth),
+		m_projection(),
+
+		m_pressureSolver(m_gridWidth, m_gridHeight, m_cellWidth),
+		m_iterationCount(config.linearSolverConfig.iterationCount),
+
+		m_applyGravity(config.applyGravity) {
+			if (config.threadCount > 0) omp_set_num_threads(config.threadCount);
+		}
+
+
 	int m_gridWidth, m_gridHeight;
 	float m_cellWidth, m_density, m_kinematicViscosity;
 
 	StaggeredVectorField2D m_velocityField;
-	ScalarField2D m_pressureField, m_divergenceField, m_volumeFractionField;
+	ScalarField2D m_pressureField, m_divergenceField;
 
 	Domain m_domain;
 	std::vector<MarkerParticle> m_markerParticles;
-	LevelSet2D m_fluidSurface;
-	FluidInterface2D m_fluidInterface;
 
 	Advection m_advection;
 	Projection m_projection;

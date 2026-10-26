@@ -4,6 +4,10 @@
 #include "TestUtils.h"
 
 #include "FluidSimulation.h"
+#include "simulations/SinglePhaseFluidSimulation.h"
+#include "simulations/SmokeSimulation.h"
+#include "simulations/FreeSurfaceFluidSimulation.h"
+
 #include "math/dataStructures/VectorField.h"
 #include "math/dataStructures/Vector.h"
 #include "math/operators/Staggered.h"
@@ -43,8 +47,8 @@ static void printDivergenceField(const FluidSimulation& simulation) {
 }
 
 
-static void printSurfaceSDF(const FluidSimulation& simulation) {
-	LevelSet2D surfaceData = simulation.getSurfaceSDF();
+static void printSurfaceSDF(const FreeSurfaceFluidSimulation& simulation) {
+	LevelSet2D surfaceData = simulation.getLevelSet();
 	int width = surfaceData.width();
 	int height = surfaceData.height();
 	for (int j = height - 1; j >= 0; j--) {
@@ -164,7 +168,7 @@ int main(int argc, char* argv[]) {
 
 
 
-	FluidSimulation simulation{ 
+	SinglePhaseFluidSimulation simulation{ 
 		FluidSimulationConfig{ 
 			width, 
 			height, 

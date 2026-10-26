@@ -26,10 +26,10 @@ public class FluidSimulationAdapter : MonoBehaviour {
         FluidSimulationConfig config = new(m_width, m_height, m_cellWidth, density, kinematicViscosity, new(iterationCount: solverIterationCount), applyGravity: applyGravity);
         
         m_simulation = simulationType switch {
-            SimulationType.Fluid => new FluidSimulation(config),
+            SimulationType.SinglePhase => new SinglePhaseFluidSimulation(config),
             SimulationType.Smoke => new SmokeSimulation(config),
-            //SimulationType.FreeSurface => new FreeSurfaceSimulation(config),
-            _ => throw new NotImplementedException()
+            SimulationType.FreeSurface => new FreeSurfaceSimulation(config),
+            _ => throw new NotImplementedException("The provided simulation type has not been implemented")
         };
 
         SetUpDomain();
@@ -242,7 +242,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
     }
 
     public void UpdateSurfaceSDFTexture(ref Texture2D surfaceSDFTexture) {
-        UpdateScalarFieldTexture(ref surfaceSDFTexture, m_simulation.SurfaceSDFValues());
+        UpdateScalarFieldTexture(ref surfaceSDFTexture, ((FreeSurfaceSimulation)m_simulation).LevelSetValues());
     }
 
 
@@ -257,7 +257,9 @@ public class FluidSimulationAdapter : MonoBehaviour {
             Gizmos.DrawSphere(origin + position, 0.05f);
         }
 
-        IEnumerator<InterfaceData> enumerator = m_simulation.InterfaceValues().GetEnumerator();
+        if (simulationType != SimulationType.FreeSurface) return;
+        
+        IEnumerator<InterfaceData> enumerator = ((FreeSurfaceSimulation)m_simulation).InterfaceValues().GetEnumerator();
         float worldCellWidth = transform.localScale.x / m_width;
         for (int j = 0; j < m_height; j++) {
             for (int i = 0; i < m_width; i++) {

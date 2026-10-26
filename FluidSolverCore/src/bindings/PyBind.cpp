@@ -4,6 +4,7 @@
 #include <pybind11/chrono.h>
 
 #include "FluidSimulation.h"
+#include "simulations/SinglePhaseFluidSimulation.h"
 #include "utils/profiling/Profiler.h"
 #include "domain/Domain.h"
 
@@ -75,24 +76,24 @@ PYBIND11_MODULE(FluidSolverPython, m) {
 			py::arg("thread_count"),
 			py::arg("apply_gravity"));
 
-	py::class_<FluidSimulation>(m, "FluidSimulation")
+	py::class_<SinglePhaseFluidSimulation>(m, "FluidSimulation")
 		.def(py::init<const FluidSimulationConfig&>(),
 			py::arg("config"))
-		.def("step", &FluidSimulation::step,
+		.def("step", &SinglePhaseFluidSimulation::step,
 			py::arg("time_step"))
-		.def("get_grid_width", &FluidSimulation::getGridWidth)
-		.def("get_grid_height", &FluidSimulation::getGridHeight)
-		.def("get_cell_width", &FluidSimulation::getCellWidth)
-		.def("get_density", &FluidSimulation::getDensity)
-		.def("get_kinematic_viscosity", &FluidSimulation::getKinematicViscosity)
-		.def("get_velocity", &FluidSimulation::getVelocity)
-		.def("set_cell", py::overload_cast<int, int, const CellConfig&>(&FluidSimulation::setCell),
+		.def("get_grid_width", &SinglePhaseFluidSimulation::getGridWidth)
+		.def("get_grid_height", &SinglePhaseFluidSimulation::getGridHeight)
+		.def("get_cell_width", &SinglePhaseFluidSimulation::getCellWidth)
+		.def("get_density", &SinglePhaseFluidSimulation::getDensity)
+		.def("get_kinematic_viscosity", &SinglePhaseFluidSimulation::getKinematicViscosity)
+		.def("get_velocity", &SinglePhaseFluidSimulation::getVelocity)
+		.def("set_cell", py::overload_cast<int, int, const CellConfig&>(&SinglePhaseFluidSimulation::setCell),
 			py::arg("i"),
 			py::arg("j"),
 			py::arg("cell_config"))
-		.def("flood_domain", &FluidSimulation::floodDomain)
-		.def("drain_domain", &FluidSimulation::drainDomain)
-		.def("create_marker_particles", &FluidSimulation::createMarkerParticles);
+		.def("flood_domain", &SinglePhaseFluidSimulation::floodDomain)
+		.def("drain_domain", &SinglePhaseFluidSimulation::drainDomain)
+		.def("create_marker_particles", &SinglePhaseFluidSimulation::createMarkerParticles);
 
 
 	py::class_<TaskData>(m, "TaskData")

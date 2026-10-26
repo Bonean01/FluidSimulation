@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 
-public enum SimulationType : byte { Fluid, Smoke, FreeSurface }
+public enum SimulationType : byte { SinglePhase, Smoke, FreeSurface }
 
 public class FluidSimulation : IDisposable {
     protected IntPtr m_handle;
@@ -26,8 +26,6 @@ public class FluidSimulation : IDisposable {
     [DllImport("FluidSolver")] private extern static IntPtr GetCellDataPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static IntPtr GetMarkerParticlesPtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static int MarkerParticleCount(IntPtr handle);
-    [DllImport("FluidSolver")] private extern static IntPtr GetSurfaceSDFPtr(IntPtr handle);
-    [DllImport("FluidSolver")] private extern static IntPtr GetFluidInterfacePtr(IntPtr handle);
 
     [DllImport("FluidSolver")] private extern static CellInfo GetCellInfo(IntPtr handle, int i, int j, float timeStep);
 
@@ -41,7 +39,7 @@ public class FluidSimulation : IDisposable {
     [DllImport("FluidSolver")] private extern static void CreateMarkerParticles(IntPtr handle);
 
 
-    public FluidSimulation(FluidSimulationConfig config, SimulationType type = SimulationType.Fluid) {
+    protected FluidSimulation(FluidSimulationConfig config, SimulationType type) {
         m_handle = CreateSimulation(config, type);
         m_width = config.gridWidth;
         m_height = config.gridHeight;
@@ -91,20 +89,6 @@ public class FluidSimulation : IDisposable {
         int count = MarkerParticleCount(m_handle);
         for (int i = 0; i < count; i++)
             yield return GetElementFromPointer<MarkerParticle>(ptr, i);
-    }
-
-    public IEnumerable<float> SurfaceSDFValues() {
-        IntPtr ptr = GetSurfaceSDFPtr(m_handle);
-        for (int i = 0; i < m_cellCount; i++) {
-            yield return GetElementFromPointer<float>(ptr, i);
-        }
-    }
-
-    public IEnumerable<InterfaceData> InterfaceValues() {
-        IntPtr ptr = GetFluidInterfacePtr(m_handle);
-        for (int i = 0; i < m_cellCount; i++) {
-            yield return GetElementFromPointer<InterfaceData>(ptr, i);
-        }
     }
 
 
