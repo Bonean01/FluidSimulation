@@ -1,4 +1,4 @@
-#include "FluidSimulation.h"
+#include "simulations/FluidSimulation.h"
 
 #include "math/operators/Staggered.h"
 #include "domain/Domain.h"

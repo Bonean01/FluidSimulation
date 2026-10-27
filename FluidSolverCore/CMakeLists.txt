@@ -1,7 +1,7 @@
 ﻿# CMakeList.txt : Top-level CMake project file, do global configuration
 # and include sub-projects here.
 #
-cmake_minimum_required (VERSION 3.10)
+cmake_minimum_required(VERSION 3.10)
 
 
 # Enable Hot Reload for MSVC compilers if supported.
@@ -11,7 +11,7 @@ if (POLICY CMP0141)
 endif()
 
 
-project ("FluidSimulation")
+project("FluidSimulation")
 
 
 # Fetch pybind11 from its git repo
@@ -25,10 +25,14 @@ FetchContent_MakeAvailable(pybind11)
 
 
 # Define a variable that contains the source files
-set (SOURCE_FILES
-	"include/FluidSimulation.h"
+set(SOURCE_FILES
 	"include/FluidSimulationConfig.h"
 
+	"include/simulations/FluidSimulation.h"
+	"include/simulations/SinglePhaseFluidSimulation.h"
+	"include/simulations/FreeSurfaceFluidSimulation.h"
+	"include/simulations/LevelSetFreeSurfaceFluidSimulation.h"
+	"include/simulations/PLICFreeSurfaceFluidSimulation.h"
 	"include/simulations/SmokeSimulation.h"
 
 	"include/domain/CellType.h"
@@ -67,7 +71,7 @@ set (SOURCE_FILES
 
 	"src/bindings/Exports.cpp"
 	
-	"src/FluidSimulation.cpp"
+	"src/simulations/FluidSimulation.cpp"
 
 	"src/domain/Domain.cpp"
 	"src/domain/PLIC/FluidInterface.cpp"
@@ -92,11 +96,11 @@ set (SOURCE_FILES
 
 
 # Create a library from the project.
-add_library (FluidSolver SHARED ${SOURCE_FILES})
+add_library(FluidSolver SHARED ${SOURCE_FILES})
 
 
 # Create a static library for testing.
-add_library (FluidSolverStatic STATIC ${SOURCE_FILES})
+add_library(FluidSolverStatic STATIC ${SOURCE_FILES})
 set_target_properties(FluidSolverStatic PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 
@@ -115,11 +119,11 @@ endif()
 
 
 # Setting include directories.
-target_include_directories (FluidSolver
+target_include_directories(FluidSolver
 	PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-target_include_directories (FluidSolverStatic
+target_include_directories(FluidSolverStatic
 	PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/include)
 

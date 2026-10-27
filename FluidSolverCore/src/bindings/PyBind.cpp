@@ -3,7 +3,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/chrono.h>
 
-#include "FluidSimulation.h"
+#include "simulations/FluidSimulation.h"
 #include "simulations/SinglePhaseFluidSimulation.h"
 #include "utils/profiling/Profiler.h"
 #include "domain/Domain.h"
