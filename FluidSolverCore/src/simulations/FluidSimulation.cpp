@@ -12,8 +12,6 @@ void FluidSimulation::step(float timeStep) {
 	ScopeProfiler p{ "============= COMPLETE SIMULATION STEP =============" };
 
 	m_advection.execute(m_markerParticles, m_velocityField, m_domain, timeStep);
-
-	if (m_applyGravity) ExternalForces::applyGravity(m_velocityField, m_domain, timeStep);
 	
 	m_domain.applyVelocityBoundaryConditions(m_velocityField);
 	

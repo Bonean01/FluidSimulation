@@ -2,7 +2,6 @@
 
 #include "FluidSimulation.h"
 
-
 class SmokeSimulation : public FluidSimulation {
 public:
     SmokeSimulation(const FluidSimulationConfig& config) :

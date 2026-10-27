@@ -18,12 +18,13 @@
 	#define INTERFACE_EXPORT
 #endif
 
-enum SimulationType : uint8_t { SinglePhase, Smoke, FreeSurface };
+enum SimulationType : uint8_t { SinglePhase, Smoke, LevelSetFreeSurface, PLICFreeSurface };
 extern "C" INTERFACE_EXPORT FluidSimulation* CreateSimulation(FluidSimulationConfig simulationConfig, SimulationType type) {
 	switch (type) {
 		case SinglePhase: return new SinglePhaseFluidSimulation(simulationConfig); break;
 		case Smoke: return new SmokeSimulation(simulationConfig); break;
-		case FreeSurface: return new FreeSurfaceFluidSimulation(simulationConfig); break;
+		case LevelSetFreeSurface: return new LevelSetFreeSurfaceFluidSimulation(simulationConfig); break;
+		case PLICFreeSurface: return new PLICFreeSurfaceFluidSimulation(simulationConfig); break;
 		default: throw std::runtime_error("Provided a non implemented simulation type");
 	}
 }

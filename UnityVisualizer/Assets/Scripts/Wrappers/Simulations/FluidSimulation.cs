@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 
-public enum SimulationType : byte { SinglePhase, Smoke, FreeSurface }
+public enum SimulationType : byte { SinglePhase, Smoke, LevelSetFreeSurface, PLICFreeSurface }
 
 public class FluidSimulation : IDisposable {
     protected IntPtr m_handle;

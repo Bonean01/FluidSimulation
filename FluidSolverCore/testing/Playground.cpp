@@ -7,6 +7,7 @@
 #include "simulations/SinglePhaseFluidSimulation.h"
 #include "simulations/SmokeSimulation.h"
 #include "simulations/LevelSetFreeSurfaceFluidSimulation.h"
+#include "simulations/PLICFreeSurfaceFluidSimulation.h"
 
 #include "math/dataStructures/VectorField.h"
 #include "math/dataStructures/Vector.h"

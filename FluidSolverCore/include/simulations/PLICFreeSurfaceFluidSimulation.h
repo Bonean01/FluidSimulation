@@ -13,7 +13,7 @@ public:
 	const ScalarField2D& getVolumeFractionField() const { return m_volumeFractionField; }
 
     void step(float timeStep) override {
-        m_advection.execute(m_volumeFractionField, m_fluidInterface, m_velocityField, m_domain, timeStep);
+		m_advection.execute(m_volumeFractionField, m_fluidInterface, m_velocityField, m_domain, timeStep);
 		m_domain.updateCellData(m_volumeFractionField);
 		if (m_applyGravity) ExternalForces::applyGravity(m_velocityField, m_domain, m_volumeFractionField, timeStep);
         FreeSurfaceFluidSimulation::step(timeStep);
