@@ -14,7 +14,6 @@ public:
 
     void step(float timeStep) override {
 		m_advection.execute(m_volumeFractionField, m_fluidInterface, m_velocityField, m_domain, timeStep);
-		m_domain.updateCellData(m_volumeFractionField);
 		if (m_applyGravity) ExternalForces::applyGravity(m_velocityField, m_domain, m_volumeFractionField, timeStep);
         FreeSurfaceFluidSimulation::step(timeStep);
     }
@@ -26,6 +25,8 @@ public:
 
 
 private:
+	void updateCellData() override { m_domain.updateCellData(m_volumeFractionField); }
+
 	FluidInterface2D m_fluidInterface;
 	ScalarField2D m_volumeFractionField;
 };

@@ -985,7 +985,7 @@ MonoBehaviour:
   simulationType: 3
   width: 66
   height: 33
-  cellWidth: 1
+  cellWidth: 0.75
   density: 1
   kinematicViscosity: 0
   solverIterationCount: 30
@@ -1003,8 +1003,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 482acafe0d8620945944c789eb241a99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FluidSimulationPlayer
-  fixedFrameRate: 40
-  startPaused: 1
+  fixedFrameRate: 30
+  startPaused: 0
 --- !u!114 &1486929794
 MonoBehaviour:
   m_ObjectHideFlags: 0
