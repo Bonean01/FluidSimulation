@@ -12,6 +12,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
 
     private int m_width, m_height;
     private float m_cellWidth;
+    private SimulationType m_simulationType;
     private FluidSimulation m_simulation;
     public event Action OnStateUpdated;
 
@@ -26,7 +27,8 @@ public class FluidSimulationAdapter : MonoBehaviour {
         m_cellWidth = cellWidth;
         FluidSimulationConfig config = new(m_width, m_height, m_cellWidth, density, kinematicViscosity, new(iterationCount: solverIterationCount), applyGravity: applyGravity);
         
-        m_simulation = simulationType switch {
+        m_simulationType = simulationType;
+        m_simulation = m_simulationType switch {
             SimulationType.SinglePhase => new SinglePhaseFluidSimulation(config),
             SimulationType.Smoke => new SmokeSimulation(config),
             SimulationType.LevelSetFreeSurface => new LevelSetFreeSurfaceFluidSimulation(config),
@@ -116,7 +118,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
 
 
     public void ApplySmokeCircle(Vector2 position, float smokeValue, float radius) {
-        if (simulationType != SimulationType.Smoke) return;
+        if (m_simulationType != SimulationType.Smoke) return;
 
         for (int i = 0; i < m_width; i++) {
             for (int j = 0; j < m_height; j++) {
@@ -236,7 +238,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
     }
 
     public float UpdateSmokeTexture(ref Texture2D smokeTexture) {
-        if (simulationType != SimulationType.Smoke) return 0.0f;
+        if (m_simulationType != SimulationType.Smoke) return 0.0f;
         return UpdateScalarFieldTexture(ref smokeTexture, ((SmokeSimulation)m_simulation).SmokeValues()).total;
     }
 
@@ -245,6 +247,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
     }
 
     public void UpdateSurfaceSDFTexture(ref Texture2D surfaceSDFTexture) {
+        if (m_simulationType != SimulationType.LevelSetFreeSurface) return;
         UpdateScalarFieldTexture(ref surfaceSDFTexture, ((LevelSetFreeSurfaceFluidSimulation)m_simulation).LevelSetValues());
     }
 
