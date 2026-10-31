@@ -4,4 +4,5 @@
 
 struct MarkerParticle {
 	Vec2f position;
+	Vec3f color;
 };

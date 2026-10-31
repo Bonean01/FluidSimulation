@@ -985,12 +985,12 @@ MonoBehaviour:
   simulationType: 3
   width: 66
   height: 33
-  cellWidth: 0.75
+  cellWidth: 0.5
   density: 1
   kinematicViscosity: 0
   solverIterationCount: 30
   applyGravity: 1
-  createMarkerParticles: 0
+  createMarkerParticles: 1
 --- !u!114 &1486929793
 MonoBehaviour:
   m_ObjectHideFlags: 0

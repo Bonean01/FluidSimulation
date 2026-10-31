@@ -7,7 +7,8 @@
 
 enum class VectorComponent : uint8_t {
 	X,
-	Y
+	Y,
+	Z
 };
 
 
@@ -71,13 +72,14 @@ struct Vec2f {
 };
 
 
+
 struct Vec2i {
 	int x, y;
 
 	Vec2i(int x = 0, int y = 0) : x(x), y(y) {}
 	int get(const VectorComponent& component) const {
-			using enum VectorComponent;
-			switch (component) {
+		using enum VectorComponent;
+		switch (component) {
 			case X: return x;
 			case Y: return y;
 			default: throw std::runtime_error("Vec2i only has X and Y components.");
@@ -123,5 +125,68 @@ struct Vec2i {
 
 	friend Vec2i operator -(const Vec2i& vec) {
 		return { -vec.x, -vec.y };
+	}
+};
+
+
+
+struct Vec3f {
+	float x, y, z;
+
+	Vec3f(float x = 0, float y = 0, float z = 0) : x(x), y(y), z(z) {}
+	float get(const VectorComponent& component) const {
+		using enum VectorComponent;
+		switch (component) {
+			case X: return x;
+			case Y: return y;
+			case Z: return z;
+			default: throw std::runtime_error("Vec3f only has X, Y and Z components.");
+		}
+	}
+
+	float magnitude() const { return std::sqrt(x * x + y * y + z * z); }
+	void normalize() {
+		float norm = magnitude();
+		this->x /= norm;
+		this->y /= norm;
+		this->z /= norm;
+	}
+
+	static Vec3f lerp(const Vec3f& A, const Vec3f& B, float t);
+
+	Vec3f& operator *=(float n) {
+		x *= n;
+		y *= n;
+		return *this;
+	}
+
+	friend Vec3f operator *(float n, const Vec3f& vec) {
+		return { n * vec.x, n * vec.y, n * vec.z };
+	}
+	friend Vec3f operator *(const Vec3f& vec, float n) {
+		return n * vec;
+	}
+
+	friend Vec3f operator /(const Vec3f& vec, float n) {
+		return { vec.x / n, vec.y / n, vec.z / n };
+	}
+
+	Vec3f& operator +=(const Vec3f& other) {
+		x += other.x;
+		y += other.y;
+		z += other.z;
+		return *this;
+	}
+
+	friend Vec3f operator +(const Vec3f& vec1, const Vec3f& vec2) {
+		return { vec1.x + vec2.x, vec1.y + vec2.y, vec1.z + vec2.z };
+	}
+
+	friend Vec3f operator -(const Vec3f& vec1, const Vec3f& vec2) {
+		return { vec1.x - vec2.x, vec1.y - vec2.y, vec1.z - vec2.z };
+	}
+
+	friend Vec3f operator -(const Vec3f& vec) {
+		return { -vec.x, -vec.y, -vec.z };
 	}
 };

@@ -24,3 +24,16 @@ public struct Vec2i {
     public static Vec2i operator *(Vec2i vec, float a) => new(vec.x * a, vec.y * a);
     public static Vec2i operator *(float a, Vec2i vec) => new(a * vec.x, a * vec.y);
 }
+
+[StructLayout(LayoutKind.Sequential)]
+public struct Vec3f {
+    public float x, y, z;
+    public Vec3f(float x, float y, float z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
+    public static Vec3f operator *(Vec3f vec, float a) => new(vec.x * a, vec.y * a, vec.z * a);
+    public static Vec3f operator *(float a, Vec3f vec) => new(a * vec.x, a * vec.y, a * vec.z);
+}

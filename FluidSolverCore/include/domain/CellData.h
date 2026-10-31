@@ -5,7 +5,7 @@
 #include "math/dataStructures/Vector.h"
 
 struct CellData {
-	CellType cellType = CellType::Void;
+	CellType cellType;
 	
 	CellData(CellType cellType = CellType::Void) :
 		cellType(cellType) {}

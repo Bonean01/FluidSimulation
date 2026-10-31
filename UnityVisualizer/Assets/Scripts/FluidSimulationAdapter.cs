@@ -243,7 +243,8 @@ public class FluidSimulationAdapter : MonoBehaviour {
     }
 
     public float UpdateVolumeFractionTexture(ref Texture2D volumeFractionTexture) {
-        return UpdateScalarFieldTexture(ref volumeFractionTexture, m_simulation.VolumeFractionValues()).total;
+        if (m_simulationType != SimulationType.PLICFreeSurface) return 0.0f; 
+        return UpdateScalarFieldTexture(ref volumeFractionTexture, ((PLICFreeSurfaceFluidSimulation)m_simulation).VolumeFractionValues()).total;
     }
 
     public void UpdateSurfaceSDFTexture(ref Texture2D surfaceSDFTexture) {

@@ -25,7 +25,7 @@ extern "C" INTERFACE_EXPORT FluidSimulation* CreateSimulation(FluidSimulationCon
 		case Smoke: return new SmokeSimulation(simulationConfig); break;
 		case LevelSetFreeSurface: return new LevelSetFreeSurfaceFluidSimulation(simulationConfig); break;
 		case PLICFreeSurface: return new PLICFreeSurfaceFluidSimulation(simulationConfig); break;
-		default: throw std::runtime_error("Provided a non implemented simulation type");
+		default: return nullptr;
 	}
 }
 

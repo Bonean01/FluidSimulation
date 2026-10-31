@@ -14,3 +14,12 @@ Vec2f Vec2f::biLerp(const Vec2f& A, const Vec2f& B, const Vec2f& C, const Vec2f&
 	Vec2f F = lerp(C, D, tX);
 	return lerp(E, F, tY);
 }
+
+
+Vec3f Vec3f::lerp(const Vec3f& A, const Vec3f& B, float t) {
+	Vec3f res{};
+	res.x = std::lerp(A.x, B.x, t);
+	res.y = std::lerp(A.y, B.y, t);
+	res.z = std::lerp(A.z, B.z, t);
+	return res;
+}
