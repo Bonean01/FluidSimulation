@@ -75,15 +75,27 @@ public class FluidSimulationAdapter : MonoBehaviour {
             }
         }
 
-        for (int i = width / 2 - 5; i < width / 2 + 5; i++)
+        for (int i = m_width / 2 - 5; i < m_width / 2 + 5; i++)
             m_simulation.SetCell(i, m_height - 1, ref inlet);
 
-        //for (int j = 1; j < height / 10; j++) {
-        //    m_simulation.SetCell(0, j, ref fluid);
-        //    m_simulation.SetCell(m_width - 1, j, ref fluid);
-        //}
+        //for (int i = m_width / 2 - 5; i < m_width / 2 + 5; i++)
+        //    m_simulation.SetCell(i, 0, ref outflow);
     }
 
+
+    private void Update() {
+        if (Input.GetKeyDown(KeyCode.DownArrow)) {
+            CellConfig inlet = new(new(CellType.Fluid, isInlet: true), new(BoundaryCondition.Dirichlet, new(0.0f, -10.0f)));
+            for (int i = m_width / 2 - 5; i < m_width / 2 + 5; i++)
+                m_simulation.SetCell(i, m_height - 1, ref inlet);
+        }
+
+        if (Input.GetKeyDown(KeyCode.UpArrow)) {
+            CellConfig staticWall = new(new(CellType.Solid), new(BoundaryCondition.Dirichlet, new(0.0f, 0.0f)));
+            for (int i = m_width / 2 - 5; i < m_width / 2 + 5; i++)
+                m_simulation.SetCell(i, m_height - 1, ref staticWall);
+        }
+    }
 
     public void StepSimulation(float dt) {
         m_simulation.Step(dt);

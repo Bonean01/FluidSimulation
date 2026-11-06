@@ -91,7 +91,8 @@ Shader "Custom/FluidVisualizer" {
                 // separate shaders for displaying each property
                 switch (_DisplayedField) {
                     case 0:  // VELOCITY
-                        color = float4(SAMPLE_TEXTURE2D(_VelocityTexture, sampler_VelocityTexture, uv).xy / sqrt(_MaxSpeedSqrd), 0.0f, 1.0f);
+                        float2 velocity = SAMPLE_TEXTURE2D(_VelocityTexture, sampler_VelocityTexture, uv).xy;
+                        color = float4(abs(velocity) / sqrt(_MaxSpeedSqrd), 0.0f, 1.0f);
                         break;
 
                     case 1:  // SPEED
