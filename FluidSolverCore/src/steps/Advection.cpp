@@ -123,6 +123,8 @@ void Advection::execute(ScalarField2D& volumeFractionField, FluidInterface2D& fl
 		#pragma omp parallel for
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width; i++) {
+				if (domain.getCell(i, j).isInlet) { volumeFractionField.setValue(i, j, 1.0f); continue; }
+
 				float flux0 = m_fluxes.getEdgeValue(C, i, j);
 				float flux1 = m_fluxes.getEdgeValue(C, i + (C == X ? 1 : 0), j + (C == Y ? 1 : 0));
 

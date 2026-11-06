@@ -37,20 +37,20 @@ public class FluidSimulationAdapter : MonoBehaviour {
         };
 
         SetUpDomain();
+        if (createMarkerParticles) m_simulation.CreateMarkerParticles();
     }
 
 
     private void SetUpDomain() {
         CellConfig movingWall = new(new(CellType.Solid), new(BoundaryCondition.Dirichlet, new(50.0f, 0.0f)));
         CellConfig staticWall = new(new(CellType.Solid), new(BoundaryCondition.Dirichlet, new(0.0f, 0.0f)));
-        CellConfig inlet = new(new(CellType.Fluid), new(BoundaryCondition.Dirichlet, new(12.5f, 0.0f)));
+        CellConfig inlet = new(new(CellType.Fluid, isInlet: true), new(BoundaryCondition.Dirichlet, new(0.0f, -10.0f)));
         CellConfig outflow = new(new(CellType.Fluid), new(BoundaryCondition.HomogeneousNeumann));
         CellConfig fluid = new(new(CellType.Fluid), new(BoundaryCondition.None));
 
 
-        for (int j = 1; j < m_height - 10; j++) {
-            for (int i = 10; i < m_width - 10; i++) {
-                //if (i < 10 && j < 10) continue;
+        for (int j = 1; j < m_height / 5; j++) {
+            for (int i = 1; i < m_width - 1; i++) {
                 m_simulation.SetCell(i, j, ref fluid);
             }
         }
@@ -65,26 +65,23 @@ public class FluidSimulationAdapter : MonoBehaviour {
             m_simulation.SetCell(i, m_height - 1, ref staticWall);
         }
 
+        Vector2Int origin = new(m_width / 2, m_height * 2 / 3);
+        for (int i = 0; i < m_width; i++) {
+            for (int j = 0; j < m_height; j++) {
+                Vector2Int pos = new(i, j);
+                if ((origin - pos).magnitude < 5) {
+                    m_simulation.SetCell(i, j, ref staticWall);
+                }
+            }
+        }
 
-        //for (int i = 0; i < 10; i++) {
-        //    for (int j = 0; j < 10; j++) {
-        //        m_simulation.SetCell(i, j, ref staticWall);
-        //    }
+        for (int i = width / 2 - 5; i < width / 2 + 5; i++)
+            m_simulation.SetCell(i, m_height - 1, ref inlet);
+
+        //for (int j = 1; j < height / 10; j++) {
+        //    m_simulation.SetCell(0, j, ref fluid);
+        //    m_simulation.SetCell(m_width - 1, j, ref fluid);
         //}
-
-
-        //Vector2Int origin = new(m_width / 2 + 5, m_height / 2);
-        //for (int i = 0; i < m_width; i++) {
-        //    for (int j = 0; j < m_height; j++) {
-        //        Vector2Int pos = new(i, j);
-        //        if ((origin - pos).magnitude < 5) {
-        //            m_simulation.SetCell(i, j, ref fluid);
-        //        }
-        //    }
-        //}
-        //m_simulation.FloodDomain();
-
-        if (createMarkerParticles) m_simulation.CreateMarkerParticles();
     }
 
 

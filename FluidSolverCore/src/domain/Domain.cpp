@@ -146,7 +146,7 @@ void Domain::updateCellData(const std::vector<MarkerParticle>& markerParticles, 
             for (int i = 0; i < width; i++) {
                 CellData& currentCell = m_cellData.at(i, j);
                 if (currentCell.cellType == CellType::Solid) continue;
-                else currentCell.cellType = CellType::Void;
+                else currentCell.cellType = CellType::Empty;
             }
         }
 
@@ -183,7 +183,7 @@ void Domain::updateCellData(const ScalarField2D& volumeFractionField) {
             if (currentCell.cellType == CellType::Solid) continue;
             
             if (volumeFraction > 0.0f) currentCell.cellType = CellType::Fluid;
-            else currentCell.cellType = CellType::Void;
+            else currentCell.cellType = CellType::Empty;
         }
     }
 }
@@ -197,7 +197,7 @@ void Domain::flood() {
     for (int j = 0; j < height; j++) {
         for (int i = 0; i < width; i++) {
             CellData& current = m_cellData.at(i, j);
-            if (current.cellType == CellType::Void) current.cellType = CellType::Fluid;
+            if (current.cellType == CellType::Empty) current.cellType = CellType::Fluid;
         }
     }
 }
@@ -211,7 +211,7 @@ void Domain::drain() {
     for (int j = 0; j < height; j++) {
         for (int i = 0; i < width; i++) {
             CellData& current = m_cellData.at(i, j);
-            if (current.cellType == CellType::Fluid) current.cellType = CellType::Void;
+            if (current.cellType == CellType::Fluid) current.cellType = CellType::Empty;
         }
     }
 }

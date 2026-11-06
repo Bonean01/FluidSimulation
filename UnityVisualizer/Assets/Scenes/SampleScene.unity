@@ -920,7 +920,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 16, y: 8, z: 1}
+  m_LocalScale: {x: 8, y: 8, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -938,7 +938,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FLuidVisualizer
   simulationAdapter: {fileID: 1486929792}
-  displayedProperty: 6
+  displayedProperty: 1
   speedGradient:
     serializedVersion: 2
     key0: {r: 0, g: 0.3925577, b: 0.4037736, a: 1}
@@ -950,11 +950,11 @@ MonoBehaviour:
     key6: {r: 0.96981126, g: 0.2104306, b: 0.7810125, a: 0}
     key7: {r: 0, g: 0, b: 0, a: 0}
     ctime0: 1002
-    ctime1: 10922
-    ctime2: 21845
-    ctime3: 32768
-    ctime4: 43690
-    ctime5: 54612
+    ctime1: 5166
+    ctime2: 14109
+    ctime3: 22128
+    ctime4: 38165
+    ctime5: 51580
     ctime6: 65535
     ctime7: 0
     atime0: 0
@@ -969,7 +969,7 @@ MonoBehaviour:
     m_ColorSpace: 0
     m_NumColorKeys: 7
     m_NumAlphaKeys: 2
-  maxSpeed: 15
+  maxSpeed: 20
 --- !u!114 &1486929792
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -983,14 +983,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FluidSimulationAdapter
   simulationType: 3
-  width: 66
-  height: 33
+  width: 89
+  height: 89
   cellWidth: 0.5
   density: 1
   kinematicViscosity: 0
   solverIterationCount: 30
   applyGravity: 1
-  createMarkerParticles: 1
+  createMarkerParticles: 0
 --- !u!114 &1486929793
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1003,7 +1003,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 482acafe0d8620945944c789eb241a99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FluidSimulationPlayer
-  fixedFrameRate: 30
+  fixedFrameRate: 40
   startPaused: 0
 --- !u!114 &1486929794
 MonoBehaviour:

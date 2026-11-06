@@ -6,7 +6,9 @@
 
 struct CellData {
 	CellType cellType;
+	bool isInlet;
 	
-	CellData(CellType cellType = CellType::Void) :
-		cellType(cellType) {}
+	CellData(CellType cellType = CellType::Empty, bool isInlet = false) :
+		cellType(cellType),
+		isInlet(isInlet) {}
 };

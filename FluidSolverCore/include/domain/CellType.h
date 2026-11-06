@@ -5,5 +5,5 @@
 enum class CellType : uint8_t {
 	Fluid,
 	Solid,
-	Void
+	Empty
 };

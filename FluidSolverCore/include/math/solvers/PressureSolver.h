@@ -11,7 +11,7 @@ public:
 		m_auxScalarField(gridWidth, gridHeight, cellWidth) {}
 
 	void solveJacobi(ScalarField2D& result, StaggeredVectorField2D& velocityField, const Domain& domain, float density, float dt, unsigned int iterationCount);
-	float solveCell(int i ,int j, ScalarField2D& prevPressureField, StaggeredVectorField2D& velocityField, const Domain& domain, float density, float dt);
+	float solveCell(int i ,int j, ScalarField2D& prevPressureField, const StaggeredVectorField2D& velocityField, const Domain& domain, float density, float dt);
 
 private:
 	ScalarField2D m_auxScalarField;

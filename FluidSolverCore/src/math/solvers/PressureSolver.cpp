@@ -24,11 +24,11 @@ void PressureSolver::solveJacobi(ScalarField2D& result, StaggeredVectorField2D& 
 }
 
 
-float PressureSolver::solveCell(int i, int j, ScalarField2D& pressureField, StaggeredVectorField2D& velocityField, const Domain& domain, float density, float timeStep) {
+float PressureSolver::solveCell(int i, int j, ScalarField2D& pressureField, const StaggeredVectorField2D& velocityField, const Domain& domain, float density, float timeStep) {
 	using enum VectorComponent;
 	
 	bool isSolid = domain.getCell(i, j).cellType == CellType::Solid;
-	bool isVoid = domain.getCell(i, j).cellType == CellType::Void;
+	bool isEmpty = domain.getCell(i, j).cellType == CellType::Empty;
 
 	bool rightFluid = domain.getCell(i + 1, j).cellType == CellType::Fluid;
 	bool leftFluid = domain.getCell(i - 1, j).cellType == CellType::Fluid;
@@ -41,7 +41,7 @@ float PressureSolver::solveCell(int i, int j, ScalarField2D& pressureField, Stag
 	bool bottomSolid = domain.getCell(i, j - 1).cellType == CellType::Solid;
 
 	int totalSolidCells = rightSolid + leftSolid + topSolid + bottomSolid;
-	if (isSolid || isVoid || totalSolidCells == 4) return 0.0f;
+	if (isSolid || isEmpty || totalSolidCells == 4) return 0.0f;
 
 	float rightPres = pressureField.getValue(i + 1, j);
 	float leftPres = pressureField.getValue(i - 1, j);
