@@ -83,8 +83,8 @@ protected:
 	std::vector<MarkerParticle> m_markerParticles;
 
 	Advection m_advection;
-	Projection m_projection;
 	Diffusion m_diffusion;
+	Projection m_projection;
 
 	PressureSolver m_pressureSolver;
 	int m_iterationCount;

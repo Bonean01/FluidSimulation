@@ -35,19 +35,6 @@ static void printSimulationState(const FluidSimulation& simulation) {
 }
 
 
-static void printDivergenceField(const FluidSimulation& simulation) {
-	ScalarField2D divergenceField = simulation.getDivergenceField();
-	int width = divergenceField.width();
-	int height = divergenceField.height();
-	for (int i = 0; i < width; i++) {
-		for (int j = 0; j < height; j++) {
-			std::cout << "(" << divergenceField.getValue(i, j) << ")\t\t";
-		}
-		std::cout << std::endl;
-	}
-}
-
-
 static void printSurfaceSDF(const LevelSetFreeSurfaceFluidSimulation& simulation) {
 	LevelSet2D surfaceData = simulation.getLevelSet();
 	int width = surfaceData.width();
@@ -124,7 +111,7 @@ int main(int argc, char* argv[]) {
 		advection.execute(volumeFractionField, fluidInterface, velocityField, domain, timestep);
 		domain.updateCellData(volumeFractionField);
 
-		ExternalForces::applyGravity(velocityField, domain, volumeFractionField, timestep);
+		ExternalForces::applyGravity(velocityField, domain, timestep);
 
 		domain.applyVelocityBoundaryConditions(velocityField);
 
