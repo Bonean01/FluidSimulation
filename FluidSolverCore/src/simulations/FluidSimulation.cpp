@@ -15,6 +15,9 @@ void FluidSimulation::step(float timeStep) {
 	
 	m_advection.execute(m_velocityField, m_domain, timeStep);
 	m_diffusion.execute(m_velocityField, m_domain, m_kinematicViscosity, timeStep, m_iterationCount);
+
+	if (m_applyGravity) ExternalForces::applyGravity(m_velocityField, m_domain, timeStep);
+
 	m_pressureSolver.solveJacobi(m_pressureField, m_velocityField, m_domain, m_density, timeStep, m_iterationCount);
 	m_projection.execute(m_velocityField, m_pressureField, m_domain, m_density, timeStep);
 	

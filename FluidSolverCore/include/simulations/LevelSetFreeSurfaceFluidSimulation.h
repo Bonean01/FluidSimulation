@@ -12,13 +12,12 @@ public:
 
     void step(float timeStep) override {
         m_fluidLevelSet.update(m_markerParticles, 5);
-		m_domain.extrapolateVelocity(m_velocityField, m_fluidLevelSet);
-        if (m_applyGravity) ExternalForces::applyGravity(m_velocityField, m_domain, timeStep);
         FreeSurfaceFluidSimulation::step(timeStep);
     }
 
 private:
     void updateCellData() override { m_domain.updateCellData(m_markerParticles, m_fluidLevelSet); }
+    void updateVelocityField() override { m_domain.extrapolateVelocity(m_velocityField, m_fluidLevelSet); }
 
     LevelSet2D m_fluidLevelSet;
 };

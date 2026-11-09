@@ -45,7 +45,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
         CellConfig movingWall = new(new(CellType.Solid), new(BoundaryCondition.Dirichlet, new(50.0f, 0.0f)));
         CellConfig staticWall = new(new(CellType.Solid), new(BoundaryCondition.Dirichlet, new(0.0f, 0.0f)));
         CellConfig inlet = new(new(CellType.Fluid, isInlet: true), new(BoundaryCondition.Dirichlet, new(0.0f, -10.0f)));
-        CellConfig outflow = new(new(CellType.Fluid), new(BoundaryCondition.HomogeneousNeumann));
+        CellConfig outflow = new(new(CellType.Empty), new(BoundaryCondition.HomogeneousNeumann));
         CellConfig fluid = new(new(CellType.Fluid), new(BoundaryCondition.None));
 
 
@@ -78,8 +78,9 @@ public class FluidSimulationAdapter : MonoBehaviour {
         for (int i = m_width / 2 - 5; i < m_width / 2 + 5; i++)
             m_simulation.SetCell(i, m_height - 1, ref inlet);
 
-        //for (int i = m_width / 2 - 5; i < m_width / 2 + 5; i++)
-        //    m_simulation.SetCell(i, 0, ref outflow);
+        // maybe the outlet should have a dirichlet boundary condition on pressure
+        //for (int j = 1; j < m_height / 10; j++)
+        //    m_simulation.SetCell(m_width - 1, j, ref outflow);
     }
 
 
