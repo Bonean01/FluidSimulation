@@ -986,15 +986,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e94e98e92c6c886408bbc9fda4ff8374, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FluidSimulationAdapter
-  simulationType: 2
-  width: 79
-  height: 79
-  cellWidth: 0.5
+  simulationType: 3
+  width: 88
+  height: 88
+  cellWidth: 1
   density: 1
   kinematicViscosity: 0
   solverIterationCount: 30
   applyGravity: 1
-  createMarkerParticles: 1
+  createMarkerParticles: 0
 --- !u!114 &1486929793
 MonoBehaviour:
   m_ObjectHideFlags: 0

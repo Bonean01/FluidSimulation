@@ -9,12 +9,10 @@ public:
 
 	virtual void step(float timeStep) override {
 		updateCellData();
-		updateVelocityField();
 		FluidSimulation::step(timeStep);
 	}
 
 
 private:
 	virtual void updateCellData() = 0;
-	virtual void updateVelocityField() = 0;
 };

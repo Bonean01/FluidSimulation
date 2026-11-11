@@ -72,6 +72,13 @@ protected:
 			if (config.threadCount > 0) omp_set_num_threads(config.threadCount);
 		}
 
+	virtual void updateVelocityField();
+	virtual void selfAdvect(float timeStep);
+	virtual void diffuse(float timeStep);
+	virtual void applyGravity(float timeStep);
+	virtual void pressureSolve(float timeStep);
+	virtual void project(float timeStep);
+	virtual void advectProperties(float timeStep);
 
 	int m_gridWidth, m_gridHeight;
 	float m_cellWidth, m_density, m_kinematicViscosity;

@@ -4,18 +4,14 @@
 
 class PLICFreeSurfaceFluidSimulation : public FreeSurfaceFluidSimulation {
 public:
-    PLICFreeSurfaceFluidSimulation(const FluidSimulationConfig& config) :
-        FreeSurfaceFluidSimulation(config),
+	PLICFreeSurfaceFluidSimulation(const FluidSimulationConfig& config) :
+		FreeSurfaceFluidSimulation(config),
 		m_fluidInterface(m_gridWidth, m_gridHeight),
 		m_volumeFractionField(m_gridWidth, m_gridHeight, m_cellWidth) {}
 
     const FluidInterface2D& getFluidInterface() const { return m_fluidInterface; }
 	const ScalarField2D& getVolumeFractionField() const { return m_volumeFractionField; }
 
-    void step(float timeStep) override {
-        FreeSurfaceFluidSimulation::step(timeStep);
-		m_advection.execute(m_volumeFractionField, m_fluidInterface, m_velocityField, m_domain, timeStep);
-    }
 
     void setCell(int i, int j, const CellConfig& config) override {
 		FluidSimulation::setCell(i, j, config);
@@ -24,8 +20,19 @@ public:
 
 
 private:
-	void updateCellData() override { m_domain.updateCellData(m_volumeFractionField); }
+	void updateCellData() override {
+		m_domain.updateCellData(m_volumeFractionField);
+	}
+
+    void advectProperties(float timeStep) override {
+        FreeSurfaceFluidSimulation::advectProperties(timeStep);
+		m_advection.execute(m_volumeFractionField, m_fluidInterface, m_velocityField, m_domain, timeStep);
+    }
+
 	void updateVelocityField() override {
+		FluidSimulation::updateVelocityField();
+
+		// Set non-fluid edges to 0.0f
 		using enum VectorComponent;
 		for (VectorComponent C : { X, Y }) {
 			#pragma omp parallel for
