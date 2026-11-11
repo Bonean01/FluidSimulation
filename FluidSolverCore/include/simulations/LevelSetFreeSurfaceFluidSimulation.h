@@ -18,7 +18,7 @@ private:
     }
     void updateVelocityField() override {
         m_domain.extrapolateVelocity(m_velocityField, m_fluidLevelSet);
-        FluidSimulation::updateVelocityField();
+        FreeSurfaceFluidSimulation::updateVelocityField();
     }
 
     LevelSet2D m_fluidLevelSet;

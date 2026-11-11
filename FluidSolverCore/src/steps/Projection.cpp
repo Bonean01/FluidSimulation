@@ -21,6 +21,7 @@ void Projection::projectComponent(const VectorComponent& C, StaggeredVectorField
 	#pragma omp parallel for
 	for (int j = 0; j < height; j++) {
 		for (int i = 0; i < width; i++) {
+			if (not domain.isFluidEdge(C, i, j)) continue;
 			if (domain.hasEdgePrescribedVelocity(C, i, j)) continue;
 
 			float gradient = Staggered::gradient(C, i, j, pressureField);
@@ -29,4 +30,18 @@ void Projection::projectComponent(const VectorComponent& C, StaggeredVectorField
 			velocityField.setEdgeValue(C, i, j, resultingVel);
 		}
 	}
+}
+
+
+void Projection::execute(StaggeredVectorField2D& velocityField, const ScalarField2D& pressureField, const ScalarField2D& volumeFractionField, const Domain& domain, float density, float timeStep) {
+	ScopeProfiler p{ "Projection" };
+	using enum VectorComponent;
+
+	projectComponent(X, velocityField, pressureField, volumeFractionField, domain, density, timeStep);
+	projectComponent(Y, velocityField, pressureField, volumeFractionField, domain, density, timeStep);
+}
+
+
+void Projection::projectComponent(const VectorComponent& C, StaggeredVectorField2D& velocityField, const ScalarField2D& pressureField, const ScalarField2D& volumeFractionField, const Domain& domain, float density, float timeStep) {
+
 }

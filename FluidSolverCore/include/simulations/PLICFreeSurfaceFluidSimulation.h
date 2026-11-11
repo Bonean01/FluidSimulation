@@ -14,7 +14,7 @@ public:
 
 
     void setCell(int i, int j, const CellConfig& config) override {
-		FluidSimulation::setCell(i, j, config);
+		FreeSurfaceFluidSimulation::setCell(i, j, config);
 		if (config.cellData.cellType == CellType::Fluid) m_volumeFractionField.setValue(i, j, 1.0f);
 	}
 
@@ -25,12 +25,12 @@ private:
 	}
 
     void advectProperties(float timeStep) override {
-        FreeSurfaceFluidSimulation::advectProperties(timeStep);
+		FreeSurfaceFluidSimulation::advectProperties(timeStep);
 		m_advection.execute(m_volumeFractionField, m_fluidInterface, m_velocityField, m_domain, timeStep);
     }
 
 	void updateVelocityField() override {
-		FluidSimulation::updateVelocityField();
+		FreeSurfaceFluidSimulation::updateVelocityField();
 
 		// Set non-fluid edges to 0.0f
 		using enum VectorComponent;
@@ -45,6 +45,14 @@ private:
 			}
 		}
 	}
+
+	void pressureSolve(float timeStep) override {
+		m_pressureSolver.solveJacobi(m_pressureField, m_velocityField, m_volumeFractionField, m_domain, m_density, timeStep, m_iterationCount);
+	}
+
+	//void project(float timeStep) override {
+	//	m_projection.execute(m_velocityField, m_pressureField, m_volumeFractionField, m_domain, m_density, timeStep);
+	//}
 
 	FluidInterface2D m_fluidInterface;
 	ScalarField2D m_volumeFractionField;

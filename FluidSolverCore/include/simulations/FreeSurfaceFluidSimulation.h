@@ -1,7 +1,6 @@
 #pragma once
 
 #include "FluidSimulation.h"
-#include "steps/ExternalForces.h"
 
 class FreeSurfaceFluidSimulation : public FluidSimulation {
 public:

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FluidSimulation.h"
+#include "SinglePhaseFluidSimulation.h"
 
 class SmokeSimulation : public SinglePhaseFluidSimulation {
 public:
@@ -15,7 +15,7 @@ public:
 
 private:
     void advectProperties(float timeStep) override {
-        FluidSimulation::advectProperties(timeStep);
+        SinglePhaseFluidSimulation::advectProperties(timeStep);
         m_advection.execute(m_smokeField, m_velocityField, m_domain, timeStep);
     }
     ScalarField2D m_smokeField;

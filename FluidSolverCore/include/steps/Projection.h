@@ -12,7 +12,9 @@ class Projection {
 public:
 	// Subtract the divergent component of the velocity field from it
 	void execute(StaggeredVectorField2D& velocityField, const ScalarField2D& pressureField, const Domain& domain, float density, float timeStep);
+	void execute(StaggeredVectorField2D& velocityField, const ScalarField2D& pressureField, const ScalarField2D& volumeFractionField, const Domain& domain, float density, float timeStep);
 
 private:
 	void projectComponent(const VectorComponent& C, StaggeredVectorField2D& velocityField, const ScalarField2D& pressureField, const Domain& domain, float density, float timeStep);
+	void projectComponent(const VectorComponent& C, StaggeredVectorField2D& velocityField, const ScalarField2D& pressureField, const ScalarField2D& volumeFractionField, const Domain& domain, float density, float timeStep);
 };
