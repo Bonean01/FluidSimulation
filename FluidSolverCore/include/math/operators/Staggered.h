@@ -3,6 +3,8 @@
 #include "math/dataStructures/ScalarField.h"
 #include "math/dataStructures/StaggeredVectorField.h"
 
+#include "domain/PLIC/FluidInterface.h"
+
 namespace Staggered {
 	float divergence(int i, int j, const StaggeredVectorField2D& vectorField);
 	float divergence(const VectorComponent& C, int i, int j, const StaggeredVectorField2D& vectorField);
@@ -10,4 +12,5 @@ namespace Staggered {
 	void laplacian(StaggeredVectorField2D& result, const StaggeredVectorField2D& vectorField);
 	float gradient(const VectorComponent& C, int i, int j, const ScalarField2D& scalarField);
 	void gradient(StaggeredVectorField2D& result, const ScalarField2D& scalarField);
+	float curvature(int i, int j, const FluidInterface2D& fluidInterface);
 }

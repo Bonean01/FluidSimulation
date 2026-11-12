@@ -90,6 +90,7 @@ set(SOURCE_FILES
 	"src/math/operators/Gradient.cpp"
 	"src/math/operators/Divergence.cpp"
 	"src/math/operators/Laplacian.cpp"
+	"src/math/operators/Curvature.cpp"
 
 	"src/math/solvers/PressureSolver.cpp"
 )

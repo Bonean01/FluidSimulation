@@ -229,3 +229,9 @@ float FluidInterface2D::computeExcess(float scaledSpeed, float intercept, float 
 
     return (b - a) * (2 * intercept - a - b) / (2 * slope);
 }
+
+
+
+Vec2f FluidInterface2D::sampleNormalBilinear(float x, float y) {
+
+}
