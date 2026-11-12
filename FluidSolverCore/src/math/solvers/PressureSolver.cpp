@@ -71,6 +71,7 @@ float PressureSolver::solveCell(int i, int j, const ScalarField2D& prevPressureF
 }
 
 // So much duplicate code :(
+// TODO: Wrap the calculation of the pressureSum and the velocities into its own function to avoid duplication
 
 void PressureSolver::solveJacobi(ScalarField2D& result, StaggeredVectorField2D& velocityField, const ScalarField2D& volumeFractionField, const Domain& domain, float density, float timeStep, unsigned int iterationCount) {
 	int width = result.width();

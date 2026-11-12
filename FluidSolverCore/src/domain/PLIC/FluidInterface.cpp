@@ -232,6 +232,47 @@ float FluidInterface2D::computeExcess(float scaledSpeed, float intercept, float 
 
 
 
-Vec2f FluidInterface2D::sampleNormalBilinear(float x, float y) {
+Vec2f FluidInterface2D::sampleNormalBilinear(float x, float y) const {
+	x = std::clamp(x, 0.0f, (float)m_width - 2.0f);
+	y = std::clamp(y, 0.0f, (float)m_height - 2.0f);
 
+	int x1 = (int)std::floor(x);
+	int x2 = x1 + 1;
+	int y1 = (int)std::floor(y);
+	int y2 = y1 + 1;
+	float tX = x - x1;
+	float tY = y - y1;
+
+	Vec2f A = getValue(x1, y1).normal;
+	Vec2f B = getValue(x2, y1).normal;
+	Vec2f C = getValue(x1, y2).normal;
+	Vec2f D = getValue(x2, y2).normal;
+
+	return Vec2f::biLerp(A, B, C, D, tX, tY);
+}
+
+
+
+std::pair<Vec2f, Vec2f> FluidInterface2D::getInterfaceIntersectionsWithCell(int i, int j) const {
+	const InterfaceData& interfaceData = getValue(i, j);
+
+	Vec2f normal = interfaceData.normal;
+	float intercept = interfaceData.intercept;
+
+	if (interfaceData.normal.magnitude() == 0.0f) return {{ 0.0f, 0.0f }, { 0.0f, 0.0f }};
+	float slope = normal.x / (normal.y == 0.0f ? std::numeric_limits<float>::epsilon() : normal.y);
+
+	float Ax = 0;
+	if (intercept < 0) Ax = intercept / slope;
+	if (intercept > 1) Ax = (intercept - 1) / slope;
+	float Ay = std::clamp(intercept, 0.0f, 1.0f);
+	Vec2f A = { Ax, Ay };
+
+	float Bx = 1;
+	if (intercept - slope < 0) Bx = intercept / slope;
+	if (intercept - slope > 1) Bx = (intercept - 1) / slope;
+	float By = std::clamp(intercept - slope, 0.0f, 1.0f);
+	Vec2f B = { Bx, By };
+
+	return { A, B };
 }

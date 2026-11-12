@@ -20,7 +20,9 @@ public:
     void reconstruct(const ScalarField2D& volumeFractionField);
     float computeFluxAt(const VectorComponent& C, int i, int j, const StaggeredVectorField2D& velocityField, const ScalarField2D& volumeFractionField, float cellWidth, float timeStep) const;
     void computeFluxes(VectorComponent C, StaggeredGrid2D<float>& result, const StaggeredVectorField2D& velocityField, const ScalarField2D& volumeFractionField, float timeStep) const;
-    Vec2f sampleNormalBilinear(float x, float y);
+
+    Vec2f sampleNormalBilinear(float x, float y) const;
+    std::pair<Vec2f, Vec2f> getInterfaceIntersectionsWithCell(int i, int j) const;
 
 private:
     VectorComponent computeMajorAxisAt(int i, int j, const ScalarField2D& volumeFractionField) const;

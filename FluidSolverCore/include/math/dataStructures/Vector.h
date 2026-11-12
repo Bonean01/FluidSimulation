@@ -69,6 +69,10 @@ struct Vec2f {
 	friend Vec2f operator -(const Vec2f& vec) {
 		return { -vec.x, -vec.y };
 	}
+
+	friend bool operator ==(const Vec2f& vec1, const Vec2f& vec2) {
+		return vec1.x == vec2.x && vec1.y == vec2.y;
+	}
 };
 
 
@@ -125,6 +129,10 @@ struct Vec2i {
 
 	friend Vec2i operator -(const Vec2i& vec) {
 		return { -vec.x, -vec.y };
+	}
+
+	friend bool operator ==(const Vec2i& vec1, const Vec2i& vec2) {
+		return vec1.x == vec2.x && vec1.y == vec2.y;
 	}
 };
 
@@ -188,5 +196,9 @@ struct Vec3f {
 
 	friend Vec3f operator -(const Vec3f& vec) {
 		return { -vec.x, -vec.y, -vec.z };
+	}
+
+	friend bool operator ==(const Vec3f& vec1, const Vec3f& vec2) {
+		return vec1.x == vec2.x && vec1.y == vec2.y && vec1.z == vec2.z;
 	}
 };
