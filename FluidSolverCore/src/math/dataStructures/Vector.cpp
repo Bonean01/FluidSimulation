@@ -16,6 +16,17 @@ Vec2f Vec2f::biLerp(const Vec2f& A, const Vec2f& B, const Vec2f& C, const Vec2f&
 }
 
 
+float Vec2f::cross(const Vec2f& A, const Vec2f& B) {
+	return A.x * B.y - A.y * B.x;
+}
+
+
+Vec2f Vec2f::normalized(const Vec2f& A) {
+	float norm = A.magnitude();
+	return A / norm;
+}
+
+
 Vec3f Vec3f::lerp(const Vec3f& A, const Vec3f& B, float t) {
 	Vec3f res{};
 	res.x = std::lerp(A.x, B.x, t);

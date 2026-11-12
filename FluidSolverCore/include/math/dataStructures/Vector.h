@@ -34,6 +34,8 @@ struct Vec2f {
 
 	static Vec2f lerp(const Vec2f& A, const Vec2f& B, float t);
 	static Vec2f biLerp(const Vec2f& A, const Vec2f& B, const Vec2f& C, const Vec2f& D, float tX, float tY);
+	static Vec2f normalized(const Vec2f& A);
+	static float cross(const Vec2f& A, const Vec2f& B);
 	
 	Vec2f& operator *=(float n) {
 		x *= n;
