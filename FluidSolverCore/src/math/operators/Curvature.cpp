@@ -18,4 +18,22 @@ namespace FiniteDifference {
 
         return curvature;
     }
+
+    void curvature(ScalarField2D& result, const FluidInterface2D& fluidInterface) {
+        int width = fluidInterface.width();
+        int height = fluidInterface.height();
+
+        #pragma omp parallel for
+        for (int j = 0; j < height; j++) {
+            for (int i = 0; i < width; i++) {
+                Vec2f normal = fluidInterface.getValue(i, j).normal;
+                if (normal.x == 0.0f && normal.y == 0.0f) {
+                    result.setValue(i, j, 0.0f);
+                    continue;
+                }
+                float curvature = FiniteDifference::curvature(i, j, fluidInterface);
+                result.setValue(i, j, curvature);
+            }
+        }
+    }
 };

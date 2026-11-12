@@ -75,6 +75,10 @@ extern "C" INTERFACE_EXPORT const InterfaceData* GetFluidInterfacePtr(PLICFreeSu
 	return handle->getFluidInterface().getValuesPtr();
 }
 
+extern "C" INTERFACE_EXPORT const float* GetInterfaceCurvatureFieldPtr(PLICFreeSurfaceFluidSimulation* handle) {
+	return handle->getSurfaceCurvatureField().getValuesPtr();
+}
+
 
 struct CellInfo {
 	float velRight, velLeft, velTop, velBottom;

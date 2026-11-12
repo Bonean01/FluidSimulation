@@ -30,4 +30,5 @@ namespace FiniteDifference {
 	}
 
 	float curvature(int i, int j, const FluidInterface2D& fluidInterface);
+	void curvature(ScalarField2D& result, const FluidInterface2D& fluidInterface);
 }

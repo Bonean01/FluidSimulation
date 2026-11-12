@@ -262,6 +262,11 @@ public class FluidSimulationAdapter : MonoBehaviour {
         UpdateScalarFieldTexture(ref surfaceSDFTexture, ((LevelSetFreeSurfaceFluidSimulation)m_simulation).LevelSetValues());
     }
 
+    public void UpdateCurvatureTexture(ref Texture2D curvatureTexture) {
+        if (m_simulationType != SimulationType.PLICFreeSurface) return;
+        UpdateScalarFieldTexture(ref curvatureTexture, ((PLICFreeSurfaceFluidSimulation)m_simulation).InterfaceCurvatureValues());
+    }
+
 
 
     private void OnDrawGizmosSelected() {

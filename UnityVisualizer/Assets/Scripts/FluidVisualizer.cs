@@ -8,7 +8,8 @@ enum FluidProperty {
     Divergence,
     Smoke,
     SurfaceSDF,
-    VolumeFraction
+    VolumeFraction,
+    Curvature
 }
 
 
@@ -19,7 +20,7 @@ public class FluidVisualizer : MonoBehaviour {
     [SerializeField] private Gradient speedGradient;
     [SerializeField] private float maxSpeed;
     private FluidSimulationAdapter m_simulationAdapter;
-    private Texture2D m_velocityTexture, m_pressureTexture, m_divergenceTexture, m_smokeTexture, m_cellDataTexture, m_surfaceSDFTexture, m_volumeFractionTexture;
+    private Texture2D m_velocityTexture, m_pressureTexture, m_divergenceTexture, m_smokeTexture, m_cellDataTexture, m_surfaceSDFTexture, m_volumeFractionTexture, m_curvatureTexture;
     private Texture2D m_speedGradientTexture;
     private SpriteRenderer m_spriteRenderer;
     
@@ -47,6 +48,7 @@ public class FluidVisualizer : MonoBehaviour {
         m_cellDataTexture = m_simulationAdapter.CreateTexture();
         m_surfaceSDFTexture = m_simulationAdapter.CreateTexture();
         m_volumeFractionTexture = m_simulationAdapter.CreateTexture();
+        m_curvatureTexture = m_simulationAdapter.CreateTexture();
 
         //m_simulationAdapter.UpdateSolidMapCellTexture(ref m_solidCellMapTexture);
         //m_spriteRenderer.material.SetTexture("_SolidCellMapTexture", m_solidCellMapTexture);
@@ -132,6 +134,11 @@ public class FluidVisualizer : MonoBehaviour {
             case FluidProperty.SurfaceSDF:
                 m_simulationAdapter.UpdateSurfaceSDFTexture(ref m_surfaceSDFTexture);
                 m_spriteRenderer.material.SetTexture("_SurfaceSDFTexture", m_surfaceSDFTexture);
+                break;
+
+            case FluidProperty.Curvature:
+                m_simulationAdapter.UpdateCurvatureTexture(ref m_curvatureTexture);
+                m_spriteRenderer.material.SetTexture("_CurvatureTexture", m_curvatureTexture);
                 break;
         }
     }

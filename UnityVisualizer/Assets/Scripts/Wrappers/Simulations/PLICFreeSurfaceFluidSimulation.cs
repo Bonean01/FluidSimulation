@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 public class PLICFreeSurfaceFluidSimulation : FluidSimulation {
     [DllImport("FluidSolver")] private extern static IntPtr GetFluidInterfacePtr(IntPtr handle);
     [DllImport("FluidSolver")] private extern static IntPtr GetVolumeFractionFieldPtr(IntPtr handle);
+    [DllImport("FluidSolver")] private extern static IntPtr GetInterfaceCurvatureFieldPtr(IntPtr handle);
     public PLICFreeSurfaceFluidSimulation(FluidSimulationConfig config) : base(config, SimulationType.PLICFreeSurface) {}
     
     public IEnumerable<InterfaceData> InterfaceValues() {
@@ -16,6 +17,12 @@ public class PLICFreeSurfaceFluidSimulation : FluidSimulation {
     
     public IEnumerable<float> VolumeFractionValues() {
         IntPtr ptr = GetVolumeFractionFieldPtr(m_handle); 
+        for (int i = 0; i < m_cellCount; i++)
+            yield return GetElementFromPointer<float>(ptr, i);
+    }
+
+    public IEnumerable<float> InterfaceCurvatureValues() {
+        IntPtr ptr = GetInterfaceCurvatureFieldPtr(m_handle);
         for (int i = 0; i < m_cellCount; i++)
             yield return GetElementFromPointer<float>(ptr, i);
     }

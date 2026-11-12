@@ -10,6 +10,7 @@ Shader "Custom/FluidVisualizer" {
         _CellDataTexture("Solid Cell Map Texture", 2D) = "white" {}
         _SurfaceSDFTexture("Surface SDF Texture", 2D) = "white" {}
         _VolumeFractionTexture("Volume Fraction Texture", 2D) = "white" {}
+        _CurvatureTexture("Curvature Texture", 2D) = "white" {}
 
         _DisplayedField("Displayed Field", int) = 0
 
@@ -65,6 +66,9 @@ Shader "Custom/FluidVisualizer" {
 
             TEXTURE2D(_VolumeFractionTexture);
             SAMPLER(sampler_VolumeFractionTexture);
+
+            TEXTURE2D(_CurvatureTexture);
+            SAMPLER(sampler_CurvatureTexture);
 
             struct Attributes {
                 float4 positionOS : POSITION;
@@ -135,6 +139,11 @@ Shader "Custom/FluidVisualizer" {
                     case 7:  // VOLUME FRACTION
                         float volumeFraction = SAMPLE_TEXTURE2D(_VolumeFractionTexture, sampler_VolumeFractionTexture, uv).x;
                         color = float4(0.0f, volumeFraction.xx, 1.0f);
+                        break;
+
+                    case 8:  // INTERFACE CURVATURE
+                        float curvature = SAMPLE_TEXTURE2D(_CurvatureTexture, sampler_CurvatureTexture, uv).x;
+                        color = float4(abs(curvature).x, 0.2f, 0.1f, 1.0f);
                         break;
                 }
                 return color;

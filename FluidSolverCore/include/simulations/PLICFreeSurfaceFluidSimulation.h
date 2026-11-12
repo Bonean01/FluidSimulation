@@ -1,16 +1,25 @@
 #pragma once
 
 #include "FreeSurfaceFluidSimulation.h"
+#include "math/operators/FiniteDifference.h"
 
 class PLICFreeSurfaceFluidSimulation : public FreeSurfaceFluidSimulation {
 public:
 	PLICFreeSurfaceFluidSimulation(const FluidSimulationConfig& config) :
 		FreeSurfaceFluidSimulation(config),
 		m_fluidInterface(m_gridWidth, m_gridHeight),
-		m_volumeFractionField(m_gridWidth, m_gridHeight, m_cellWidth) {}
+		m_volumeFractionField(m_gridWidth, m_gridHeight, m_cellWidth),
+		m_surfaceCurvatureField(m_gridWidth, m_gridHeight, m_cellWidth) {}
 
     const FluidInterface2D& getFluidInterface() const { return m_fluidInterface; }
 	const ScalarField2D& getVolumeFractionField() const { return m_volumeFractionField; }
+	const ScalarField2D& getSurfaceCurvatureField() const { return m_surfaceCurvatureField; }
+
+
+	void step(float timeStep) override {
+		FreeSurfaceFluidSimulation::step(timeStep);
+		FiniteDifference::curvature(m_surfaceCurvatureField, m_fluidInterface);
+	}
 
 
     void setCell(int i, int j, const CellConfig& config) override {
@@ -55,5 +64,5 @@ private:
 	//}
 
 	FluidInterface2D m_fluidInterface;
-	ScalarField2D m_volumeFractionField;
+	ScalarField2D m_volumeFractionField, m_surfaceCurvatureField;
 };
