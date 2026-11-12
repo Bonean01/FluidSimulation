@@ -17,17 +17,19 @@ struct FluidSimulationConfig {
 	float cellWidth;
 	float density;
 	float kinematicViscosity;
+    float surfaceTensionCoefficient;
     LinearSolverConfig linearSolverConfig;
     unsigned int threadCount;
     bool applyGravity;
 
-    FluidSimulationConfig(int gridWidth, int gridHeight, float cellWidth, float density = 1, float kinematicViscosity = 0,
+    FluidSimulationConfig(int gridWidth, int gridHeight, float cellWidth, float density = 1, float kinematicViscosity = 0, float surfaceTensionCoefficient = 0,
                           LinearSolverConfig linearSolverConfig = {}, unsigned int threadCount = 0, bool applyGravity = false) :
         gridWidth(gridWidth),
         gridHeight(gridHeight),
         cellWidth(cellWidth),
         density(density),
         kinematicViscosity(kinematicViscosity),
+        surfaceTensionCoefficient(surfaceTensionCoefficient),
         linearSolverConfig(linearSolverConfig),
         threadCount(threadCount),
         applyGravity(applyGravity) { }

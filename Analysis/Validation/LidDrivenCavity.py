@@ -16,8 +16,8 @@ from .CaseConfig import CaseConfig
 class LidDrivenCavityConfig(CaseConfig):
     lid_speed: float
 
-    def __init__(self, grid_width=33, grid_height=33, density=1.0, kinematic_viscosity=1e-02, time_step=1.0/2000.0, solver_iteration_count=30, simulation_iteration_count=2000, lid_speed=1.0):
-        super().__init__(grid_width, grid_height, density, kinematic_viscosity, time_step, solver_iteration_count, simulation_iteration_count)
+    def __init__(self, grid_width=33, grid_height=33, density=1.0, kinematic_viscosity=1e-02, surface_tension_coefficient=0, time_step=1.0/2000.0, solver_iteration_count=30, simulation_iteration_count=2000, lid_speed=1.0):
+        super().__init__(grid_width, grid_height, density, kinematic_viscosity, surface_tension_coefficient, time_step, solver_iteration_count, simulation_iteration_count)
         self.lid_speed = lid_speed
 
 
@@ -124,6 +124,7 @@ class LidDrivenCavity(ValidationCase):
             args.grid_height,
             args.density,
             args.kinematic_viscosity,
+            args.surface_tension_coefficient,
             args.time_step,
             args.solver_iteration_count,
             args.simulation_iteration_count,

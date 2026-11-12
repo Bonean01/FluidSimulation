@@ -86,6 +86,7 @@ int main(int argc, char* argv[]) {
 	float cellWidth = 1.0f;
 	float density = 1.0f;
 	float kinematicViscosity = 0.0001f;
+	float surfaceTensionCoefficient = 0.073f;
 	float timestep = 1.0f / 20.0f;
 
 	Domain domain{ width, height };
@@ -95,74 +96,14 @@ int main(int argc, char* argv[]) {
 	StaggeredGrid2D<float> fluxes{ width, height, cellWidth }; 
 	Advection advection{ width, height, cellWidth };
 
-	for (int j = 5; j < height - 1; j++) {
-		for (int i = 1; i < width - 1; i++) {
-			volumeFractionField.setValue(i, j, 1.0f);
-		}
-	}
-	domain.updateCellData(volumeFractionField);
-
-	std::cout << "======================== VOLUME FRACTION FIELD ========================\n" << volumeFractionField;
-
-	FluidInterface2D fluidInterface{ width, height };
-	fluidInterface.reconstruct(volumeFractionField);
-
-	for (int k = 0; k < 2; k++) {
-		advection.execute(volumeFractionField, fluidInterface, velocityField, domain, timestep);
-		domain.updateCellData(volumeFractionField);
-
-		ExternalForces::applyGravity(velocityField, domain, timestep);
-
-		domain.applyVelocityBoundaryConditions(velocityField);
-
-		advection.execute(velocityField, domain, timestep);
-	}
-	
-	printFluidInterface(fluidInterface);
-	std::cout << "\n======================== VELOCITIES ========================\n" << velocityField;
-	std::cout << "\n======================== FLUXES ========================\n" << fluxes;
-	std::cout << "\n======================== UPDATED VOLUME FRACTION FIELD ========================\n" << volumeFractionField;
-
-	return 0;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	SinglePhaseFluidSimulation simulation{ 
-		FluidSimulationConfig{ 
-			width, 
-			height, 
-			cellWidth, 
-			density, 
+	SinglePhaseFluidSimulation simulation{
+		FluidSimulationConfig{
+			width,
+			height,
+			cellWidth,
+			density,
 			kinematicViscosity,
+			surfaceTensionCoefficient,
 			LinearSolverConfig{
 				LinearSolverAlgorithm::JACOBI,
 				30

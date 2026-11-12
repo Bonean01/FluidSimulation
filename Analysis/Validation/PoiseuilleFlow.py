@@ -16,8 +16,8 @@ from .CaseConfig import CaseConfig
 class PoiseuilleFlowConfig(CaseConfig):
     inlet_speed: float
 
-    def __init__(self, grid_width=66, grid_height=33, density=1.0, kinematic_viscosity=1e-05, time_step=1.0/2000.0, solver_iteration_count=30, simulation_iteration_count=2000, inlet_speed=30.0):
-        super().__init__(grid_width, grid_height, density, kinematic_viscosity, time_step, solver_iteration_count, simulation_iteration_count)
+    def __init__(self, grid_width=66, grid_height=33, density=1.0, kinematic_viscosity=1e-05, surface_tension_coefficient=0, time_step=1.0/2000.0, solver_iteration_count=30, simulation_iteration_count=2000, inlet_speed=30.0):
+        super().__init__(grid_width, grid_height, density, kinematic_viscosity, surface_tension_coefficient, time_step, solver_iteration_count, simulation_iteration_count)
         self.inlet_speed = inlet_speed
 
 
@@ -114,6 +114,7 @@ class PoiseuilleFlow(ValidationCase):
             args.grid_height,
             args.density,
             args.kinematic_viscosity,
+            args.surface_tension_coefficient,
             args.time_step,
             args.solver_iteration_count,
             args.simulation_iteration_count,

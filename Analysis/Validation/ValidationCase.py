@@ -41,6 +41,7 @@ class ValidationCase(ABC):
                 cell_width,
                 self._config.density,
                 self._config.kinematic_viscosity,
+                self._config.surface_tension_coefficient,
                 linear_solver_config,
                 thread_count=0,
                 apply_gravity=False
@@ -85,6 +86,13 @@ class ValidationCase(ABC):
             type=float,
             default=default_config.kinematic_viscosity,
             help="Kinematic viscosity of the fluid"
+        )
+
+        parser.add_argument(
+            "--surface-tension-coefficient",
+            type=float,
+            default=default_config.surface_tension_coefficient,
+            help="Surface tension coefficient of the fluid"
         )
     
         parser.add_argument(

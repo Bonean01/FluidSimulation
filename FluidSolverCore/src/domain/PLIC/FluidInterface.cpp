@@ -1,5 +1,8 @@
 #include "domain/PLIC/FluidInterface.h"
+
 #include <array>
+#include <algorithm>
+
 #include "math/operators/FiniteDifference.h"
 
 
@@ -259,7 +262,7 @@ std::pair<Vec2f, Vec2f> FluidInterface2D::getInterfaceIntersectionsWithCell(int 
 	Vec2f normal = interfaceData.normal;
 	float intercept = interfaceData.intercept;
 
-	if (interfaceData.normal.magnitude() == 0.0f) return {{ 0.0f, 0.0f }, { 0.0f, 0.0f }};
+	if (normal.x == 0.0f && normal.y == 0.0f) return {{ 0.0f, 0.0f }, { 0.0f, 0.0f }};
 	float slope = normal.x / (normal.y == 0.0f ? std::numeric_limits<float>::epsilon() : normal.y);
 
 	float Ax = 0;

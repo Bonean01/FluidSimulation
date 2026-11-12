@@ -66,12 +66,13 @@ PYBIND11_MODULE(FluidSolverPython, m) {
 			py::arg("iteration_count"));
 
 	py::class_<FluidSimulationConfig>(m, "FluidSimulationConfig")
-		.def(py::init<int, int, float, float, float, LinearSolverConfig, unsigned int, bool>(),
+		.def(py::init<int, int, float, float, float, float, LinearSolverConfig, unsigned int, bool>(),
 			py::arg("width"),
 			py::arg("height"),
 			py::arg("cell_width"),
 			py::arg("density"),
 			py::arg("kinematic_viscosity"),
+			py::arg("surface_tension_coefficient"),
 			py::arg("linear_solver_config"),
 			py::arg("thread_count"),
 			py::arg("apply_gravity"));

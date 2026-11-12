@@ -25,16 +25,18 @@ public struct FluidSimulationConfig {
     public float cellWidth;
     public float density;
     public float kinematicViscosity;
+    public float surfaceTensionCoefficient;
     public LinearSolverConfig linearSolverConfig;
     public uint threadCount;
     public bool applyGravity;
 
-    public FluidSimulationConfig(int gridWidth, int gridHeight, float cellWidth, float density, float kinematicViscosity, LinearSolverConfig linearSolverConfig = new(), uint threadCount = 0, bool applyGravity = false) {
+    public FluidSimulationConfig(int gridWidth, int gridHeight, float cellWidth, float density, float kinematicViscosity, float surfaceTensionCoefficient, LinearSolverConfig linearSolverConfig = new(), uint threadCount = 0, bool applyGravity = false) {
         this.gridWidth = gridWidth;
         this.gridHeight = gridHeight;
         this.cellWidth = cellWidth;
         this.density = density;
         this.kinematicViscosity = kinematicViscosity;
+        this.surfaceTensionCoefficient = surfaceTensionCoefficient;
         this.linearSolverConfig = linearSolverConfig;
         this.threadCount = threadCount;
         this.applyGravity = applyGravity;

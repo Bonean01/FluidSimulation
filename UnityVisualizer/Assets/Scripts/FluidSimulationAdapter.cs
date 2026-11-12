@@ -5,7 +5,7 @@ using UnityEngine;
 public class FluidSimulationAdapter : MonoBehaviour {
     [SerializeField] private SimulationType simulationType;
     [SerializeField] private int width, height;
-    [SerializeField] private float cellWidth, density, kinematicViscosity;
+    [SerializeField] private float cellWidth, density, kinematicViscosity, surfaceTensionCoefficient;
     [SerializeField] private uint solverIterationCount;
     [SerializeField] private bool applyGravity;
     [SerializeField] private bool createMarkerParticles;
@@ -25,7 +25,7 @@ public class FluidSimulationAdapter : MonoBehaviour {
         m_width = width;
         m_height = height;
         m_cellWidth = cellWidth;
-        FluidSimulationConfig config = new(m_width, m_height, m_cellWidth, density, kinematicViscosity, new(iterationCount: solverIterationCount), applyGravity: applyGravity);
+        FluidSimulationConfig config = new(m_width, m_height, m_cellWidth, density, kinematicViscosity, surfaceTensionCoefficient, new(iterationCount: solverIterationCount), applyGravity: applyGravity);
         
         m_simulationType = simulationType;
         m_simulation = m_simulationType switch {

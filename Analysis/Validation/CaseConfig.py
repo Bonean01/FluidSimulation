@@ -9,11 +9,12 @@ class CaseConfig:
     thread_count: int
 
 
-    def __init__(self, grid_width, grid_height, density, kinematic_viscosity, time_step, solver_iteration_count, simulation_iteration_count):
+    def __init__(self, grid_width, grid_height, density, kinematic_viscosity, surface_tension_coefficient, time_step, solver_iteration_count, simulation_iteration_count):
         self.grid_width = grid_width
         self.grid_height = grid_height
         self.density = density
         self.kinematic_viscosity = kinematic_viscosity
+        self.surface_tension_coefficient = surface_tension_coefficient
         self.time_step = time_step
         self.solver_iteration_count = solver_iteration_count
         self.simulation_iteration_count = simulation_iteration_count
