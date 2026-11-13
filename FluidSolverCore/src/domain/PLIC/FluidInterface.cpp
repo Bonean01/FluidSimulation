@@ -241,12 +241,12 @@ Vec2f FluidInterface2D::sampleNormalBilinear(float x, float y) const {
 	x = std::clamp(x, 0.0f, (float)m_width - 2.0f);
 	y = std::clamp(y, 0.0f, (float)m_height - 2.0f);
 
-	int x1 = (int)std::floor(x);
+	int x1 = (int)std::floor(x - 0.5f);
 	int x2 = x1 + 1;
-	int y1 = (int)std::floor(y);
+	int y1 = (int)std::floor(y - 0.5f);
 	int y2 = y1 + 1;
-	float tX = x - x1;
-	float tY = y - y1;
+	float tX = x - x1 - 0.5f;
+	float tY = y - y1 - 0.5f;
 
 	Vec2f A = getValue(x1, y1).normal;
 	Vec2f B = getValue(x2, y1).normal;

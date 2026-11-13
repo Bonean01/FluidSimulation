@@ -8,8 +8,8 @@ namespace FiniteDifference {
         Vec2f intersectionB = intersections.second;
         Vec2f position = static_cast<Vec2f>(Vec2i{ i, j });
 
-        Vec2f normalA = fluidInterface.sampleNormalBilinear(position + intersectionA);
-        Vec2f normalB = fluidInterface.sampleNormalBilinear(position + intersectionB);
+        Vec2f normalA = Vec2f::normalized(fluidInterface.sampleNormalBilinear(position + intersectionA));
+        Vec2f normalB = Vec2f::normalized(fluidInterface.sampleNormalBilinear(position + intersectionB));
 
         float deltaLength = (intersectionB - intersectionA).magnitude();
 

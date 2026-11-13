@@ -136,6 +136,9 @@ void Advection::execute(ScalarField2D& volumeFractionField, FluidInterface2D& fl
 				float netFlux = flux0 - flux1;
 
 				float newVolumeFraction = timeStep / cellVolume * (netFlux + dilatationTerm) + volumeFraction;
+				if (newVolumeFraction > 1.0f - 1e-07f) newVolumeFraction = 1.0f;
+				if (newVolumeFraction < 1e-07f) newVolumeFraction = 0.0f;
+
 				volumeFractionField.setValue(i, j, newVolumeFraction);
 			}
 		}

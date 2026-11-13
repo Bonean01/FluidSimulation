@@ -8,6 +8,20 @@
 #include "steps/ExternalForces.h"
 
 
+void FluidSimulation::step(float timeStep) {
+	ScopeProfiler p{ "============= COMPLETE SIMULATION STEP =============" };
+
+	updateVelocityField();
+	selfAdvect(timeStep);
+	diffuse(timeStep);
+	if (m_applyGravity)
+		applyGravity(timeStep);
+	pressureSolve(timeStep);
+	project(timeStep);
+	advectProperties(timeStep);
+}
+
+
 void FluidSimulation::updateVelocityField() {
 	m_domain.applyVelocityBoundaryConditions(m_velocityField);
 }
@@ -34,18 +48,4 @@ void FluidSimulation::project(float timeStep) {
 
 void FluidSimulation::advectProperties(float timeStep) {
 	m_advection.execute(m_markerParticles, m_velocityField, m_domain, timeStep);
-}
-
-
-void FluidSimulation::step(float timeStep) {
-	ScopeProfiler p{ "============= COMPLETE SIMULATION STEP =============" };
-
-	updateVelocityField();
-	selfAdvect(timeStep);
-	diffuse(timeStep);
-	if (m_applyGravity)
-		applyGravity(timeStep);
-	pressureSolve(timeStep);
-	project(timeStep);
-	advectProperties(timeStep);
 }
