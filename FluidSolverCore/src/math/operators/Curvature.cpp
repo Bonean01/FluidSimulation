@@ -6,9 +6,10 @@ namespace FiniteDifference {
         auto intersections = fluidInterface.getInterfaceIntersectionsWithCell(i, j);
         Vec2f intersectionA = intersections.first;
         Vec2f intersectionB = intersections.second;
+        Vec2f position = static_cast<Vec2f>(Vec2i{ i, j });
 
-        Vec2f normalA = fluidInterface.sampleNormalBilinear(intersectionA);
-        Vec2f normalB = fluidInterface.sampleNormalBilinear(intersectionB);
+        Vec2f normalA = fluidInterface.sampleNormalBilinear(position + intersectionA);
+        Vec2f normalB = fluidInterface.sampleNormalBilinear(position + intersectionB);
 
         float deltaLength = (intersectionB - intersectionA).magnitude();
 

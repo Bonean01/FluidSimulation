@@ -235,6 +235,8 @@ float FluidInterface2D::computeExcess(float scaledSpeed, float intercept, float 
 
 
 
+// This doesn't work properly cause the normal can will be zero in cells that 
+// don't contain the interface
 Vec2f FluidInterface2D::sampleNormalBilinear(float x, float y) const {
 	x = std::clamp(x, 0.0f, (float)m_width - 2.0f);
 	y = std::clamp(y, 0.0f, (float)m_height - 2.0f);
