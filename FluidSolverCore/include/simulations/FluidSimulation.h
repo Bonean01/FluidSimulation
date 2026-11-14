@@ -75,7 +75,7 @@ protected:
 	virtual void updateVelocityField();
 	virtual void selfAdvect(float timeStep);
 	virtual void diffuse(float timeStep);
-	virtual void applyGravity(float timeStep);
+	virtual void externalForces(float timeStep);
 	virtual void pressureSolve(float timeStep);
 	virtual void project(float timeStep);
 	virtual void advectProperties(float timeStep);

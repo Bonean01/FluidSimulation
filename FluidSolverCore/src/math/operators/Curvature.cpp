@@ -4,14 +4,15 @@ namespace FiniteDifference {
     // Computes the surface divergence of the normals: κ = -∇_s * n for a given cell
     float curvature(int i, int j, const FluidInterface2D& fluidInterface) {
         auto intersections = fluidInterface.getInterfaceIntersectionsWithCell(i, j);
-        Vec2f intersectionA = intersections.first;
-        Vec2f intersectionB = intersections.second;
+        Vec2f intersectionB = intersections.first;
+        Vec2f intersectionA = intersections.second;
         Vec2f position = static_cast<Vec2f>(Vec2i{ i, j });
 
         Vec2f normalA = Vec2f::normalized(fluidInterface.sampleNormalBilinear(position + intersectionA));
         Vec2f normalB = Vec2f::normalized(fluidInterface.sampleNormalBilinear(position + intersectionB));
 
         float deltaLength = (intersectionB - intersectionA).magnitude();
+        if (deltaLength == 0.0f) return 0.0f;
 
         // κ = sign(cross(n_a, n_b)) * magnitude((n_b - n_a) / ΔS)
         float sign = std::signbit(Vec2f::cross(normalA, normalB)) ? -1.0f : 1.0f;
@@ -19,6 +20,7 @@ namespace FiniteDifference {
 
         return curvature;
     }
+
 
     void curvature(ScalarField2D& result, const FluidInterface2D& fluidInterface) {
         int width = fluidInterface.width();

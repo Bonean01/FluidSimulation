@@ -14,8 +14,7 @@ void FluidSimulation::step(float timeStep) {
 	updateVelocityField();
 	selfAdvect(timeStep);
 	diffuse(timeStep);
-	if (m_applyGravity)
-		applyGravity(timeStep);
+	externalForces(timeStep);
 	pressureSolve(timeStep);
 	project(timeStep);
 	advectProperties(timeStep);
@@ -34,8 +33,9 @@ void FluidSimulation::diffuse(float timeStep) {
 	m_diffusion.execute(m_velocityField, m_domain, m_kinematicViscosity, timeStep, m_iterationCount);
 }
 
-void FluidSimulation::applyGravity(float timeStep) {
-	ExternalForces::applyGravity(m_velocityField, m_domain, timeStep);
+void FluidSimulation::externalForces(float timeStep) {
+	if (m_applyGravity)
+		ExternalForces::applyGravity(m_velocityField, m_domain, timeStep);
 }
 
 void FluidSimulation::pressureSolve(float timeStep) {

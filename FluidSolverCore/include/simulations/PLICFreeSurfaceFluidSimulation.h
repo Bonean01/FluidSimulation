@@ -2,6 +2,7 @@
 
 #include "FreeSurfaceFluidSimulation.h"
 #include "math/operators/FiniteDifference.h"
+#include "steps/ExternalForces.h"
 
 class PLICFreeSurfaceFluidSimulation : public FreeSurfaceFluidSimulation {
 public:
@@ -31,6 +32,11 @@ public:
 private:
 	void updateCellData() override {
 		m_domain.updateCellData(m_volumeFractionField);
+	}
+
+	void externalForces(float timeStep) override {
+		FreeSurfaceFluidSimulation::externalForces(timeStep);
+		ExternalForces::applyContinuumSurfaceForce(m_velocityField, m_domain, m_fluidInterface, m_volumeFractionField, m_density, timeStep, m_surfaceTensionCoefficient);
 	}
 
     void advectProperties(float timeStep) override {

@@ -23,6 +23,7 @@ float Vec2f::cross(const Vec2f& A, const Vec2f& B) {
 
 Vec2f Vec2f::normalized(const Vec2f& A) {
 	float norm = A.magnitude();
+	if (norm == 0) return { 0.0f, 0.0f };
 	return A / norm;
 }
 

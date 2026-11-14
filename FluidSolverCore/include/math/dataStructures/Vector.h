@@ -28,6 +28,7 @@ struct Vec2f {
 	float magnitude() const { return std::sqrt(x*x + y*y); }
 	void normalize() { 
 		float norm = magnitude();
+		if (norm == 0) return;
 		this->x /= norm;
 		this->y /= norm;
 	}
@@ -157,6 +158,7 @@ struct Vec3f {
 	float magnitude() const { return std::sqrt(x * x + y * y + z * z); }
 	void normalize() {
 		float norm = magnitude();
+		if (norm == 0) return;
 		this->x /= norm;
 		this->y /= norm;
 		this->z /= norm;

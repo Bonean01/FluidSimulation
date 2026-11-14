@@ -70,13 +70,13 @@ public class FluidSimulationAdapter : MonoBehaviour {
             for (int j = 0; j < m_height; j++) {
                 Vector2Int pos = new(i, j);
                 if ((origin - pos).magnitude < 5) {
-                    m_simulation.SetCell(i, j, ref staticWall);
+                    m_simulation.SetCell(i, j, ref fluid);
                 }
             }
         }
 
-        for (int i = m_width / 2 - 5; i < m_width / 2 + 5; i++)
-            m_simulation.SetCell(i, m_height - 1, ref inlet);
+        //for (int i = m_width / 2 - 5; i < m_width / 2 + 5; i++)
+        //    m_simulation.SetCell(i, m_height - 1, ref inlet);
 
         // maybe the outlet should have a dirichlet boundary condition on pressure
         //for (int j = 1; j < m_height / 10; j++)
