@@ -37,15 +37,14 @@ namespace ExternalForces {
 			for (int j = 0; j < height; j++) {
 				for (int i = 0; i < width; i++) {
 					if (domain.hasEdgePrescribedVelocity(C, i, j)) continue;
-					Vec2f normal = fluidInterface.getValue(i, j).normal;
-					if (normal.x == 0 && normal.y == 0) continue;
 
 					float currentVel = velocityField.getEdgeValue(C, i, j);
 					float curvature0 = curvatureField.getValue(i, j);
 					float curvature1 = curvatureField.getValue(i - (C == X ? 1 : 0), j - (C == Y ? 1 : 0));
 					float curvature = (curvature0 + curvature1) / 2;
-					float volumeFractionGradient = Staggered::gradient(C, i, j, volumeFractionField);
-					float CSF = curvature * surfaceTensionCoefficient * std::abs(volumeFractionGradient);
+					if (curvature0 == 0.0f) curvature = curvature1;
+					if (curvature1 == 0.0f) curvature = curvature0;
+					float CSF = curvature * surfaceTensionCoefficient * Staggered::gradient(C, i, j, volumeFractionField);
 
 					velocityField.setEdgeValue(C, i, j, currentVel + CSF / density * timeStep);
 				}

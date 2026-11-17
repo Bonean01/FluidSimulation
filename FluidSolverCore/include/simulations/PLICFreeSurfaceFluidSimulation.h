@@ -53,7 +53,6 @@ private:
 			#pragma omp parallel for
 			for (int j = 0; j < m_gridHeight; j++) {
 				for (int i = 0; i < m_gridWidth; i++) {
-					const BoundaryData& currentBoundary = m_domain.getBoundary(C, i, j);
 					if (m_domain.hasEdgePrescribedVelocity(C, i, j)) continue;
 					if (not m_domain.isFluidEdge(C, i, j)) m_velocityField.setEdgeValue(C, i, j, 0.0f);
 				}

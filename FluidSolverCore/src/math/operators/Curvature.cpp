@@ -4,8 +4,8 @@ namespace FiniteDifference {
     // Computes the surface divergence of the normals: κ = -∇_s * n for a given cell
     float curvature(int i, int j, const FluidInterface2D& fluidInterface) {
         auto intersections = fluidInterface.getInterfaceIntersectionsWithCell(i, j);
-        Vec2f intersectionB = intersections.first;
         Vec2f intersectionA = intersections.second;
+        Vec2f intersectionB = intersections.first;
         Vec2f position = static_cast<Vec2f>(Vec2i{ i, j });
 
         Vec2f normalA = Vec2f::normalized(fluidInterface.sampleNormalBilinear(position + intersectionA));
