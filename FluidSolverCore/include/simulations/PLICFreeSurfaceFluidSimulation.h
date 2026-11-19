@@ -36,7 +36,7 @@ private:
 
 	void externalForces(float timeStep) override {
 		FreeSurfaceFluidSimulation::externalForces(timeStep);
-		ExternalForces::applyContinuumSurfaceForce(m_velocityField, m_domain, m_fluidInterface, m_volumeFractionField, m_density, timeStep, m_surfaceTensionCoefficient);
+		//ExternalForces::applyContinuumSurfaceForce(m_velocityField, m_domain, m_fluidInterface, m_volumeFractionField, m_density, timeStep, m_surfaceTensionCoefficient);
 	}
 
     void advectProperties(float timeStep) override {
@@ -61,7 +61,7 @@ private:
 	}
 
 	void pressureSolve(float timeStep) override {
-		m_pressureSolver.solveJacobi(m_pressureField, m_velocityField, m_volumeFractionField, m_domain, m_density, timeStep, m_iterationCount);
+		m_pressureSolver.solveJacobi(m_pressureField, m_velocityField, m_volumeFractionField, m_fluidInterface, m_domain, m_density, m_surfaceTensionCoefficient, timeStep, m_iterationCount);
 	}
 
 	//void project(float timeStep) override {

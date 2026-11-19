@@ -3,6 +3,8 @@
 #include <omp.h>
 
 #include "utils/profiling/ScopeProfiler.h"
+#include "math/operators/FiniteDifference.h"
+#include "domain/PLIC/FluidInterface.h"
 
 
 void PressureSolver::solveJacobi(ScalarField2D& result, StaggeredVectorField2D& velocityField, const Domain& domain, float density, float timeStep, unsigned int iterationCount) {
@@ -73,14 +75,14 @@ float PressureSolver::solveCell(int i, int j, const ScalarField2D& prevPressureF
 // So much duplicate code :(
 // TODO: Wrap the calculation of the pressureSum and the velocities into its own function to avoid duplication
 
-void PressureSolver::solveJacobi(ScalarField2D& result, StaggeredVectorField2D& velocityField, const ScalarField2D& volumeFractionField, const Domain& domain, float density, float timeStep, unsigned int iterationCount) {
+void PressureSolver::solveJacobi(ScalarField2D& result, StaggeredVectorField2D& velocityField, const ScalarField2D& volumeFractionField, const FluidInterface2D& fluidInterface, const Domain& domain, float density, float surfaceTensionCoefficient, float timeStep, unsigned int iterationCount) {
 	int width = result.width();
 	int height = result.height();
 	for (unsigned int k = 0; k < iterationCount; k++) {
 		#pragma omp parallel for
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width; i++) {
-				float newCellValue = solveCell(i, j, m_auxScalarField, velocityField, volumeFractionField, domain, density, timeStep);
+				float newCellValue = solveCell(i, j, m_auxScalarField, velocityField, volumeFractionField, fluidInterface, domain, density, surfaceTensionCoefficient, timeStep);
 				result.setValue(i, j, newCellValue);
 			}
 		}
@@ -90,7 +92,7 @@ void PressureSolver::solveJacobi(ScalarField2D& result, StaggeredVectorField2D& 
 }
 
 
-float PressureSolver::solveCell(int i, int j, const ScalarField2D& prevPressureField, const StaggeredVectorField2D& velocityField, const ScalarField2D& volumeFractionField, const Domain& domain, float density, float timeStep) {
+float PressureSolver::solveCell(int i, int j, const ScalarField2D& prevPressureField, const StaggeredVectorField2D& velocityField, const ScalarField2D& volumeFractionField, const FluidInterface2D& fluidInterface, const Domain& domain, float density, float surfaceTensionCoefficient, float timeStep) {
 	using enum VectorComponent;
 
 	bool isSolid = domain.getCell(i, j).cellType == CellType::Solid;
@@ -108,6 +110,8 @@ float PressureSolver::solveCell(int i, int j, const ScalarField2D& prevPressureF
 
 	int totalSolidCells = rightSolid + leftSolid + topSolid + bottomSolid;
 	if (isSolid || isEmpty || totalSolidCells == 4) return 0.0f;
+	// TODO: if the cell is empty (F < 0.5) extrapolate the fluid pressure into the
+	// air and use that instead of zero: -(1 - theta) / theta * p_fluid
 
 	float rightPres = prevPressureField.getValue(i + 1, j);
 	float leftPres = prevPressureField.getValue(i - 1, j);
@@ -135,6 +139,11 @@ float PressureSolver::solveCell(int i, int j, const ScalarField2D& prevPressureF
 
 	float newPressure = pressureSum - k * cellDensity * (rightVel - leftVel + topVel - bottomVel);
 	newPressure /= 4 - totalSolidCells;
+
+	if (0 < volumeFraction && volumeFraction < 1) {
+		float curvature = FiniteDifference::curvature(i, j, fluidInterface);
+		newPressure += std::abs(curvature) * surfaceTensionCoefficient;
+	}
 
 	return newPressure;
 }
